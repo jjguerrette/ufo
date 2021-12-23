@@ -11,41 +11,21 @@
 #include <string>
 #include <vector>
 
+#include "oops/util/parameters/OptionalParameter.h"
 #include "oops/util/parameters/Parameters.h"
-#include "oops/util/parameters/Parameter.h"
+#include "oops/util/parameters/RequiredParameter.h"
+
 #include "ufo/filters/ObsFilterData.h"
 #include "ufo/filters/obsfunctions/ObsFunctionBase.h"
+#include "ufo/filters/Variable.h"
 #include "ufo/filters/Variables.h"
+#include "ufo/utils/parameters/ParameterTraitsVariable.h"
 
 namespace ufo {
 
 // -----------------------------------------------------------------------------
 
-/// \brief Options controlling Polynomial2D function
-class Polynomial2DParameters : public oops::Parameters {
-  OOPS_CONCRETE_PARAMETERS(Polynomial2DParameters, Parameters)
-
- public:
-
-  /// independent Parameters for each term of the polynomial
-  oops::RequiredParameter<std::vector<Polynomial2DTermParameters>>
-    polynomialTerms{"polynomial terms", this};
-
-  /// independent coefficients for each filter variable
-  oops::RequiredParameter<std::vector<LinearFit2DCoefficientsParameters>>
-    polynomialCoefficients{"polynomial coefficients", this};
-
-  /// x and y variables in the 2D polynomial
-  oops::RequiredParameter<Variable> xvar{"xvar", this};
-  oops::RequiredParameter<Variable> yvar{"yvar", this};
-
-  /// filter variables, must be same as the parent filter variables,
-  /// including missing entirely if that is the case. Only the filter
-  /// variables will be processed, such that non-matching polynomial coefficients
-  /// vector members will be ignored.  See Polynomial2D for examples.
-  oops::OptionalParameter<std::vector<Variable>> filterVariables{
-    "filter variables", this};
-};
+/// \brief parameters controlling a single term in a Polynomial2D equation
 
 class Polynomial2DTermParameters : public oops::Parameters {
   OOPS_CONCRETE_PARAMETERS(Polynomial2DTermParameters, Parameters)
@@ -53,15 +33,19 @@ class Polynomial2DTermParameters : public oops::Parameters {
  public:
   /// exponents of x and y for a single term in the polynomial
   /// should be a vector of size-2
-  oops::RequiredParameter<std::vector<float>> exponents{"exponents", this};
-}:
+  oops::RequiredParameter<std::vector<double>> exponents{"exponents", this};
+};
 
-class LinearFit2DCoefficientsParameters: public oops::Parameters {
-  OOPS_CONCRETE_PARAMETERS(LinearFit2DCoefficientsParameters, Parameters)
+// -----------------------------------------------------------------------------
+
+/// \brief coefficients for terms in a linear fit
+
+class LinearFitCoefficientsParameters: public oops::Parameters {
+  OOPS_CONCRETE_PARAMETERS(LinearFitCoefficientsParameters, Parameters)
 
  public:
   /// filter variable to which these polynomial coefficients apply
-  oops::RequiredParameter<std::string>> variable{"name", this};
+  oops::RequiredParameter<std::string> name{"name", this};
 
   /// single channel, if applicable
   oops::OptionalParameter<int> channel{"channel", this};
@@ -69,17 +53,42 @@ class LinearFit2DCoefficientsParameters: public oops::Parameters {
   /// coefficients of the polynomial, ordered identically to "polynomial terms"
   /// and of the same length or smaller. only the first values.size() "polynomial terms"
   /// will be used to form the output for this filter variable.
-  oops::RequiredParameter<std::vector<float>> values{"values", this};
-}:
+  oops::RequiredParameter<std::vector<double>> values{"values", this};
+};
 
 // -----------------------------------------------------------------------------
 
-/// \brief 2D polynomial function
+/// \brief parameters that determine a full Polynomial2D equation
+class Polynomial2DParameters : public oops::Parameters {
+  OOPS_CONCRETE_PARAMETERS(Polynomial2DParameters, Parameters)
+
+ public:
+  /// filter variables, must be same as the parent filter variables,
+  /// including missing entirely if that is the case. Only the filter
+  /// variables will be processed, such that non-matching 'polynomial coefficients'
+  /// members will be ignored.  See below for examples.
+  oops::OptionalParameter<std::vector<Variable>> filterVariables{
+    "filter variables", this};
+
+  /// x and y variables in the 2D polynomial
+  oops::RequiredParameter<Variable> xvar{"xvar", this};
+  oops::RequiredParameter<Variable> yvar{"yvar", this};
+
+  /// independent Parameters for each term of the polynomial
+  oops::RequiredParameter<std::vector<Polynomial2DTermParameters>>
+    polynomialTerms{"polynomial terms", this};
+
+  /// independent coefficients for each filter variable
+  oops::RequiredParameter<std::vector<LinearFitCoefficientsParameters>>
+    polynomialCoefficients{"polynomial coefficients", this};
+};
+
+// -----------------------------------------------------------------------------
+
+/// \brief 2D polynomial equation of any degree
 ///
 /// 1 + c1 x + c2 y + c3 x^2 + c4 xy + c5 y^2 + ...
-
-// -----------------------------------------------------------------------------
-
+///
 /// ### important notes ###
 /// () The pseudo-yaml example below is for a single contiguous configuration file with anchors
 /// () If desirable, only one Polynomial2DAnchor (shown below) per filter type is needed in a
