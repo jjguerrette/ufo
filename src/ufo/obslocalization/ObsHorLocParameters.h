@@ -5,26 +5,19 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef UFO_OBSLOCALIZATION_OBSLOCPARAMETERS_H_
-#define UFO_OBSLOCALIZATION_OBSLOCPARAMETERS_H_
+#ifndef UFO_OBSLOCALIZATION_OBSHORLOCPARAMETERS_H_
+#define UFO_OBSLOCALIZATION_OBSHORLOCPARAMETERS_H_
 
 #include <string>
 #include <utility>
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/geometry/KPoint.h"
 #include "eckit/geometry/Point2.h"
 #include "eckit/geometry/Point3.h"
 #include "eckit/geometry/UnitSphere.h"
 
+#include "oops/base/ObsLocalizationParametersBase.h"
 #include "oops/util/parameters/OptionalParameter.h"
 #include "oops/util/parameters/Parameter.h"
-#include "oops/util/parameters/Parameters.h"
-#include "oops/util/parameters/RequiredParameter.h"
-
-namespace eckit {
-  class Configuration;
-}
 
 namespace ufo {
 
@@ -76,8 +69,8 @@ struct ParameterTraits<ufo::SearchMethod> :
 namespace ufo {
 
 /// \brief Options controlling local observations subsetting
-class ObsLocParameters : public oops::Parameters {
-  OOPS_CONCRETE_PARAMETERS(ObsLocParameters, Parameters)
+class ObsHorLocParameters : public oops::ObsLocalizationParametersBase {
+  OOPS_CONCRETE_PARAMETERS(ObsHorLocParameters, oops::ObsLocalizationParametersBase)
 
  public:
   /// Localization lengthscale (find all obs within the distance from reference point)
@@ -112,4 +105,4 @@ class ObsLocParameters : public oops::Parameters {
 
 }  // namespace ufo
 
-#endif  // UFO_OBSLOCALIZATION_OBSLOCPARAMETERS_H_
+#endif  // UFO_OBSLOCALIZATION_OBSHORLOCPARAMETERS_H_
