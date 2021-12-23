@@ -165,6 +165,10 @@ set ( filters_files
       obsfunctions/CLWRetSymmetricMW.h
       obsfunctions/Conditional.cc
       obsfunctions/Conditional.h
+#      obsfunctions/MaxColumnCloudFraction.cc
+#      obsfunctions/MaxColumnCloudFraction.h
+      obsfunctions/Polynomial2D.cc
+      obsfunctions/Polynomial2D.h
       obsfunctions/SetSurfaceType.cc
       obsfunctions/SetSurfaceType.h
       obsfunctions/SIRetMW.cc

@@ -68,6 +68,7 @@ void Polynomial2D::compute(const ObsFilterData & data,
   std::vector<double> exponents(2);
   LinearFit2DCoefficientsParameters &coeffOpt;
   Polynomial2DTermParameters &term;
+  std::vector<double> &coeff;
 
   // fill in output values
   out.zero()
@@ -85,8 +86,8 @@ void Polynomial2D::compute(const ObsFilterData & data,
 
       // look for the correct coefficients to match this filter variable
       cvar = -1
-      for (size_t cvar_ = 0; cvar_ < options_.fittingCoefficients.size(); ++cvar_) {
-        coeffOpt = options_.fittingCoefficients.value()[cvar_];
+      for (size_t cvar_ = 0; cvar_ < options_.polynomialCoefficients.size(); ++cvar_) {
+        coeffOpt = options_.polynomialCoefficients.value()[cvar_];
         if (coeffOpt.name.value() == fVar.variable()) {
           if (coeffOpt.channel.value() != boost::none) {
             if (coeffOpt.channel.value() == fVar.channels()[jvar]) {
@@ -102,19 +103,20 @@ void Polynomial2D::compute(const ObsFilterData & data,
       if (cvar < 0) {
          continue;
       }
-      // coeffOpt = options_.fittingCoefficients[cvar].value();
+      // coeffOpt = options_.polynomialCoefficients.value()[cvar];
       // const std::vector<double> &coeff = coeffOpt.values.value();
-      const std::vector<double> &coeff = options_.fittingCoefficients.value()[cvar].values.value();
+      coeff = options_.polynomialCoefficients.value()[cvar].values.value();
 
       // xvar and yvar indices
       size_t ixvar = std::min(ovar, xvar.size() - 1);
       size_t iyvar = std::min(ovar, yvar.size() - 1);
       // note: use xvals[ixvar][iloc] and yvals[iyvar][iloc] below
 
-      for (size_t iterm = 0; jterm < options.fittingTerms.size(); ++iterm) {
+      // only loop over available coefficients
+      for (size_t iterm = 0; jterm < coeff.size(); ++iterm) {
         c = coeff[iterm]
 
-        term = options.fittingTerms[iterm].value();
+        term = options.polynomialTerms.value()[iterm];
         px = term.exponents.value()[0];
         py = term.exponents.value()[1];
 

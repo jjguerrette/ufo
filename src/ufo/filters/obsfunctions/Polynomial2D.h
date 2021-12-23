@@ -29,11 +29,11 @@ class Polynomial2DParameters : public oops::Parameters {
 
   /// independent Parameters for each term of the polynomial
   oops::RequiredParameter<std::vector<Polynomial2DTermParameters>>
-    fittingTerms{"fitting terms", this};
+    polynomialTerms{"polynomial terms", this};
 
   /// independent coefficients for each filter variable
   oops::RequiredParameter<std::vector<LinearFit2DCoefficientsParameters>>
-    fittingCoefficients{"fitting coefficients", this};
+    polynomialCoefficients{"polynomial coefficients", this};
 
   /// x and y variables in the 2D polynomial
   oops::RequiredParameter<Variable> xvar{"xvar", this};
@@ -41,7 +41,7 @@ class Polynomial2DParameters : public oops::Parameters {
 
   /// filter variables, must be same as the parent filter variables,
   /// including missing entirely if that is the case. Only the filter
-  /// variables will be processed, such that non-matching fitting coefficients
+  /// variables will be processed, such that non-matching polynomial coefficients
   /// vector members will be ignored.  See Polynomial2D for examples.
   oops::OptionalParameter<std::vector<Variable>> filterVariables{
     "filter variables", this};
@@ -66,8 +66,9 @@ class LinearFit2DCoefficientsParameters: public oops::Parameters {
   /// single channel, if applicable
   oops::OptionalParameter<int> channel{"channel", this};
 
-  /// coefficients of the polynomial, ordered identically to "fitting terms"
-  /// and of the same length
+  /// coefficients of the polynomial, ordered identically to "polynomial terms"
+  /// and of the same length or smaller. only the first values.size() "polynomial terms"
+  /// will be used to form the output for this filter variable.
   oops::RequiredParameter<std::vector<float>> values{"values", this};
 }:
 
@@ -76,44 +77,53 @@ class LinearFit2DCoefficientsParameters: public oops::Parameters {
 /// \brief 2D polynomial function
 ///
 /// 1 + c1 x + c2 y + c3 x^2 + c4 xy + c5 y^2 + ...
-/// Notes:
 
 // -----------------------------------------------------------------------------
 
+/// ### important notes ###
+/// () The pseudo-yaml example below is for a single contiguous configuration file with anchors
+/// () If desirable, only one Polynomial2DAnchor (shown below) per filter type is needed in a
+///    single yaml file
+/// () Make sure the "filter variables" are prescribed identically to the parent filter (e.g.,
+///    using yaml anchors like "*FilterVariables" below).
+/// () The example below includes a 6-term degree-2 polynomial. The first 2 brightness_temperature
+///    channels use all 6 of the terms. Channel 5, aire_temperature, and specific_humidity use
+///    only the leading 3 of the 6 terms, equivalent to a linear fit in 2-dimensional space.
+///    More terms are added by extending options.(polynomial terms) and
+///    options.(polynomial coefficients)[:].values.
+/// () Alternatively, the output can be parameterized on a single variable, x or y, by
+///    setting the exponents of the other term, y or x, repsectively, to zero in all terms.
+/// () Although the examples below are for the Perform Action filter with "assign error" as the
+///    action, this ObsFunction can be used in any application that requires a quantity
+///    parameterized as a 2D polynomial.
+///
 /// ### example configuration ###
-///   Notes:
-///   () The pseudo-yaml example below is for a single contiguous configuration file with anchors
-///   () Although the examples below are for the Perform Action filter with "assign error" as the
-///      action, this ObsFunction can be used in any application that requires a quantity
-///      parameterized as a 2D polynomial.
-///   () Make sure the "filter variables" are prescribed identically to the parent filter (e.g.,
-///      using yaml anchors like "*FilterVariables" below).
-///   () The example below is for a three-term degree-1 polynomial.  More terms are added by
-///      extending options.(fitting terms) and options.(fitting coefficients)[:].values.
-///   () Alternatively, the output can be parameterized on a single variable, x or y, by
-///      setting the exponents of the other term, y or x, repsectively, to zero in all terms.
+///    _polynomial 2d options anchor: &Polynomial2DAnchor
+///      polynomial terms:
+///      - exponents: [0, 0]
+///      - exponents: [1, 0]
+///      - exponents: [0, 1]
+///      - exponents: [2, 0]
+///      - exponents: [1, 1]
+///      - exponents: [0, 2]
+///      polynomial coefficients:
+///      - name: brightness_temperature
+///        channel: 1
+///        values: [0., 1., 2.5, 0.25, 0.1, 0.3]
+///      - name: brightness_temperature
+///        channel: 2
+///        values: [0., 1., 2.5, 0.5, 0.1, 0.5]
+///      - name: brightness_temperature # never selected in below examples
+///        channel: 5
+///        values: [0., 1., 2.5]
+///      - name: air_temperature
+///        values: [1., 1., 1.5]
+///      - name: specific_humidity
+///        values: [1., 0., 1.5]
 ///
-///      _polynomial 2d options anchor: &Polynomial2DAnchor
-///        fitting terms:
-///        - exponents: [0, 0]
-///        - exponents: [1, 0]
-///        - exponents: [0, 1]
-///        fitting coefficients:
-///        - name: brightness_temperature
-///          channel: 1
-///          values: [0., 1., 2.5]
-///        - name: brightness_temperature
-///          channel: 2
-///          values: [0., 1., 2.5]
-///        - name: brightness_temperature # never selected in below examples
-///          channel: 5
-///          values: [0., 1., 2.5]
-///        - name: air_temperature
-///          values: [1., 1., 1.5]
-///        - name: specific_humidity
-///          values: [1., 0., 1.5]
-///
-///     # (1) channels 1 and 2 for brightness_temperature are selected
+///   observations:
+///   # (1) channels 1 and 2 for brightness_temperature are selected
+///   - obs filters:
 ///     - filter: Perform Action
 ///       filter variables: &radianceFilterVariables
 ///       - name: brightness_temperature
@@ -124,11 +134,11 @@ class LinearFit2DCoefficientsParameters: public oops::Parameters {
 ///           name: Polynomial2D@ObsFunction
 ///           options: &Polynomial2DAnchor
 ///             filter variables: *radianceFilterVariables
-///             xvar: XRadGroupName/XRadVariableName
-///             yvar: YRadGroupName/YRadVariableName
+///             xvar: MetaData/latitude
+///             yvar: GeoVaLs/surface_wind_speed
 ///
-///     # (2) air_temperature and specific_humidity are selected
-///
+///   # (2) air_temperature and specific_humidity are selected
+///   - obs filters:
 ///     - filter: Perform Action
 ///       filter variables: &conventionalFilterVariables
 ///       - name: air_temperature
@@ -142,8 +152,8 @@ class LinearFit2DCoefficientsParameters: public oops::Parameters {
 ///             xvar: XConvGroupName/XConvVariableName
 ///             yvar: YConvGroupName/YConvVariableName
 ///
-///     # (3) defaults to simulated variables in obs operator
-///
+///   # (3) defaults to simulated variables in obs operator
+///   - obs filters:
 ///     - filter: Perform Action
 ///       action:
 ///         name: assign error
