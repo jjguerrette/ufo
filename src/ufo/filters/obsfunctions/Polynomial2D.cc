@@ -40,7 +40,6 @@ Polynomial2D::~Polynomial2D() {}
 
 void Polynomial2D::compute(const ObsFilterData & data,
                            ioda::ObsDataVector<float> & out) const {
-
   // Get nlocs dimension
   size_t nlocs = data.nlocs();
 
@@ -73,6 +72,10 @@ void Polynomial2D::compute(const ObsFilterData & data,
   double c, xi, yi, zi, px, py;
   size_t cvar, ovar;
 
+  // initialize output to zero
+  // should this be missing instead?
+  out.zero();
+
   // fill in output values
   for (size_t ivar = 0; ivar < filtervars.size(); ++ivar) {
     // get this filter variable
@@ -100,6 +103,7 @@ void Polynomial2D::compute(const ObsFilterData & data,
           }
         }
       }
+      // skip filter variables for which there are no coefficients
       if (cvar < 0) {
          continue;
       }
@@ -109,12 +113,13 @@ void Polynomial2D::compute(const ObsFilterData & data,
       size_t ixvar = std::min(ovar, xvar.size() - 1);
       size_t iyvar = std::min(ovar, yvar.size() - 1);
 
+      // allocate intermediate output variables
       std::vector<double> z(coeff.size());
       std::vector<double> zabs(coeff.size());
 
+      // evaluate polynomial
       for (size_t iloc = 0; iloc < nlocs; ++iloc) {
-
-        // only loop over as many terms as there are available coefficients
+        // only use as many terms as there are available coefficients
         for (size_t iterm = 0; iterm < coeff.size(); ++iterm) {
           px = allTerms[iterm].exponents.value()[0];
           xi = std::pow(xvals[ixvar][iloc], px);
