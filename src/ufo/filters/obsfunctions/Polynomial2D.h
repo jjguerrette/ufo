@@ -47,7 +47,7 @@ class LinearFitCoefficientsParameters: public oops::Parameters {
   /// filter variable to which these polynomial coefficients apply
   oops::RequiredParameter<std::string> name{"name", this};
 
-  /// single channel, if applicable
+  /// single channel, if applicable.  omit for non-channel filter variables.
   oops::OptionalParameter<int> channel{"channel", this};
 
   /// coefficients of the polynomial, ordered identically to "polynomial terms"
@@ -183,7 +183,6 @@ class Polynomial2D : public ObsFunctionBase<float> {
  private:
   Polynomial2DParameters options_;
   ufo::Variables invars_;
-  std::vector<int> channels_;
 };
 
 // -----------------------------------------------------------------------------
