@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "ioda/ObsDataVector.h"
+#include "oops/util/missingValues.h"
 #include "ufo/filters/Variable.h"
 #include "ufo/filters/Variables.h"
 
@@ -40,105 +41,166 @@ Polynomial2D::~Polynomial2D() {}
 
 void Polynomial2D::compute(const ObsFilterData & data,
                            ioda::ObsDataVector<float> & out) const {
+  oops::Log::trace() << "Polynomial2D::compute started" << std::endl;
+  const float missing = util::missingValue(missing);
+
   // Get nlocs dimension
   size_t nlocs = data.nlocs();
 
   // Get x and y variable data
   const Variable &xvar = options_.xvar.value();
-  ioda::ObsDataVector<float> xvals(data.obsspace(), xvar.toOopsVariables());
+  oops::Log::trace() << "Polynomial2D::compute, retrieving xvar: " << xvar << std::endl;
+  // TODO(JJG): would be nice to make this work for filter-variable resolved variables (like ObsValue)
+  // ioda::ObsDataVector<float> xvals(data.obsspace(), xvar.toOopsVariables());
+  // ioda::ObsDataVector<float> xvals(data.obsspace(), xvar.toOopsVariables(), xvar.group());
+  // std::vector<float> xvals(nlocs);
+  std::vector<float> xvals;
   data.get(xvar, xvals);
 
   const Variable &yvar = options_.yvar.value();
-  ioda::ObsDataVector<float> yvals(data.obsspace(), yvar.toOopsVariables());
+  oops::Log::trace() << "Polynomial2D::compute, retrieving yvar: " << yvar << std::endl;
+  // TODO(JJG): would be nice to make this work for filter-variable resolved variables (like ObsValue)
+  // ioda::ObsDataVector<float> yvals(data.obsspace(), yvar.toOopsVariables());
+  // ioda::ObsDataVector<float> yvals(data.obsspace(), yvar.toOopsVariables(), yvar.group());
+  // std::vector<float> yvals(nlocs);
+  std::vector<float> yvals;
   data.get(yvar, yvals);
 
+  oops::Log::trace() << "Polynomial2D::compute, initialize outVars and filterVars" << std::endl;
+
   // Identify filter variables (same behavior as FilterBase::FilterBase)
-  Variables filtervars;
+  Variables outVars(out.varnames());
+  Variables filterVars;
   if (options_.filterVariables.value() != boost::none) {
     // read filter variables
     for (const Variable &var : *options_.filterVariables.value())
-      filtervars += var;
+      filterVars += var;
   } else {
     // if no filter variables explicitly specified, filter out all variables
-    filtervars += Variables(data.obsspace().obsvariables());
+    filterVars += Variables(data.obsspace().obsvariables());
   }
+
+  oops::Log::trace() << "Polynomial2D::compute, outVars: " << outVars << std::endl;
+  oops::Log::trace() << "Polynomial2D::compute, filterVars: " << filterVars << std::endl;
 
   // Allocate re-usable placeholder variables
   const std::vector<Polynomial2DTermParameters>
     &allTerms = options_.polynomialTerms.value();
   const std::vector<LinearFitCoefficientsParameters>
-    &allCoeff = options_.polynomialCoefficients.value();
+    &allVarCoeffs = options_.polynomialCoefficients.value();
 
-  double c, xi, yi, zi, px, py;
   size_t cvar, ovar;
-
-  // initialize output to zero
-  // should this be missing instead?
-  out.zero();
+  int px, py;
+  double xi, yi;
 
   // fill in output values
-  for (size_t ivar = 0; ivar < filtervars.size(); ++ivar) {
-    // get this filter variable
-    Variable fVar = filtervars[ivar];
-    ovar = ivar;
+  // outVars.size() and filterVars.size() are always 1
+  // for (size_t ivar = 0; ivar < outVars.size(); ++ivar) {
+  for (size_t ivar = 0; ivar < filterVars.size(); ++ivar) {
+    // get output variable and filter variable
+    // Variable outVar = outVars[ivar];
+    Variable filterVar = filterVars[ivar];
 
-    // handle scalar and 1-D Variable cases
-    for (size_t jvar = 0; jvar < fVar.size(); ++jvar) {
-      if (jvar > 0) {
-        ovar = jvar;
+    oops::Log::debug() << "Polynomial2D::compute, filterVar.variable: " << filterVar.variable() << std::endl;
+
+    // for (size_t jvar = 0; jvar < outVar.size(); ++jvar) {
+    for (size_t jvar = 0; jvar < filterVar.size(); ++jvar) {
+      // handle scalar and 1-D Variable cases (i.e., channels)
+      ovar = jvar;
+
+      // initialize to missing
+      for (size_t iloc = 0; iloc < nlocs; ++iloc) {
+        out[ovar][iloc] = missing;
       }
+      // oops::Log::debug() << "Polynomial2D::compute, ovar: " << ovar << std::endl;
 
       // look for the correct coefficients to match this filter variable
-      cvar = -1;
-      for (size_t cvar_ = 0; cvar_ < allCoeff.size(); ++cvar_) {
-        if (allCoeff[cvar].name.value() == fVar.variable()) {
-          if (allCoeff[cvar].channel.value() != boost::none) {
-            if (allCoeff[cvar].channel.value() == fVar.channels()[jvar]) {
-              cvar = cvar_;
+      cvar = allVarCoeffs.size();
+      for (size_t csrch = 0; csrch < allVarCoeffs.size(); ++csrch) {
+        if (allVarCoeffs[csrch].name.value() == filterVar.variable()) {
+          if (allVarCoeffs[csrch].channel.value() != boost::none) {
+            // if (allVarCoeffs[csrch].channel.value() == outVar.channels()[jvar]) {
+            if (allVarCoeffs[csrch].channel.value() == filterVar.channels()[jvar]) {
+              // oops::Log::debug() << "Polynomial2D::compute, filterVar.channels()[jvar]: " << filterVar.channels()[jvar] << std::endl;
+              cvar = csrch;
               break;
             }
           } else {
-            cvar = cvar_;
+            cvar = csrch;
             break;
           }
         }
       }
-      // skip filter variables for which there are no coefficients
-      if (cvar < 0) {
-         continue;
-      }
-      const std::vector<double> &coeff = allCoeff[cvar].values.value();
 
-      // xvar and yvar indices
-      size_t ixvar = std::min(ovar, xvar.size() - 1);
-      size_t iyvar = std::min(ovar, yvar.size() - 1);
+      oops::Log::debug() << "Polynomial2D::compute, cvar: " << cvar << std::endl;
+
+      // skip filter variables for which there are no coefficients
+      if (cvar >= allVarCoeffs.size()) {
+        continue;
+      }
+
+      // initialize coefficients
+      // oops::Log::debug() << "Polynomial2D::compute, allVarCoeffs.size(): " << allVarCoeffs.size() << std::endl;
+
+      const std::vector<double> &coeff = allVarCoeffs[cvar].values.value();
+      size_t nCoeff = coeff.size();
+
+      // oops::Log::debug() << "Polynomial2D::compute, nCoeff:" << nCoeff << std::endl;
+
+      // xvar and yvar variable indices
+      // size_t ixvar = std::min(ovar, xvar.size() - 1);
+      // size_t iyvar = std::min(ovar, yvar.size() - 1);
 
       // allocate intermediate output variables
-      std::vector<double> z(coeff.size());
-      std::vector<double> zabs(coeff.size());
+      std::vector<std::vector<double>> z(nlocs, std::vector<double>(nCoeff));
 
       // evaluate polynomial
+      // only use as many terms as there are available coefficients
+      for (size_t icof = 0; icof < nCoeff; ++icof) {
+        // oops::Log::debug() << "Polynomial2D::compute, icof: " << icof << std::endl;
+        px = allTerms[icof].exponents.value()[0];
+        py = allTerms[icof].exponents.value()[1];
+        for (size_t iloc = 0; iloc < nlocs; ++iloc) {
+          // xi = std::pow(xvals[ixvar][iloc], px);
+          xi = std::pow(xvals[iloc], px);
+
+          // yi = std::pow(yvals[iyvar][iloc], py);
+          yi = std::pow(yvals[iloc], py);
+
+          z[iloc][icof] = coeff[icof];
+          z[iloc][icof] *= xi;
+          z[iloc][icof] *= yi;
+        }
+      }
+
+      // oops::Log::debug() << "Polynomial2D::compute, accumulating z" << std::endl;
+      // oops::Log::debug() << "Polynomial2D::compute, nlocs: " << nlocs << std::endl;
+
+      std::vector<double> zabs(nCoeff);
       for (size_t iloc = 0; iloc < nlocs; ++iloc) {
-        // only use as many terms as there are available coefficients
-        for (size_t iterm = 0; iterm < coeff.size(); ++iterm) {
-          px = allTerms[iterm].exponents.value()[0];
-          xi = std::pow(xvals[ixvar][iloc], px);
-
-          py = allTerms[iterm].exponents.value()[1];
-          yi = std::pow(yvals[iyvar][iloc], py);
-
-          z[iterm] = coeff[iterm];
-          z[iterm] *= xi;
-          z[iterm] *= yi;
-          zabs[iterm] = std::abs(z[iterm]);
+        // oops::Log::debug() << "Polynomial2D::compute, iloc: " << iloc << std::endl;
+        for (size_t iterm = 0; iterm < nCoeff; ++iterm) {
+          // oops::Log::debug() << "Polynomial2D::compute, iterm: " << iterm << std::endl;
+          zabs[iterm] = std::abs(z[iloc][iterm]);
         }
 
         // re-order z from smallest to largest magnitude before sum
-        std::sort(z.begin(), z.end(), [&zabs](size_t i1, size_t i2) {return zabs[i1] < zabs[i2];});
-        out[ovar][iloc] = std::accumulate(z.begin(), z.end(), 0.0f);
+        // oops::Log::debug() << "Polynomial2D::compute, sort" << std::endl;
+
+        std::sort(z[iloc].begin(), 
+                  z[iloc].end(),
+                  [&zabs](const size_t &i1, const size_t &i2) {return zabs[i1] < zabs[i2];});
+
+        // oops::Log::debug() << "Polynomial2D::compute, accumulate" << std::endl;
+
+        out[ovar][iloc] = static_cast<float>(
+          std::accumulate(z[iloc].begin(), z[iloc].end(), 0.0));
       }
+      oops::Log::debug() << "Polynomial2D::compute, completed ovar: " << ovar << std::endl;
+
     }
   }
+  oops::Log::trace() << "Polynomial2D::compute finished" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

@@ -33,7 +33,7 @@ class Polynomial2DTermParameters : public oops::Parameters {
  public:
   /// exponents of x and y for a single term in the polynomial
   /// should be a vector of size-2
-  oops::RequiredParameter<std::vector<double>> exponents{"exponents", this};
+  oops::RequiredParameter<std::vector<int>> exponents{"exponents", this};
 };
 
 // -----------------------------------------------------------------------------
@@ -141,27 +141,38 @@ class Polynomial2DParameters : public oops::Parameters {
 ///         name: assign error
 ///         error function:
 ///           name: Polynomial2D@ObsFunction
+///           channels: 1,2
 ///           options: &Polynomial2DAnchor
 ///             filter variables: *radianceFilterVariables
 ///             xvar: MetaData/latitude
 ///             yvar: GeoVaLs/surface_wind_speed
 ///
-///   # (2) air_temperature and specific_humidity are selected
+///   # (2) air_temperature and specific_humidity are selected individually
 ///   - obs filters:
 ///     - filter: Perform Action
-///       filter variables: &conventionalFilterVariables
+///       filter variables: &airtempFilterVariables
 ///       - name: air_temperature
+///       action:
+///         name: assign error
+///         error function:
+///           name: Polynomial2D@ObsFunction
+///           options: *Polynomial2DAnchor
+///             filter variables: *airtempFilterVariables
+///             xvar: XConvGroupName/XConvVariableName
+///             yvar: YConvGroupName/YConvVariableName
+///     - filter: Perform Action
+///       filter variables: &spechumFilterVariables
 ///       - name: specific_humidity
 ///       action:
 ///         name: assign error
 ///         error function:
 ///           name: Polynomial2D@ObsFunction
 ///           options: *Polynomial2DAnchor
-///             filter variables: *conventionalFilterVariables
+///             filter variables: *spechumFilterVariables
 ///             xvar: XConvGroupName/XConvVariableName
 ///             yvar: YConvGroupName/YConvVariableName
 ///
-///   # (3) defaults to simulated variables in obs operator
+///   # (3) defaults to simulated variables in obs operator, can only handle a single variable
 ///   - obs filters:
 ///     - filter: Perform Action
 ///       action:
