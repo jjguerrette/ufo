@@ -163,9 +163,11 @@ Variables Variables::allFromGroup(const std::string & group) const {
 oops::Variables Variables::toOopsVariables() const {
   oops::Variables vars;
   for (size_t ivar = 0; ivar < vars_.size(); ++ivar) {
-    for (size_t jj = 0; jj < vars_[ivar].size(); ++jj) {
-      vars.push_back(vars_[ivar].variable(jj));
-    }
+    // for (size_t jj = 0; jj < vars_[ivar].size(); ++jj) {
+      // vars.push_back(vars_[ivar].variable(jj));
+    // }
+    // TODO: produces oops::Variables that can be converted back to ufo::Variables
+    vars += vars_[ivar].toOopsVariables();
   }
   return vars;
 }

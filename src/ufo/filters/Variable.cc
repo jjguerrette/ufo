@@ -142,8 +142,16 @@ std::string Variable::fullName() const {
 
 oops::Variables Variable::toOopsVariables() const {
   oops::Variables vars;
-  for (size_t jj = 0; jj < this->size(); ++jj) {
-    vars.push_back(this->variable(jj));
+  // for (size_t jj = 0; jj < this->size(); ++jj) {
+    // vars.push_back(this->variable(jj));
+  // }
+  // TODO: produces oops::Variables that can be converted back to ufo::Variables
+  if (channels_.size() > 0) {
+    std::vector<std::string> varAsVec {varname_};
+    oops::Variables varsWithChannels(varAsVec, channels_);
+    vars += varsWithChannels;
+  } else {
+    vars.push_back(varname_);
   }
   return vars;
 }
