@@ -91,13 +91,14 @@ class Polynomial2DParameters : public oops::Parameters {
 ///
 /// ### important notes ###
 /// () The pseudo-yaml example below is for a single contiguous configuration file with anchors
-/// () If desirable, only one Polynomial2DAnchor (shown below) per filter type is needed in a
-///    single yaml file
+/// () While the example below only has one Polynomial2DAnchor, multiple such anchors are likely
+///    needed, one fore each observation type.  That requirement is driven by overlap in
+///    filter variable names and/or channel numbers between observation types.
 /// () Make sure the "filter variables" are prescribed identically to the parent filter (e.g.,
 ///    using yaml anchors like "*FilterVariables" below).
 /// () The example below includes a 6-term degree-2 polynomial. The first 2 brightness_temperature
-///    channels use all 6 of the terms. Channel 5, aire_temperature, and specific_humidity use
-///    only the leading 3 of the 6 terms, equivalent to a linear fit in 2-dimensional space.
+///    channels use all 6 of the terms. Channel 5, air_temperature, and specific_humidity use
+///    only the leading 3 of those 6 terms, equivalent to a linear fit in 2-dimensional space.
 ///    More terms are added by extending options.(polynomial terms) and
 ///    options.(polynomial coefficients)[:].values.
 /// () Alternatively, the output can be parameterized on a single variable, x or y, by
