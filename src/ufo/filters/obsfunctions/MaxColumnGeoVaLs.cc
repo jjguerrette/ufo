@@ -54,7 +54,7 @@ void MaxColumnGeoVaLs::compute(const ObsFilterData & in,
     }
   }
 
-  // oops::Log::trace() << "MaxColumnGeoVaLs::compute, assigning max to out" << std::endl;
+  // oops::Log::debug() << "MaxColumnGeoVaLs::compute, assigning max to out" << std::endl;
 
   float gvalMax;
   for (size_t iloc = 0; iloc < nlocs; ++iloc) {
@@ -65,7 +65,7 @@ void MaxColumnGeoVaLs::compute(const ObsFilterData & in,
       out[ivar][iloc] = gvalMax;
     }
   }
-  // oops::Log::trace() << "MaxColumnGeoVaLs::compute, out: " << out << std::endl;
+  // oops::Log::debug() << "MaxColumnGeoVaLs::compute, out: " << out << std::endl;
   // oops::Log::trace() << "MaxColumnGeoVaLs::compute finished" << std::endl;
 }
 
