@@ -200,6 +200,7 @@ void Polynomial2D::compute(const ObsFilterData & data,
         // z_ *= std::pow(yvals[iloc], py[iterm]);
         // zp[iterm] = std::make_pair(z_, std::abs(z_))
       }
+      // sort terms before accumulate to reduce precision loss
       // TODO: figure out why this causes an error
       // std::sort(z.begin(),
                 // z.end(),
@@ -216,7 +217,7 @@ void Polynomial2D::compute(const ObsFilterData & data,
       out[ovar][iloc] = static_cast<float>(
         std::accumulate(z.begin(), z.end(), 0.0));
     }
-    oops::Log::debug() << "Polynomial2D::compute, completed ovar: " << ovar << std::endl;
+    // oops::Log::debug() << "Polynomial2D::compute, completed ovar: " << ovar << std::endl;
   }
   oops::Log::trace() << "Polynomial2D::compute finished" << std::endl;
 }
