@@ -49,7 +49,7 @@ AssignError::AssignError(const Parameters_ & parameters)
 // -----------------------------------------------------------------------------
 
 void AssignError::apply(const Variables & vars,
-                        const std::vector<std::vector<bool>> &,
+                        const std::vector<std::vector<bool>> &flagged,
                         const ObsFilterData & data,
                         int /*filterQCflag*/,
                         ioda::ObsDataVector<int> & flags,
@@ -63,7 +63,7 @@ void AssignError::apply(const Variables & vars,
       size_t iv = obserr.varnames().find(vars.variable(jv).variable());
       size_t kv = flags.varnames().find(vars.variable(jv).variable());
       for (size_t jobs = 0; jobs < obserr.nlocs(); ++jobs) {
-        if (flags[kv][jobs] == QCflags::pass) obserr[iv][jobs] = error;
+        if (flagged[jv][jobs] && flags[kv][jobs] == QCflags::pass) obserr[iv][jobs] = error;
       }
     }
     // If variable is specified
@@ -90,7 +90,7 @@ void AssignError::apply(const Variables & vars,
       size_t iv = obserr.varnames().find(vars.variable(jv).variable());
       size_t kv = flags.varnames().find(vars.variable(jv).variable());
       for (size_t jobs = 0; jobs < obserr.nlocs(); ++jobs) {
-        if (flags[kv][jobs] == QCflags::pass && errors[error_jv[jv]][jobs] != missing)
+        if (flagged[jv][jobs] && flags[kv][jobs] == QCflags::pass && errors[error_jv[jv]][jobs] != missing)
           obserr[iv][jobs] = errors[error_jv[jv]][jobs];
       }
     }
