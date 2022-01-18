@@ -18,10 +18,13 @@ static TransformMaker<Cal_HeightFromPressure>
 Cal_HeightFromPressure::Cal_HeightFromPressure(
     const Parameters_ &options,
     const ObsFilterData &data,
-    const std::shared_ptr<ioda::ObsDataVector<int>> &flags)
-    : TransformBase(options, data, flags),
-      heightCoord_(options.HeightCoord),
-      pressureCoord_(options.PressureCoord)
+    const std::shared_ptr<ioda::ObsDataVector<int>> &flags,
+    const std::shared_ptr<ioda::ObsDataVector<float>> &obserr)
+    : TransformBase(options, data, flags, obserr),
+      heightCoord_(options.heightCoord),
+      heightGroup_(options.heightGroup),
+      pressureCoord_(options.pressureCoord),
+      pressureGroup_(options.pressureGroup)
 {}
 
 /************************************************************************************/
@@ -39,7 +42,7 @@ void Cal_HeightFromPressure::runTransform(const std::vector<bool> &apply) {
 
   // 1. Obtain air pressure from the ObsSpace.
 
-  getObservation("MetaData", pressureCoord_, airPressure);
+  getObservation(pressureGroup_, pressureCoord_, airPressure);
 
   if (airPressure.empty()) {
     oops::Log::warning() << "Air pressure vector is empty. "
@@ -49,7 +52,7 @@ void Cal_HeightFromPressure::runTransform(const std::vector<bool> &apply) {
 
   // 2. Initialise the output array
   // -------------------------------------------------------------------------------
-  getObservation("MetaData", heightCoord_, geopotentialHeight);
+  getObservation(heightGroup_, heightCoord_, geopotentialHeight);
 
   if (geopotentialHeight.empty()) {
     geopotentialHeight = std::vector<float>(nlocs_);
@@ -79,7 +82,7 @@ void Cal_HeightFromPressure::runTransform(const std::vector<bool> &apply) {
 
   if (hasBeenUpdated) {
     // If the geopotential height was updated, save it as a DerivedValue.
-    obsdb_.put_db(outputTag, heightCoord_, geopotentialHeight);
+    obsdb_.put_db(getDerivedGroup(heightGroup_), heightCoord_, geopotentialHeight);
   }
 }
 }  // namespace ufo

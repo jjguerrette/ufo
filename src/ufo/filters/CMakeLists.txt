@@ -98,6 +98,7 @@ set ( filters_files
       Thinning.h
       TemporalThinning.cc
       TemporalThinning.h
+      TemporalThinningParameters.cc
       TemporalThinningParameters.h
       TrackCheck.cc
       TrackCheck.h
@@ -133,6 +134,8 @@ set ( filters_files
       processWhere.h
       ObsAccessor.cc
       ObsAccessor.h
+      PrintFilterData.cc
+      PrintFilterData.h
       actions/AssignError.cc
       actions/AssignError.h
       actions/AcceptObs.cc
@@ -268,6 +271,8 @@ set ( filters_files
       obsfunctions/LAMDomainCheck/esg_grid_mod.F90
       obsfunctions/ProfileAverageObsPressure.cc
       obsfunctions/ProfileAverageObsPressure.h
+      obsfunctions/ProfileLevelCount.cc
+      obsfunctions/ProfileLevelCount.h
       obsfunctions/DateTimeOffset.cc
       obsfunctions/DateTimeOffset.h
       obsfunctions/FillAveragedProfileData.cc
