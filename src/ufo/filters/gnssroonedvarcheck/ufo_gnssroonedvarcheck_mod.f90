@@ -19,11 +19,11 @@ use ufo_geovals_mod
 use ufo_vars_mod
 use ufo_gnssro_bendmetoffice_mod
 use ufo_gnssroonedvarcheck_utils_mod, only: &
-    Ops_RealSortQuick, deallocate_singleob, &
-    allocate_singleob, allocate_singlebg, deallocate_singlebg, find_unique, &
-    singlebg_type, singleob_type
+    deallocate_singleob, allocate_singleob, allocate_singlebg, &
+    deallocate_singlebg, singlebg_type, singleob_type
 use ufo_gnssroonedvarcheck_get_bmatrix_mod, only: bmatrix_type
 use ufo_gnssroonedvarcheck_do1dvar_mod, only: Ops_GPSRO_Do1DVar_BA
+use ufo_utils_mod, only: Ops_RealSortQuick, find_unique
 
 implicit none
 private
@@ -266,10 +266,12 @@ subroutine ufo_gnssroonedvarcheck_apply(self, geovals, apply)
     end do
 
     ! Load the geovals into the background structure
-    Back % za(:) = rho_heights % vals(:, index_vals(start_point))
-    Back % zb(:) = theta_heights % vals(:, index_vals(start_point))
-    Back % p(:) = prs % vals(:, index_vals(start_point))
-    Back % q(:) = q % vals(:, index_vals(start_point))
+    ! Reverse the order of the geovals, since this routine (and the forward
+    ! operator) works bottom-to-top
+    Back % za(:) = rho_heights % vals(prs%nval:1:-1, index_vals(start_point))
+    Back % zb(:) = theta_heights % vals(q%nval:1:-1, index_vals(start_point))
+    Back % p(:) = prs % vals(prs % nval:1:-1, index_vals(start_point))
+    Back % q(:) = q % vals(q%nval:1:-1, index_vals(start_point))
 
     ! Allocate the observations structure
     nobs_profile = current_point - start_point

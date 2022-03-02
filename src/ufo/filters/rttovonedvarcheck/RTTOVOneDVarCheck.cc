@@ -60,8 +60,13 @@ RTTOVOneDVarCheck::RTTOVOneDVarCheck(ioda::ObsSpace & obsdb, const Parameters_ &
   // Create hofxdiags
   for (size_t jvar = 0; jvar < retrieved_vars_.size(); ++jvar) {
     for (size_t jch = 0; jch < channels_.size(); ++jch) {
-      hoxdiags_retrieved_vars_.push_back("brightness_temperature_jacobian_"+
-                   retrieved_vars_[jvar]+"_"+std::to_string(channels_[jch]));
+      if (retrieved_vars_[jvar] == "emissivity_pc") {
+        hoxdiags_retrieved_vars_.push_back("brightness_temperature_jacobian_surface_emissivity_" +
+                     std::to_string(channels_[jch]));
+      } else {
+        hoxdiags_retrieved_vars_.push_back("brightness_temperature_jacobian_" +
+                     retrieved_vars_[jvar] + "_" + std::to_string(channels_[jch]));
+      }
     }
   }
 
@@ -101,15 +106,13 @@ void RTTOVOneDVarCheck::applyFilter(const std::vector<bool> & apply,
                                std::vector<std::vector<bool>> &) const {
   oops::Log::trace() << "RTTOVOneDVarCheck Filter starting" << std::endl;
 
-// Get GeoVaLs - the copy is needed to check the z-direction orientation.
-// this is a temporary measure until the filter is updated to deal with toptobottom.
+// Get air_pressure for first ob to check they are top to bottom
   const ufo::GeoVaLs * gvals = data_.getGeoVaLs();
-  ufo::GeoVaLs geoVaLsCopy = *gvals;
-  if (geoVaLsCopy.has("air_pressure")) {
-    geoVaLsCopy.reorderzdir("air_pressure", "bottom2top");
-  } else {
-    throw eckit::BadValue("GeoVaLs must contain air_pressure");
-  }
+  const size_t nlevels = gvals->nlevs("air_pressure");
+  std::vector<double> airPressureObOne(nlevels);
+  gvals->getAtLocation(airPressureObOne, "air_pressure", 0);
+  if (airPressureObOne.front() >= airPressureObOne.back())
+    throw eckit::BadValue("GeoVaLs are not top to bottom => aborting");
 
 // Create oops variable with the list of channels
   oops::Variables variables = filtervars.toOopsVariables();
@@ -127,8 +130,15 @@ void RTTOVOneDVarCheck::applyFilter(const std::vector<bool> & apply,
 // Read in ObsBias for all channels in the database and save to db for access in Fortran
 // there is currently no mechanism for passing ioda::ObsDataVectors to Fortran.
 // This is saved to ObsBias rather than ObsBiasData to avoid replication of datasets because
-// the oops::Observer saves to ObsBias.
-  Variable obsbiasvar("brightness_temperature@ObsBiasData",
+// the oops::Observer saves to ObsBias.  For testing the ObsBias can be read from another
+// location using the obsBiasGroupForTesting optional parameter.
+  std::string group;
+  if (parameters_.obsBiasGroupForTesting.value().is_initialized()) {
+    group = parameters_.obsBiasGroupForTesting.value().get();
+  } else {
+    group = "ObsBiasData";
+  }
+  Variable obsbiasvar("brightness_temperature@"+group,
                       obsdb_.obsvariables().channels());
   ioda::ObsDataVector<float> obsbias(obsdb_, obsbiasvar.toOopsVariables());
   data_.get(obsbiasvar, obsbias);
@@ -138,7 +148,7 @@ void RTTOVOneDVarCheck::applyFilter(const std::vector<bool> & apply,
   ufo_rttovonedvarcheck_apply_f90(keyRTTOVOneDVarCheck_,
                                   parameters_.ModOptions.value().toConfiguration(),
                                   variables, hoxdiags_retrieved_vars_,
-                                  geoVaLsCopy.toFortran(),
+                                  gvals->toFortran(),
                                   apply_char.size(), apply_char[0]);
 
 // Read qc flags from database

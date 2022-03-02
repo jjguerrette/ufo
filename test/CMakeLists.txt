@@ -37,6 +37,7 @@ list( APPEND ufo_test_input
   testinput/atms_rttov_ops_qc_rttovonedvarcheck.yaml
   testinput/atms_rttov_ops.yaml
   testinput/atms_rttov_qc.yaml
+  testinput/atovs_rttov_scatt.yaml
   testinput/amsua_rttovcpp.yaml
   testinput/background_error_vert_interp.yaml
   testinput/background_error_identity.yaml
@@ -54,6 +55,7 @@ list( APPEND ufo_test_input
   testinput/cris_qc_filters.yaml
   testinput/cris_qc_land.yaml
   testinput/empty.yaml
+  testinput/filter_stage.yaml
   testinput/function_bennartzscatindex.yaml
   testinput/function_cloudcost.yaml
   testinput/function_clouddetect_iasi.yaml
@@ -136,6 +138,7 @@ list( APPEND ufo_test_input
   testinput/iasi_crtm.yaml
   testinput/iasi_qc.yaml
   testinput/iasi_qc_filters.yaml
+  testinput/iasi_rttov_ops_qc_rttovonedvarcheck.yaml
   testinput/identity.yaml
   testinput/insitupm.yaml
   testinput/interpolate_data_from_file_predictor.yaml
@@ -178,6 +181,7 @@ list( APPEND ufo_test_input
   testinput/parameters_older_eckit.yaml
   testinput/primitive_variables.yaml
   testinput/metoffice_radiance_error_matrices.yaml
+  testinput/mopitt_co.yaml
   testinput/print_filter_data.yaml
   testinput/qc_actions.yaml
   testinput/qc_backgroundcheck.yaml
@@ -302,6 +306,7 @@ list( APPEND ufo_test_input
   testinput/variables.yaml
   testinput/vert_interp_pmissing.yaml
   testinput/windprof.yaml
+  testinput/unit_tests/assign_error_using_where.yaml
   testinput/unit_tests/composite_GsiSfcModel_SfcPCorrected.yaml
   testinput/unit_tests/composite_vertInterp_SfcPCorrected.yaml
   testinput/unit_tests/function_clwret_ssmis.yaml
@@ -318,6 +323,7 @@ list( APPEND ufo_test_input
   testinput/unit_tests/function_linear_combination_multichannel.yaml
   testinput/unit_tests/function_exponential.yaml
   testinput/unit_tests/function_obserrorfactorquotient.yaml
+  testinput/unit_tests/function_oceanpressuretodepth.yaml
   testinput/unit_tests/function_satwindsLNVDcheck.yaml
   testinput/unit_tests/function_satwindsSPDBcheck.yaml
   testinput/unit_tests/function_solarzenith.yaml
@@ -328,6 +334,7 @@ list( APPEND ufo_test_input
   testinput/unit_tests/variabletransforms_rhumidity_part2.yaml
   testinput/unit_tests/variabletransforms_rhumidity_part3.yaml
   testinput/unit_tests/variabletransforms_shumidity.yaml
+  testinput/unit_tests/variabletransforms_shumidity2.yaml
   testinput/unit_tests/variabletransforms_potentialT.yaml
   testinput/unit_tests/variabletransforms_scanposition.yaml
   testinput/unit_tests/variabletransforms_SondePressureFromHeight.yaml
@@ -337,6 +344,7 @@ list( APPEND ufo_test_input
   testinput/unit_tests/variabletransforms_windcomponents.yaml
   testinput/unit_tests/variabletransforms_windspeedanddirection.yaml
   testinput/unit_tests/variabletransforms_profilehorizontaldrift.yaml
+  testinput/unit_tests/variabletransforms_profilehorizontaldrift_zero_obs.yaml
   testinput/unit_tests/variabletransforms_pstar.yaml
   testinput/unit_tests/variabletransforms_QFEtoQNH.yaml
 )
@@ -982,6 +990,7 @@ if( ${rttov_FOUND} )
                     COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
                     ARGS    "testinput/atms_rttov_ops_qc_rttovonedvarcheck.yaml"
                     ENVIRONMENT OOPS_TRAPFPE=1
+                    DEPENDS test_ObsFilters.x
                     TEST_DEPENDS ufo_get_ufo_test_data )
 
   ecbuild_add_test( TARGET  test_ufo_ssmis_ops_qc_rttovonedvarcheck
@@ -1001,7 +1010,23 @@ if( ${rttov_FOUND} )
                     COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
                     ARGS    "testinput/amsr2_rttov_ops_qc_rttovonedvarcheck.yaml"
                     ENVIRONMENT OOPS_TRAPFPE=1
+                    DEPENDS test_ObsFilters.x
                     TEST_DEPENDS ufo_get_ufo_test_data )
+
+  ecbuild_add_test( TARGET  test_ufo_iasi_ops_qc_rttovonedvarcheck
+                    COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
+                    ARGS    "testinput/iasi_rttov_ops_qc_rttovonedvarcheck.yaml"
+                    ENVIRONMENT OOPS_TRAPFPE=1
+                    DEPENDS test_ObsFilters.x
+                    TEST_DEPENDS ufo_get_ufo_test_data )
+
+  ecbuild_add_test( TARGET  test_ufo_atovs_rttov_scatt
+                    COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsOperator.x
+                    ARGS    "testinput/atovs_rttov_scatt.yaml"
+                    ENVIRONMENT OOPS_TRAPFPE=1
+                    DEPENDS test_ObsOperator.x
+                    TEST_DEPENDS ufo_get_ufo_test_data )
+  
 
   ecbuild_add_test( TARGET  test_ufo_opr_rttovcpp_amsua
                     COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsOperator.x
@@ -1269,6 +1294,19 @@ ecbuild_add_test( TARGET  test_ufo_linopr_avgkernel_tropomi_no2
                   DEPENDS test_ObsOperatorTLAD.x
                   TEST_DEPENDS ufo_get_ufo_test_data )
 
+ecbuild_add_test( TARGET  test_ufo_opr_avgkernel_mopitt_co
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsOperator.x
+                  ARGS    "testinput/mopitt_co.yaml"
+                  ENVIRONMENT OOPS_TRAPFPE=1
+                  DEPENDS test_ObsOperator.x
+                  TEST_DEPENDS ufo_get_ufo_test_data )
+
+ecbuild_add_test( TARGET  test_ufo_linopr_avgkernel_mopitt_co
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsOperatorTLAD.x
+                  ARGS    "testinput/mopitt_co.yaml"
+                  DEPENDS test_ObsOperatorTLAD.x
+                  TEST_DEPENDS ufo_get_ufo_test_data )
+
 ecbuild_add_test( TARGET  test_ufo_timeoper_opr
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsOperator.x
                   ARGS    "testinput/timeoper.yaml"
@@ -1417,7 +1455,7 @@ ecbuild_add_test( TARGET  test_ufo_linopr_gnssroBendMetOffice_pseudo
                   DEPENDS test_ObsOperatorTLAD.x
                   TEST_DEPENDS ufo_get_ufo_test_data )
 
-ecbuild_add_test( TARGET  test_ufo_qc_gnssroBendMetOffice
+ecbuild_add_test( TARGET  test_ufo_qc_gnssroBendMetOffice_1dvar
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
                   ARGS    "testinput/gnssrobendmetoffice_qc.yaml"
                   ENVIRONMENT OOPS_TRAPFPE=1
@@ -1815,6 +1853,13 @@ ecbuild_add_test( TARGET  test_ufo_qc_grosserror_wholereport
 ecbuild_add_test( TARGET  test_ufo_qc_velocitybounds
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
                   ARGS    "testinput/qc_velocitycheck.yaml"
+                  ENVIRONMENT OOPS_TRAPFPE=1
+                  DEPENDS test_ObsFilters.x
+                  TEST_DEPENDS ufo_get_ufo_test_data )
+
+ecbuild_add_test( TARGET  test_ufo_obserror_where
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
+                  ARGS    "testinput/unit_tests/assign_error_using_where.yaml"
                   ENVIRONMENT OOPS_TRAPFPE=1
                   DEPENDS test_ObsFilters.x
                   TEST_DEPENDS ufo_get_ufo_test_data )
@@ -2437,6 +2482,21 @@ ecbuild_add_test( TARGET  test_ufo_print_filter_data_mpi
                   DEPENDS test_ObsFilters.x
                   TEST_DEPENDS ufo_get_ufo_test_data )
 
+ecbuild_add_test( TARGET  test_ufo_filter_stage
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
+                  ARGS    "testinput/filter_stage.yaml"
+                  ENVIRONMENT OOPS_TRAPFPE=1
+                  DEPENDS test_ObsFilters.x
+                  TEST_DEPENDS ufo_get_ufo_test_data )
+
+ecbuild_add_test( TARGET  test_ufo_filter_stage_mpi
+                  MPI 2
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
+                  ARGS    "testinput/filter_stage.yaml"
+                  ENVIRONMENT OOPS_TRAPFPE=1
+                  DEPENDS test_ObsFilters.x
+                  TEST_DEPENDS ufo_get_ufo_test_data )
+
 # Test UFO ObsFilters (specific)
 
 ecbuild_add_test( TARGET  test_ufo_gaussianthinning
@@ -2829,9 +2889,23 @@ ecbuild_add_test( TARGET  test_ufo_variabletransforms_humidityspecific
                   DEPENDS test_ObsFilters.x
                   TEST_DEPENDS ufo_get_ufo_test_data )
 
+ecbuild_add_test( TARGET  test_ufo_variabletransforms_humidityspecific2
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
+                  ARGS    "testinput/unit_tests/variabletransforms_shumidity2.yaml"
+                  ENVIRONMENT OOPS_TRAPFPE=1
+                  DEPENDS test_ObsFilters.x
+                  TEST_DEPENDS ufo_get_ufo_test_data )
+
 ecbuild_add_test( TARGET  test_ufo_variabletransforms_profilehorizontaldrift
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
                   ARGS    "testinput/unit_tests/variabletransforms_profilehorizontaldrift.yaml"
+                  ENVIRONMENT OOPS_TRAPFPE=1
+                  DEPENDS test_ObsFilters.x
+                  TEST_DEPENDS ufo_get_ufo_test_data )
+
+ecbuild_add_test( TARGET  test_ufo_variabletransforms_profilehorizontaldrift_zero_obs
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
+                  ARGS    "testinput/unit_tests/variabletransforms_profilehorizontaldrift_zero_obs.yaml"
                   ENVIRONMENT OOPS_TRAPFPE=1
                   DEPENDS test_ObsFilters.x
                   TEST_DEPENDS ufo_get_ufo_test_data )
@@ -3138,6 +3212,13 @@ ecbuild_add_test( TARGET  test_ufo_function_obserrorfactorconv
                   ENVIRONMENT OOPS_TRAPFPE=1
                   DEPENDS test_ObsFunction.x
                   TEST_DEPENDS ufo_get_ufo_test_data )
+
+ecbuild_add_test( TARGET  test_ufo_function_oceanpressuretodepth
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFunction.x
+                  ARGS    "testinput/unit_tests/function_oceanpressuretodepth.yaml"
+                  ENVIRONMENT OOPS_TRAPFPE=1
+                  DEPENDS test_ObsFunction.x
+                  TEST_DEPENDS ufo_get_ufo_test_data)
 
 ecbuild_add_test( TARGET  test_ufo_function_linear_combination
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFunction.x
@@ -3799,16 +3880,23 @@ endif()
 #####################################################################
 if( ${rttov_FOUND} )
 list( APPEND rttov_test_input
-rttov7pred54L/rtcoef_noaa_19_amsua.dat
-rttov7pred54L/rtcoef_noaa_20_atms.dat
 rttov7pred54L/rtcoef_dmsp_17_ssmis.dat
 rttov7pred54L/rtcoef_gcom-w_1_amsr2.dat
+rttov7pred54L/rtcoef_metop_1_amsuamhs.dat
+rttov7pred54L/rtcoef_metop_1_iasi.dat
+rttov7pred54L/rtcoef_noaa_19_amsua.dat
+rttov7pred54L/rtcoef_noaa_20_atms.dat
+mietable/mietable_metop_amsuamhs.dat
 )
 
-# Symlink all CRTM files
+# Symlink RTcoef files
 CREATE_SYMLINK_FILENAME( ${rttov_SOURCE_DIR}/rtcoef_rttov12
                          ${CMAKE_CURRENT_BINARY_DIR}/Data
                          ${rttov_test_input} )
+
+file(ARCHIVE_EXTRACT INPUT ${rttov_SOURCE_DIR}/rtcoef_rttov12/mietable/mietable_metop_amsuamhs.tgz
+                     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Data )
+                     
 endif( ${rttov_FOUND} )
 
 ######

@@ -94,9 +94,11 @@ void testConventionalProfileProcessing(const eckit::LocalConfiguration &conf) {
   // Determine whether an exception is expected to be thrown.
   // Exceptions can be thrown in the following places:
   // - on instantiation of the filter,
-  // - during the operation of the filter,
-  bool expectThrowOnInstantiation = conf.getBool("ExpectThrowOnInstantiation", false);
-  bool expectThrowDuringOperation = conf.getBool("ExpectThrowDuringOperation", false);
+  // - during the operation of the filter at the prior stage
+  // - during the operation of the filter at the post stage
+  const bool expectThrowOnInstantiation = conf.getBool("ExpectThrowOnInstantiation", false);
+  const bool expectThrowDuringPriorFilter = conf.getBool("ExpectThrowDuringPriorFilter", false);
+  const bool expectThrowDuringPostFilter = conf.getBool("ExpectThrowDuringPostFilter", false);
 
   if (expectThrowOnInstantiation) {
     EXPECT_THROWS(ufo::ConventionalProfileProcessing filterThrow(obsspace, filterParameters,
@@ -122,11 +124,16 @@ void testConventionalProfileProcessing(const eckit::LocalConfiguration &conf) {
   }
 
   filter.preProcess();
+  if (expectThrowDuringPriorFilter) {
+    EXPECT_THROWS(filter.priorFilter(*geovals));
+    return;
+  }
   filter.priorFilter(*geovals);
-  if (expectThrowDuringOperation)
-    EXPECT_THROWS(filter.postFilter(hofx, bias, obsdiags));
-  else
-    filter.postFilter(hofx, bias, obsdiags);
+  if (expectThrowDuringPostFilter) {
+    EXPECT_THROWS(filter.postFilter(*geovals, hofx, bias, obsdiags));
+    return;
+  }
+  filter.postFilter(*geovals, hofx, bias, obsdiags);
 
   // Determine whether the mismatch check should be bypassed or not.
   // It might be necessary to disable the mismatch check in tests which are
@@ -240,8 +247,6 @@ void testConventionalProfileProcessing(const eckit::LocalConfiguration &conf) {
   const bool testProfileVerticalInterpolation =
     conf.getBool("testProfileVerticalInterpolation", false);
   if (testProfileVerticalInterpolation) {
-    geovals->reorderzdir("air_pressure_levels", "bottom2top");
-
     ConventionalProfileProcessingParameters options;
     options.deserialize(conf);
 
@@ -266,15 +271,15 @@ void testConventionalProfileProcessing(const eckit::LocalConfiguration &conf) {
       const std::string coordOrderName = coordOrderNames[jprof];
       const std::string outOfBoundsName = outOfBoundsNames[jprof];
 
+      // The GeoVaLs used in this test are indexed from top to bottom.
       std::vector <float> zRhoGeoVaLs(geovals->nlevs(ufo::VariableNames::geovals_height_rho));
       geovals->getAtLocation(zRhoGeoVaLs, ufo::VariableNames::geovals_height_rho, 0);
-
-      // Reverse coordinate order if required.
-      if (coordOrderName == "Descending")
+      if (coordOrderName == "Ascending")
         std::reverse(zRhoGeoVaLs.begin(), zRhoGeoVaLs.end());
 
       std::vector <float> pressureGeoVaLs(geovals->nlevs(ufo::VariableNames::geovals_pressure_rho));
       geovals->getAtLocation(pressureGeoVaLs, ufo::VariableNames::geovals_pressure_rho, 0);
+      std::reverse(pressureGeoVaLs.begin(), pressureGeoVaLs.end());
 
       // Get observed geopotential height and (empty) pressure vector.
       const auto &zObs = profileDataHandler.get<float>(ufo::VariableNames::obs_geopotential_height);
