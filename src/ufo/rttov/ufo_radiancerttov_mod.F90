@@ -174,7 +174,7 @@ contains
     integer                                 :: nprofiles, nlevels
     integer(kind=jpim)                      :: errorstatus  ! Error status of RTTOV subroutine calls
 
-    integer                                 :: i_inst, iprof_rttov, iprof, ichan, ichan_sim
+    integer                                 :: i_inst, iprof_rttov, iprof, ichan, ichan_sim, jchan
     integer                                 :: nprof_sim, nprof_max_sim, nchan_total
     integer                                 :: prof_start, prof_end
 
@@ -287,6 +287,12 @@ contains
       ichan_sim = 0_jpim
       nchan_sim = 0_jpim
 
+      !allocate list used to store 'good' profiles
+      !prof_list is defined in utils_mod
+      !initialise to -1, so no bad profile is given an emissivity
+      allocate(prof_list(nprof_sim,2))
+      prof_list = -1 
+
       ! Build the list of profile/channel indices in chanprof
       do iprof_rttov = 1, nprof_sim
         errorstatus = errorstatus_success
@@ -301,15 +307,17 @@ contains
         if(self % conf % RTTOV_profile_checkinput) call self % RTprof % check(self % conf, iprof, i_inst, errorstatus)
 
         ! check sfc_emiss valid if read in
-        if (allocated(sfc_emiss)) then
-          do ichan = 1, nchan_inst
-            if ((sfc_emiss(ichan,iprof) > 1.0) .or. (sfc_emiss(ichan,iprof) < 0.0)) then
-              errorstatus = errorstatus_fatal
-            end if
-          end do
-        end if
+        if(errorstatus == errorstatus_success) then
+          if (allocated(sfc_emiss)) then
+            do ichan = 1, nchan_inst
+              if ((sfc_emiss(ichan,iprof) > 1.0) .or. (sfc_emiss(ichan,iprof) < 0.0)) then
+                errorstatus = errorstatus_fatal
+              end if
+            end do
+          end if
 
-        if (errorstatus == errorstatus_success) then 
+          prof_list(iprof_rttov,1) = iprof_rttov ! chunk index
+          prof_list(iprof_rttov,2) = iprof       ! all-obs index
           do ichan = 1, nchan_inst
             ichan_sim = ichan_sim + 1_jpim
             chanprof(ichan_sim) % prof = iprof_rttov ! this refers to the slice of the RTprofile array passed to RTTOV
@@ -330,26 +338,34 @@ contains
         if (allocated(sfc_emiss)) then
           self % RTprof % calcemis(:) = .false.
           do ichan = 1, ichan_sim
-            self % RTprof % emissivity(ichan) % emis_in = sfc_emiss(chanprof(ichan) % chan, iprof)
-            if (self % RTprof % emissivity(ichan) % emis_in == 0.0) then
-              self % RTprof % calcemis(ichan) = .true.
-            end if
+            do jchan = 1, nchan_inst
+              if (chanprof(ichan) % chan == self % channels(jchan)) then
+                self % RTprof % emissivity(ichan) % emis_in = sfc_emiss(jchan, iprof)
+                if (self % RTprof % emissivity(ichan) % emis_in == 0.0) then
+                  self % RTprof % calcemis(ichan) = .true.
+                end if
+                cycle
+              end if
+            end do
           end do
         else
-          call self % RTProf % init_emissivity(self % conf, prof_start)
+          call self % RTProf % init_default_emissivity(self % conf, prof_start)
         end if
       end if
 
       ! Write out emissivity if checking profile
       if(size(self % conf % inspect) > 0) then
         do ichan = 1, ichan_sim, nchan_inst
-          iprof = chanprof(ichan) % prof
+          iprof = prof_start + chanprof(ichan) % prof - 1
           if(any(self % conf % inspect == iprof)) then
+            write(*,*) "profile ", iprof
             write(*,*) "calcemiss = ",self % RTprof % calcemis(ichan:ichan+nchan_inst-1)
             write(*,*) "emissivity in = ",self % RTprof % emissivity(ichan:ichan+nchan_inst-1) % emis_in
           end if
         end do
       end if
+
+      deallocate(prof_list)
 
       ! --------------------------------------------------------------------------
       ! Call RTTOV model
@@ -390,7 +406,6 @@ contains
               calcemis    = self % RTProf % calcemis(1:nchan_sim),            &! in    flag for internal emissivity calcs
               emissivity  = self % RTProf % emissivity(1:nchan_sim),          &! inout input/output emissivities per channel
               emissivity_k = self % RTProf % emissivity_k(1:nchan_sim))        ! inout input/output emissivities per channel
-            
           end if
           
           if ( errorstatus /= errorstatus_success ) then
@@ -445,8 +460,9 @@ contains
           ! Write out emissivity out and hofx
           if(size(self % conf % inspect) > 0) then
             do ichan = 1, ichan_sim, nchan_inst
-              iprof = chanprof(ichan) % prof
+              iprof = prof_start + chanprof(ichan) % prof - 1
               if(any(self % conf % inspect == iprof)) then
+                write(*,*) "profile ", iprof
                 write(*,*) "emissivity out = ",self % RTprof % emissivity(ichan:ichan+nchan_inst-1) % emis_out
                 write(*,*) "hofx out = ",hofx(1:size(self%channels),iprof)
               end if

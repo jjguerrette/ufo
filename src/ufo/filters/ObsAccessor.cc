@@ -67,6 +67,10 @@ ObsAccessor::ObsAccessor(const ioda::ObsSpace &obsdb,
                          boost::optional<Variable> categoryVariable)
   : obsdb_(&obsdb), groupBy_(groupBy), categoryVariable_(categoryVariable)
 {
+  // If the observations are to be grouped by a category variable, and that variable was
+  // also used to divide the ObsSpace into records, change the value of `groupBy_`.
+  // This is not done if the records are treated as single observations (for which
+  // `groupBy_` is equal to `GroupBy::SINGLE_OBS`).
   if (groupBy_ == GroupBy::VARIABLE && wereRecordsGroupedByCategoryVariable())
     groupBy_ = GroupBy::RECORD_ID;
 
@@ -74,9 +78,8 @@ ObsAccessor::ObsAccessor(const ioda::ObsSpace &obsdb,
     // Each record is held by a single process, so there's no need to exchange data between
     // processes and we can use an InefficientDistribution rather than the distribution taken from
     // obsdb_. Which in this case is *efficient*!
-    eckit::LocalConfiguration emptyConfig;
     obsDistribution_ = std::make_shared<ioda::InefficientDistribution>(obsdb_->comm(),
-                                                        emptyConfig);
+                                                        ioda::EmptyDistributionParameters());
     oops::Log::trace() << "ObservationAccessor: no MPI communication necessary" << std::endl;
   } else {
     obsDistribution_ = obsdb.distribution();
@@ -96,6 +99,11 @@ ObsAccessor ObsAccessor::toObservationsSplitIntoIndependentGroupsByRecordId(
 ObsAccessor ObsAccessor::toObservationsSplitIntoIndependentGroupsByVariable(
     const ioda::ObsSpace &obsdb, const Variable &variable) {
   return ObsAccessor(obsdb, GroupBy::VARIABLE, variable);
+}
+
+ObsAccessor ObsAccessor::toSingleObservationsSplitIntoIndependentGroupsByVariable(
+    const ioda::ObsSpace &obsdb, const Variable &variable) {
+  return ObsAccessor(obsdb, GroupBy::SINGLE_OBS, variable);
 }
 
 std::vector<bool> ObsAccessor::getGlobalApply(
@@ -187,6 +195,9 @@ RecursiveSplitter ObsAccessor::splitObservationsIntoIndependentGroups(
     groupObservationsByRecordNumber(validObsIds, splitter);
     break;
   case GroupBy::VARIABLE:
+    groupObservationsByCategoryVariable(validObsIds, splitter);
+    break;
+  case GroupBy::SINGLE_OBS:
     groupObservationsByCategoryVariable(validObsIds, splitter);
     break;
   }

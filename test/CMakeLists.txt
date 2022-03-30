@@ -22,6 +22,8 @@ list( APPEND ufo_test_input
   testinput/amsr2_rttov_ops_qc_rttovonedvarcheck.yaml
   testinput/amsua_crtm.yaml
   testinput/amsua_crtm_bc.yaml
+  testinput/amsua_crtm_bc_geos.yaml
+  testinput/amsua_crtm_bc_channelnobc_geos.yaml
   testinput/amsua_n19_fov.yaml
   testinput/amsua_qc.yaml
   testinput/amsua_qc_clwretmw.yaml
@@ -34,6 +36,7 @@ list( APPEND ufo_test_input
   testinput/aod_metoffice.yaml
   testinput/atms_crtm.yaml
   testinput/atms_qc_filters.yaml
+  testinput/atms_rttov_bad_data.yaml
   testinput/atms_rttov_ops_qc_rttovonedvarcheck.yaml
   testinput/atms_rttov_ops.yaml
   testinput/atms_rttov_qc.yaml
@@ -198,6 +201,7 @@ list( APPEND ufo_test_input
   testinput/qc_gauss_thinning.yaml
   testinput/qc_gauss_thinning_median.yaml
   testinput/qc_gauss_thinning_ops.yaml
+  testinput/qc_gauss_thinning_records_are_single_obs.yaml
   testinput/qc_gauss_thinning_satrad.yaml
   testinput/qc_gauss_thinning_unittests.yaml
   testinput/qc_grosserrorwholereport.yaml
@@ -227,6 +231,7 @@ list( APPEND ufo_test_input
   testinput/qc_thinning.yaml
   testinput/qc_temporal_thinning.yaml
   testinput/qc_temporal_thinning_unittests.yaml
+  testinput/qc_temporal_thinning_records_are_single_obs.yaml
   testinput/qc_trackcheck.yaml
   testinput/qc_trackcheck_unittests.yaml
   testinput/qc_trackcheckship.yaml
@@ -294,6 +299,7 @@ list( APPEND ufo_test_input
   testinput/conventionalprofileprocessing_average_windspeed_OPScomparison.yaml
   testinput/conventionalprofileprocessing_average_relativehumidity_obsfilter.yaml
   testinput/conventionalprofileprocessing_average_relativehumidity_OPScomparison.yaml
+  testinput/conventionalprofileprocessing_average_single_level_profile_obsfilter.yaml
   testinput/conventionalprofileprocessing_opr_average.yaml
   testinput/conventionalprofileprocessing_obsfunction_profileaverageobs.yaml
   testinput/conventionalprofileprocessing_obsfunction_fillaveragedprofiledata.yaml
@@ -671,6 +677,20 @@ if( crtm_FOUND )
                       DEPENDS test_ObsOperator.x
                       TEST_DEPENDS ufo_get_ufo_test_data ufo_get_crtm_test_data )
 
+    ecbuild_add_test( TARGET  test_ufo_opr_crtm_bc_amsua_geos
+                      COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsOperator.x
+                      ARGS    "testinput/amsua_crtm_bc_geos.yaml"
+                      ENVIRONMENT OOPS_TRAPFPE=1
+                      DEPENDS test_ObsOperator.x
+                      TEST_DEPENDS ufo_get_ufo_test_data ufo_get_crtm_test_data )
+
+    ecbuild_add_test( TARGET  test_ufo_opr_crtm_bc_channelnobc_amsua_geos
+                      COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsOperator.x
+                      ARGS    "testinput/amsua_crtm_bc_channelnobc_geos.yaml"
+                      ENVIRONMENT OOPS_TRAPFPE=1
+                      DEPENDS test_ObsOperator.x
+                      TEST_DEPENDS ufo_get_ufo_test_data ufo_get_crtm_test_data )
+
     ecbuild_add_test( TARGET  test_ufo_linopr_crtm_amsua
                       COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsOperatorTLAD.x
                       ARGS    "testinput/amsua_crtm.yaml"
@@ -963,6 +983,13 @@ if( ${rttov_FOUND} )
                     ARGS    "testinput/function_cloudcost.yaml"
                     ENVIRONMENT OOPS_TRAPFPE=1
                     DEPENDS test_ObsFilters.x
+                    TEST_DEPENDS ufo_get_ufo_test_data )
+
+  ecbuild_add_test( TARGET  test_ufo_opr_rttov_bad_data
+                    COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsOperator.x
+                    ARGS    "testinput/atms_rttov_bad_data.yaml"
+                    ENVIRONMENT OOPS_TRAPFPE=1
+                    DEPENDS test_ObsOperator.x
                     TEST_DEPENDS ufo_get_ufo_test_data )
 
   ecbuild_add_test( TARGET  test_ufo_opr_rttov_atms
@@ -1964,6 +1991,14 @@ ecbuild_add_test( TARGET  test_ufo_qc_gauss_thinning_ops
                   DEPENDS test_ObsFilters.x
                   TEST_DEPENDS ufo_get_ufo_test_data )
 
+ecbuild_add_test( TARGET  test_ufo_qc_gauss_thinning_records_are_single_obs
+                  MPI     4
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
+                  ARGS    "testinput/qc_gauss_thinning_records_are_single_obs.yaml"
+                  ENVIRONMENT OOPS_TRAPFPE=1
+                  DEPENDS test_ObsFilters.x
+                  TEST_DEPENDS ufo_get_ufo_test_data )
+
 ecbuild_add_test( TARGET  test_ufo_qc_met_office_buddy_check
                   MPI     4
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
@@ -2035,6 +2070,14 @@ ecbuild_add_test( TARGET  test_ufo_qc_temporalthinning
                   MPI     4
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
                   ARGS    "testinput/qc_temporal_thinning.yaml"
+                  ENVIRONMENT OOPS_TRAPFPE=1
+                  DEPENDS test_ObsFilters.x
+                  TEST_DEPENDS ufo_get_ufo_test_data )
+
+ecbuild_add_test( TARGET  test_ufo_qc_temporal_thinning_records_are_single_obs
+                  MPI     4
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
+                  ARGS    "testinput/qc_temporal_thinning_records_are_single_obs.yaml"
                   ENVIRONMENT OOPS_TRAPFPE=1
                   DEPENDS test_ObsFilters.x
                   TEST_DEPENDS ufo_get_ufo_test_data )
@@ -2248,6 +2291,13 @@ ecbuild_add_test( TARGET  test_ufo_conventionalprofileprocessing_average_windspe
 ecbuild_add_test( TARGET  test_ufo_conventionalprofileprocessing_average_relativehumidity_obsfilter
                   COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
                   ARGS    "testinput/conventionalprofileprocessing_average_relativehumidity_obsfilter.yaml"
+                  ENVIRONMENT OOPS_TRAPFPE=1
+                  DEPENDS test_ObsFilters.x
+                  TEST_DEPENDS ufo_get_ufo_test_data )
+
+ecbuild_add_test( TARGET  test_ufo_conventionalprofileprocessing_average_single_level_profile_obsfilter
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
+                  ARGS    "testinput/conventionalprofileprocessing_average_single_level_profile_obsfilter.yaml"
                   ENVIRONMENT OOPS_TRAPFPE=1
                   DEPENDS test_ObsFilters.x
                   TEST_DEPENDS ufo_get_ufo_test_data )
