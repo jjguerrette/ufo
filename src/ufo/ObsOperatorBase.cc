@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "eckit/config/Configuration.h"
 #include "ioda/ObsSpace.h"
 #include "oops/util/abor1_cpp.h"
 #include "oops/util/Logger.h"
@@ -32,7 +31,7 @@ std::unique_ptr<Locations> ObsOperatorBase::locations() const {
 // -----------------------------------------------------------------------------
 
 oops::Variables ObsOperatorBase::simulatedVars() const {
-  return odb_.obsvariables();
+  return odb_.assimvariables();
 }
 
 // -----------------------------------------------------------------------------

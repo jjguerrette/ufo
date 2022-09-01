@@ -43,12 +43,18 @@ class ObsProfileAverageParameters : public ObsOperatorParametersBase {
     "the observed profile and each model level",
      3,
      this,
-     {oops::minConstraint(1)}};
+     {oops::minConstraint(0)}};
 
   oops::Parameter<bool> compareWithOPS{
     "compare with OPS",
     "If true, perform comparisons of auxiliary variables with OPS",
     false,
+    this};
+
+  oops::Parameter<bool> requireDescendingPressureSort{
+    "require descending pressure sort",
+    "Require pressures to be sorted in descending order",
+    true,
     this};
 
   oops::Parameter<std::string> pressureCoord{"pressure coordinate",

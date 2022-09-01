@@ -30,6 +30,7 @@ public :: ufo_geovals_split, ufo_geovals_merge
 public :: ufo_geovals_minmaxavg, ufo_geovals_normalize, ufo_geovals_maxloc, ufo_geovals_schurmult
 public :: ufo_geovals_read_netcdf, ufo_geovals_write_netcdf
 public :: ufo_geovals_rms, ufo_geovals_copy, ufo_geovals_copy_one
+public :: ufo_geovals_fill, ufo_geovals_fillad
 public :: ufo_geovals_analytic_init
 
 private :: ufo_geovals_reset_sec_arg
@@ -1184,6 +1185,91 @@ deallocate(ncid_var)
 end subroutine ufo_geovals_write_netcdf
 
 ! ------------------------------------------------------------------------------
+
+subroutine ufo_geovals_fill(self, c_nloc, c_indx, c_nval, c_vals, levels_top_down)
+implicit none
+type(ufo_geovals), intent(inout) :: self
+integer(c_int), intent(in) :: c_nloc
+integer(c_int), intent(in) :: c_indx(c_nloc)
+integer(c_int), intent(in) :: c_nval
+real(c_double), intent(in) :: c_vals(c_nval)
+logical(c_bool), intent(in) :: levels_top_down
+
+integer :: jvar, jlev, jloc, iloc, ii
+integer :: lbgn, lend, linc
+
+if (.not.self%linit) call abor1_ftn("ufo_geovals_fill: geovals not initialized")
+
+lbgn = 1
+lend = 1
+ii = 0
+do jvar = 1, self%nvar
+  ! setting loop indices to ensure geovals are filled top to bottom
+  if (levels_top_down) then
+    linc=1
+    lend=self%geovals(jvar)%nval
+  else
+    lbgn=self%geovals(jvar)%nval
+    linc=-1
+  endif
+
+  do jlev = lbgn, lend, linc
+    do jloc=1, c_nloc
+      ii = ii + 1
+      iloc = c_indx(jloc) + 1
+      if (iloc<1 .or. iloc> self%nlocs) call abor1_ftn("ufo_geovals_fill: error iloc")
+      self%geovals(jvar)%vals(jlev,iloc) = c_vals(ii)
+    enddo
+  enddo
+enddo
+if (ii /= c_nval) call abor1_ftn("ufo_geovals_fill: error size")
+
+end subroutine ufo_geovals_fill
+
+! ------------------------------------------------------------------------------
+
+subroutine ufo_geovals_fillad(self, c_nloc, c_indx, c_nval, c_vals, levels_top_down)
+implicit none
+type(ufo_geovals), intent(in) :: self
+integer(c_int), intent(in) :: c_nloc
+integer(c_int), intent(in) :: c_indx(c_nloc)
+integer(c_int), intent(in) :: c_nval
+real(c_double), intent(inout) :: c_vals(c_nval)
+logical(c_bool), intent(in) :: levels_top_down
+
+integer :: jvar, jlev, jloc, iloc, ii
+integer :: lbgn, lend, linc
+
+if (.not.self%linit) call abor1_ftn("ufo_geovals_fillad: geovals not initialized")
+
+lbgn = 1
+lend = 1
+ii = 0
+do jvar = 1, self%nvar
+  ! setting loop indices to ensure geovals are filled top to bottom
+  if (levels_top_down) then 
+    linc=1
+    lend=self%geovals(jvar)%nval
+  else
+    lbgn=self%geovals(jvar)%nval
+    linc=-1
+  endif
+
+  do jlev = 1, self%geovals(jvar)%nval
+    do jloc=1, c_nloc
+      ii = ii + 1
+      iloc = c_indx(jloc) + 1
+      if (iloc<1 .or. iloc> self%nlocs) call abor1_ftn("ufo_geovals_fillad: error iloc")
+      c_vals(ii) = self%geovals(jvar)%vals(jlev,iloc)
+    enddo
+  enddo
+enddo
+if (ii /= c_nval) call abor1_ftn("ufo_geovals_fillad: error size")
+
+end subroutine ufo_geovals_fillad
+
+! ------------------------------------------------------------------------------
+
 subroutine check(action, status)
 use netcdf, only: nf90_noerr, nf90_strerror
 implicit none

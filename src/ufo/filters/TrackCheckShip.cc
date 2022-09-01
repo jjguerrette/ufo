@@ -29,6 +29,7 @@
 #include "ufo/filters/TrackCheckShipDiagnostics.h"
 #include "ufo/filters/TrackCheckShipParameters.h"
 #include "ufo/utils/Constants.h"
+#include "ufo/utils/RecordHandler.h"
 #include "ufo/utils/RecursiveSplitter.h"
 
 namespace ufo {
@@ -39,6 +40,13 @@ TrackCheckShip::TrackCheckShip(ioda::ObsSpace &obsdb, const Parameters_ &paramet
   : FilterBase(obsdb, parameters, flags, obserr), options_(parameters)
 {
   oops::Log::debug() << "TrackCheckShip: config = " << options_ << std::endl;
+  if (options_.recordsAreSingleObs) {  // 'records are single obs' option set,...
+    const std::vector<std::string> groupingVars = obsdb.obs_group_vars();
+    if (groupingVars.size() < 1) {     // ...but not grouped into records
+      throw eckit::UserError(R"(Cannot treat records as single obs
+                                if obs not grouped into records.)", Here());
+    }
+  }
   assert(options_.core.maxSpeed.value() > 0);
   if (options_.testingMode)
     diagnostics_.reset(new TrackCheckShipDiagnostics());
@@ -78,7 +86,9 @@ float TrackCheckShip::angle(const TrackCheckShip::TrackObservation &a,
   auto locC = c.getLocation();
   Eigen::Vector3f disp1{locB[0]-locA[0], locB[1]-locA[1], locB[2]-locA[2]};
   Eigen::Vector3f disp2{locC[0]-locB[0], locC[1]-locB[1], locC[2]-locB[2]};
-  auto retValue = std::acos(disp1.dot(disp2) / (disp1.norm() * disp2.norm()));
+  auto CosAngle = disp1.dot(disp2) / (disp1.norm() * disp2.norm());
+  CosAngle = std::max(-1.0f, (std::min(1.0f, CosAngle)));
+  auto retValue = std::acos(CosAngle);
   retValue *= static_cast<float>(Constants::rad2deg);
   return std::round(retValue * 10.0f) * 0.1f;
 }
@@ -154,10 +164,22 @@ void TrackCheckShip::print(std::ostream & os) const {
 void TrackCheckShip::applyFilter(const std::vector<bool> & apply,
                                  const Variables & filtervars,
                                  std::vector<std::vector<bool>> & flagged) const {
-  ObsAccessor obsAccessor = TrackCheckUtils::createObsAccessor(options_.stationIdVariable, obsdb_);
+  ObsAccessor obsAccessor = TrackCheckUtils::createObsAccessor(options_.stationIdVariable,
+                                                               obsdb_,
+                                                               options_.recordsAreSingleObs);
 
-  const std::vector<size_t> validObsIds
-                                   = obsAccessor.getValidObservationIds(apply, *flags_, filtervars);
+  // The RecordHandler deals with data that have been grouped into records.
+  // If the grouping has not been performed then each RecordHandler function simply
+  // returns what it has been passed without modification.
+  // The value of `retainOnlyIfAllFilterVariablesAreValid` is set to `false`
+  // because that is the default value used in the `ObsAccessor` class.
+  const RecordHandler recordHandler(obsdb_, filtervars, *flags_, false);
+
+  const std::vector<size_t> validObsIds =
+    obsAccessor.getValidObservationIds(options_.recordsAreSingleObs ?
+                                    recordHandler.changeApplyIfRecordsAreSingleObs(apply) : apply,
+                                    *flags_,
+                                    filtervars);
 
   RecursiveSplitter splitter = obsAccessor.splitObservationsIntoIndependentGroups(validObsIds);
   TrackCheckUtils::sortTracksChronologically(validObsIds, obsAccessor, splitter);
@@ -223,7 +245,9 @@ void TrackCheckShip::applyFilter(const std::vector<bool> & apply,
       flagRejectedTrackObservations(track.begin(), track.end(),
                                     validObsIds, trackObservations, isRejected);
   }
-  obsAccessor.flagRejectedObservations(isRejected, flagged);
+  obsAccessor.flagRejectedObservations(options_.recordsAreSingleObs ?
+    recordHandler.changeThinnedIfRecordsAreSingleObs(isRejected) : isRejected,
+    flagged);
 }
 
 /// \returns a \p vector of \p TrackObservations that all hold a \p shared_ptr to an instance
@@ -492,12 +516,9 @@ void TrackCheckShip::removeFaultyObservation(
       diagnostics_->storeFirstIterativeRemovalInfo(
             std::make_pair(observationNumbersAroundFastest, errorCategory));
     }
-    if (rejectedObservation == observationAfterFastestSegment) {
-      fail(observationAfterFastestSegment - 1);
-    } else {
-      fail(observationAfterFastestSegment);
-    }
-    track.erase(observationAfterFastestSegment - 1, observationAfterFastestSegment);
+    fail(observationAfterFastestSegment - 1);
+    fail(observationAfterFastestSegment);
+    track.erase(observationAfterFastestSegment - 1, observationAfterFastestSegment + 1);
   } else {
     if (options_.testingMode.value() && firstIterativeRemoval) {
       std::vector<size_t> rejectedObservationNumber{rejectedObservation->get().

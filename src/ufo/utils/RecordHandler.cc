@@ -12,11 +12,18 @@
 
 #include "oops/util/missingValues.h"
 
+#include "ufo/filters/QCflags.h"
 #include "ufo/utils/RecordHandler.h"
 
 namespace ufo {
-  RecordHandler::RecordHandler(const ioda::ObsSpace & obsdb)
-    : obsdb_(obsdb)
+  RecordHandler::RecordHandler(const ioda::ObsSpace & obsdb,
+                               const Variables & filtervars,
+                               const ioda::ObsDataVector<int> & flags,
+                               const bool retainOnlyIfAllFilterVariablesAreValid)
+    : obsdb_(obsdb),
+      filtervars_(filtervars),
+      flags_(flags),
+      retainOnlyIfAllFilterVariablesAreValid_(retainOnlyIfAllFilterVariablesAreValid)
   {}
 
 std::vector<std::size_t> RecordHandler::getLaunchPositions() const {
@@ -26,6 +33,13 @@ std::vector<std::size_t> RecordHandler::getLaunchPositions() const {
   std::vector<util::DateTime> dateTimes(obsdb_.nlocs());
   obsdb_.get_db("MetaData", "dateTime", dateTimes);
 
+  // Indices of filter variables in the `flags` vector.
+  std::vector<size_t> indexOfFilterVariableInFlags;
+  for (size_t ivar = 0; ivar < filtervars_.nvars(); ++ivar) {
+    const std::string filterVariableName = filtervars_.variable(ivar).variable();
+    indexOfFilterVariableInFlags.push_back(flags_.varnames().find(filterVariableName));
+  }
+
   // Vector of locations corresponding to profile launch positions.
   std::vector<std::size_t> launchPositions;
 
@@ -34,19 +48,51 @@ std::vector<std::size_t> RecordHandler::getLaunchPositions() const {
   // Loop over profiles.
   for (std::size_t jprof = 0; jprof < recnums.size(); ++jprof) {
     // Get locations corresponding to this profile.
-    const std::vector<std::size_t> & locs = obsdb_.recidx_vector(recnums[jprof]);
+    std::vector<std::size_t> locs = obsdb_.recidx_vector(recnums[jprof]);
+    // Sort locs according to values of dateTime, ignoring missing values.
+    std::stable_sort(locs.begin(),
+                     locs.end(),
+                     [&](int a, int b)
+                     {return dateTimes[a] == missingDateTime ?
+                         false :
+                         (dateTimes[b] == missingDateTime ?
+                          true :
+                          dateTimes[a] < dateTimes[b]);});
+
     // Find the location corresponding to the launch position.
-    // This is defined as the smallest non-missing datetime in the profile.
-    // If all datetimes are missing this will select the first entry in the profile.
-    auto it_nonmissing = std::min_element(locs.begin(), locs.end(),
-                                          [missingDateTime, & dateTimes]
-                                          (const size_t & a, const size_t & b)
-                                          {return dateTimes[a] == missingDateTime ?
-                                           false :
-                                           (dateTimes[b] == missingDateTime ?
-                                            true :
-                                            dateTimes[a] < dateTimes[b]);});
-    launchPositions.push_back(*it_nonmissing);
+    // This is defined as the location with the earliest non-missing datetime
+    // and a certain number of filter variables with QC flags equal to pass.
+    // If `retainOnlyIfAllFilterVariablesAreValid` is true, all filter variables must
+    // have QC flags equal to pass. If it is false then at least one must have a
+    // QC flag equal to pass.
+    size_t launchPosition = locs.front();
+    for (const size_t jloc : locs) {
+      // Skip location if dateTime is missing.
+      if (dateTimes[jloc] == missingDateTime) continue;
+      // Skip location if a certain number of filter variables are missing.
+      bool filterVarsOK = true;
+      if (retainOnlyIfAllFilterVariablesAreValid_) {
+        for (const int idx : indexOfFilterVariableInFlags) {
+          if (QCflags::isRejected(flags_[idx][jloc])) {
+            filterVarsOK = false;
+            break;
+          }
+        }
+      } else {
+        filterVarsOK = false;
+        for (const int idx : indexOfFilterVariableInFlags) {
+          if (!QCflags::isRejected(flags_[idx][jloc])) {
+            filterVarsOK = true;
+            break;
+          }
+        }
+      }
+      if (!filterVarsOK) continue;
+      // Launch position is current location.
+      launchPosition = jloc;
+      break;
+    }
+    launchPositions.push_back(launchPosition);
   }
 
   return launchPositions;

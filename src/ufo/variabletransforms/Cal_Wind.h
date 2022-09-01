@@ -10,12 +10,39 @@
 
 #include <memory>
 #include <ostream>
+#include <set>
 #include <string>
 #include <vector>
 
 #include "ufo/variabletransforms/TransformBase.h"
 
 namespace ufo {
+
+/// Configuration parameters for the wind components transform.
+class Cal_WindComponentsParameters: public VariableTransformParametersBase {
+  OOPS_CONCRETE_PARAMETERS(Cal_WindComponentsParameters, VariableTransformParametersBase);
+
+ public:
+  /// Observation group name. Default is ObsValue.
+  oops::Parameter<std::string> group{"group", "ObsValue", this};
+  oops::Parameter<std::string> WindDirectionVariable{"wind direction variable",
+                                                     "wind_from_direction", this};
+  oops::Parameter<std::string> WindSpeedVariable{"wind speed variable",
+                                                "wind_speed", this};
+};
+
+/// Configuration parameters for the wind speed and direction transform.
+class Cal_WindSpeedAndDirectionParameters: public VariableTransformParametersBase {
+  OOPS_CONCRETE_PARAMETERS(Cal_WindSpeedAndDirectionParameters, VariableTransformParametersBase);
+
+ public:
+  /// Observation group name. Default is ObsValue.
+  oops::Parameter<std::string> group{"group", "ObsValue", this};
+  oops::Parameter<std::string> EastwardWindVariable{"eastward wind variable",
+                                                    "eastward_wind", this};
+  oops::Parameter<std::string> NorthwardWindVariable{"northward wind variable",
+                                                     "northward_wind", this};
+};
 
 /*!
 * \brief Wind Speed And Direction filter
@@ -29,12 +56,20 @@ namespace ufo {
 */
 class Cal_WindSpeedAndDirection : public TransformBase {
  public:
-  Cal_WindSpeedAndDirection(const GenericVariableTransformParameters &options,
+  typedef Cal_WindSpeedAndDirectionParameters Parameters_;
+
+  Cal_WindSpeedAndDirection(const Parameters_ &options,
                             const ObsFilterData &data,
                             const std::shared_ptr<ioda::ObsDataVector<int>> &flags,
                             const std::shared_ptr<ioda::ObsDataVector<float>> &obserr);
   // Run variable conversion
   void runTransform(const std::vector<bool> &apply) override;
+
+ private:
+  std::string eastwardwindvariable_;
+  std::string northwardwindvariable_;
+  /// Group name.
+  std::string group_;
 };
 
 /*!
@@ -42,18 +77,29 @@ class Cal_WindSpeedAndDirection : public TransformBase {
 *
 * \details Performs a variable conversion from wind_speed and wind_from_direction to
 *  the wind components, eastward_wind and northward_wind. The newly calculated variables
-*  are included in the same obs space.
+*  are included in the same obs space. This filter supports the use of nchans as the
+*  the second observed dimension. The variable conversion is performed for
+*  each channel and so the output eastward_wind and northward_wind variables will have the
+*  same dimensions as wind_speed and wind_from_direction.
 *
 * See VariableTransformParametersBase for filter setup.
 */
 class Cal_WindComponents : public TransformBase {
  public:
-  Cal_WindComponents(const GenericVariableTransformParameters &options,
+  typedef Cal_WindComponentsParameters Parameters_;
+
+  Cal_WindComponents(const Parameters_ &options,
                      const ObsFilterData &data,
                      const std::shared_ptr<ioda::ObsDataVector<int>> &flags,
                      const std::shared_ptr<ioda::ObsDataVector<float>> &obserr);
-  // Run check
+  // Run variable conversion
   void runTransform(const std::vector<bool> &apply) override;
+
+ private:
+  std::string windspeedvariable_;
+  std::string winddirectionvariable_;
+  /// Group name.
+  std::string group_;
 };
 }  // namespace ufo
 

@@ -13,7 +13,7 @@
 #include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
 
-#include "ioda/Engines/Factory.h"
+#include "ioda/Engines/EngineUtils.h"
 #include "ioda/Group.h"
 #include "ioda/ObsSpace.h"
 
@@ -29,10 +29,17 @@ namespace ufo {
 Locations::Locations(const std::vector<float> & lons, const std::vector<float> & lats,
                      const std::vector<util::DateTime> & times,
                      std::shared_ptr<const ioda::Distribution> dist)
-  : dist_(std::move(dist)), times_(std::move(times)) {
+  : dist_(std::move(dist)), times_(std::move(times)), lons_(), lats_() {
+  oops::Log::trace() << "ufo::Locations::Locations start" << std::endl;
   const size_t nlocs = times_.size();
   ASSERT(nlocs == lons.size());
   ASSERT(nlocs == lats.size());
+  lons_.resize(nlocs);
+  lats_.resize(nlocs);
+  for (size_t jj = 0; jj < nlocs; ++jj) {
+    lons_[jj] = lons[jj];
+    lats_[jj] = lats[jj];
+  }
 
   initializeObsGroup(nlocs);
 
@@ -72,7 +79,8 @@ Locations::Locations(const std::vector<float> & lons, const std::vector<float> &
  */
 
 Locations::Locations(const eckit::Configuration & conf,
-                     const eckit::mpi::Comm & comm) {
+                     const eckit::mpi::Comm & comm)
+  : dist_(), times_(), lons_(), lats_() {
   const eckit::LocalConfiguration obsconf(conf, "obs space");
   const util::DateTime bgn = util::DateTime(conf.getString("window begin"));
   const util::DateTime end = util::DateTime(conf.getString("window end"));
@@ -95,9 +103,15 @@ Locations::Locations(const eckit::Configuration & conf,
 
   const ioda::Variable nlocsVar = og_.vars["nlocs"];
   std::vector<float> buffer(nlocs);
+  lons_.resize(nlocs);
+  lats_.resize(nlocs);
+
   obspace.get_db("MetaData", "longitude", buffer);
+  for (size_t jj = 0; jj < nlocs; ++jj) lons_[jj] = buffer[jj];
   og_.vars.createWithScales<float>("longitude", {nlocsVar}, float_params).write(buffer);
+
   obspace.get_db("MetaData", "latitude", buffer);
+  for (size_t jj = 0; jj < nlocs; ++jj) lats_[jj] = buffer[jj];
   og_.vars.createWithScales<float>("latitude", {nlocsVar}, float_params).write(buffer);
 
   times_.resize(nlocs);
@@ -105,6 +119,7 @@ Locations::Locations(const eckit::Configuration & conf,
 }
 
 // -------------------------------------------------------------------------------------------------
+
 Locations & Locations::operator+=(const Locations & other) {
   // Resize ObsGroup to new total size
   const ioda::Variable nlocsVar = og_.vars["nlocs"];
@@ -132,11 +147,14 @@ Locations & Locations::operator+=(const Locations & other) {
   og_.vars["latitude"].write<float>(buffer, feSelect, beSelect);
 
   times_.insert(times_.end(), other.times_.begin(), other.times_.end());
+  lats_.insert(lats_.end(), other.lats_.begin(), other.lats_.end());
+  lons_.insert(lons_.end(), other.lons_.begin(), other.lons_.end());
 
   return *this;
 }
 
 // -------------------------------------------------------------------------------------------------
+
 std::vector<bool> Locations::isInTimeWindow(const util::DateTime & t1,
                                             const util::DateTime & t2) const {
   std::vector<bool> isIn(times_.size(), false);

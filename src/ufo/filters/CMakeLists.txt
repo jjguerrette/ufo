@@ -87,6 +87,8 @@ set ( filters_files
       SatName.cc
       SatwindInversionCorrection.cc
       SatwindInversionCorrection.h
+      SpikeAndStepCheck.cc
+      SpikeAndStepCheck.h
       StuckCheck.cc
       StuckCheck.h
       StuckCheckParameters.h
@@ -143,6 +145,8 @@ set ( filters_files
       actions/FilterAction.h
       actions/FilterActionBase.cc
       actions/FilterActionBase.h
+      actions/FlagOriginalAndAveragedProfiles.cc
+      actions/FlagOriginalAndAveragedProfiles.h
       actions/InflateError.cc
       actions/InflateError.h
       actions/PassivateObs.cc
@@ -171,6 +175,8 @@ set ( filters_files
       obsfunctions/MaxColumnGeoVaLs.h
       obsfunctions/Polynomial2D.cc
       obsfunctions/Polynomial2D.h
+      obsfunctions/SetSeaIceEmiss.cc
+      obsfunctions/SetSeaIceEmiss.h
       obsfunctions/SetSurfaceType.cc
       obsfunctions/SetSurfaceType.h
       obsfunctions/SIRetMW.cc
@@ -181,12 +187,18 @@ set ( filters_files
       obsfunctions/HydrometeorCheckAMSUA.h
       obsfunctions/HydrometeorCheckATMS.cc
       obsfunctions/HydrometeorCheckATMS.h
+      obsfunctions/HydrometeorCheckAMSUAclr.cc
+      obsfunctions/HydrometeorCheckAMSUAclr.h
       obsfunctions/ImpactHeight.cc
       obsfunctions/ImpactHeight.h
       obsfunctions/InterChannelConsistencyCheck.cc
       obsfunctions/InterChannelConsistencyCheck.h
+      obsfunctions/LiquidWaterPathGuess.cc
+      obsfunctions/LiquidWaterPathGuess.h
       obsfunctions/BgdDepartureAnomaly.cc
       obsfunctions/BgdDepartureAnomaly.h
+      obsfunctions/ObsErrorModelHumidity.cc
+      obsfunctions/ObsErrorModelHumidity.h
       obsfunctions/ObsErrorModelStepwiseLinear.cc
       obsfunctions/ObsErrorModelStepwiseLinear.h
       obsfunctions/ObsErrorModelRamp.cc
@@ -203,6 +215,10 @@ set ( filters_files
       obsfunctions/CloudDetectMinResidualAVHRR.h
       obsfunctions/CloudDetectMinResidualIR.cc
       obsfunctions/CloudDetectMinResidualIR.h
+      obsfunctions/CloudFirstGuessMinimumResidual.cc
+      obsfunctions/CloudFirstGuessMinimumResidual.h
+      obsfunctions/MetOfficeAllSkyErrorModel.cc
+      obsfunctions/MetOfficeAllSkyErrorModel.h
       obsfunctions/ModelHeightAdjustedWindVectorComponent.cc
       obsfunctions/ModelHeightAdjustedWindVectorComponent.h
       obsfunctions/ModelHeightAdjustedAirTemperature.cc
@@ -241,6 +257,8 @@ set ( filters_files
       obsfunctions/ObsFunctionLinearCombination.h
       obsfunctions/ObsFunctionScattering.cc
       obsfunctions/ObsFunctionScattering.h
+      obsfunctions/ObsFunctionSelectStatistic.cc
+      obsfunctions/ObsFunctionSelectStatistic.h
       obsfunctions/ObsFunctionVelocity.cc
       obsfunctions/ObsFunctionVelocity.h
       obsfunctions/OceanPressureToDepth.cc
@@ -278,6 +296,8 @@ set ( filters_files
       obsfunctions/DateTimeOffset.h
       obsfunctions/FillAveragedProfileData.cc
       obsfunctions/FillAveragedProfileData.h
+      obsfunctions/MetOfficeRelativeHumidityCorrection.cc
+      obsfunctions/MetOfficeRelativeHumidityCorrection.h
 )
 
 if( ${rttov_FOUND} )

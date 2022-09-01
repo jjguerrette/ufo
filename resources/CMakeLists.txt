@@ -18,9 +18,11 @@ list( APPEND ufo_resources
   rmatrix/rttov/amsr_gcomw1_rmatrix_test.nc4
   rmatrix/rttov/iasi_metopb_rmatrix_test.nc4
   rmatrix/rttov/ssmis_dmspf17_rmatrix_test.nc4
+  rmatrix/rttov/atovs_metopb_rmatrix_test.nc4
   rmatrix/gnssro/gnssro_ba_rmatrix_latitude.nl
   rmatrix/gnssro/gnssro_ba_rmatrix_avtemp.nl
   bmatrix/gnssro/gnssro_bmatrix.txt
+  namemap/test_name_map.yaml
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/auxillary)
@@ -28,4 +30,5 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bmatrix/rttov)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/rmatrix/rttov)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bmatrix/gnssro)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/rmatrix/gnssro)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/namemap)
 CREATE_SYMLINK( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${ufo_resources} )

@@ -67,6 +67,7 @@ class FilterBase : public ObsProcessorBase {
 
  protected:
   ufo::Variables filtervars_;
+  ufo::Variables filtersimvars_;
 
  private:
   void doFilter() const override;
@@ -76,6 +77,7 @@ class FilterBase : public ObsProcessorBase {
   virtual int qcFlag() const = 0;
 
   std::vector<WhereParameters> whereParameters_;
+  WhereOperator whereOperator_;
   std::vector<std::unique_ptr<FilterActionParametersBase>> actionsParameters_;
 };
 

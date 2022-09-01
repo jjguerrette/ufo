@@ -20,6 +20,7 @@
 
 #include "oops/runs/Test.h"
 #include "oops/util/Expect.h"
+#include "oops/util/missingValues.h"
 
 #include "ufo/utils/RecordHandler.h"
 
@@ -35,8 +36,36 @@ void testRecordHandler(const eckit::LocalConfiguration &conf) {
   obsParams.validateAndDeserialize(obsSpaceConf);
   ioda::ObsSpace obsspace(obsParams, oops::mpi::world(), bgn, end, oops::mpi::myself());
 
+  // Obtain air_temperature and eastward_wind from configuration and save to ObsSpace.
+  std::vector<float> air_temperature = conf.getFloatVector("air_temperature");
+  std::vector<float> eastward_wind = conf.getFloatVector("eastward_wind");
+
+  // Create a vector of QC flags based on the values of the observed values.
+  ioda::ObsDataVector<int> qcflags(obsspace, obsspace.obsvariables());
+
+  // Change -999 to the missing floating-point value.
+  // Also set the relevant QC flag to missing.
+  const float missingFloat = util::missingValue(missingFloat);
+  for (size_t jloc = 0; jloc < obsspace.nlocs(); ++jloc) {
+    if (air_temperature[jloc] == -999) {
+      air_temperature[jloc] = missingFloat;
+      qcflags[0][jloc] = 10;
+    }
+    if (eastward_wind[jloc] == -999) {
+      eastward_wind[jloc] = missingFloat;
+      qcflags[1][jloc] = 10;
+    }
+  }
+  obsspace.put_db("ObsValue", "air_temperature", air_temperature);
+  obsspace.put_db("ObsValue", "eastward_wind", eastward_wind);
+
+  const Variables filtervars = Variables(obsspace.obsvariables());
+
   // Create a record handler.
-  ufo::RecordHandler recordHandler(obsspace);
+  ufo::RecordHandler recordHandler(obsspace,
+                                   filtervars,
+                                   qcflags,
+                                   conf.getBool("retainOnlyIfAllFilterVariablesAreValid", false));
 
   // (1) Get input vector.
   // (There is not a getBoolVector option for eckit::Configuration, which is why the conversion from

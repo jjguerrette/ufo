@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "oops/util/parameters/OptionalParameter.h"
 #include "oops/util/parameters/Parameter.h"
 #include "oops/util/parameters/Parameters.h"
 #include "oops/util/parameters/RequiredParameter.h"
@@ -47,8 +48,15 @@ class ObsErrorBoundMWParameters : public oops::Parameters {
   /// Function to set the observation bound based on terrain height
   oops::RequiredParameter<Variable> obserrBoundTopo{"obserr_bound_topo", this};
 
+  /// Factor applied to the derived top bound. It is 3.0 by default;
+  oops::OptionalParameter<float> thresholdfactor{"threshold", this};
+
   /// Function to estimate observation error based on symmetric cloud amount
-  oops::RequiredParameter<Variable> obserrFunction{"obserr_function", this};
+  // oops::RequiredParameter<Variable> obserrFunction{"obserr_function", this};
+  oops::OptionalParameter<Variable> obserrFunction{"obserr_function", this};
+
+  /// Parameter for original observation error
+  oops::OptionalParameter<std::vector<float>> obserrOriginal{"error parameter vector", this};
 
   /// Name of the data group to which the observation error is applied (default: ObsErrorData)
   oops::Parameter<std::string> testObserr{"test_obserr", "ObsErrorData", this};

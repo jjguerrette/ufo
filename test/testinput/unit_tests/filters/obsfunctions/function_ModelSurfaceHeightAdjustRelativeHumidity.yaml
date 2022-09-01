@@ -1,0 +1,22 @@
+window begin: 2021-05-21T00:00:00Z
+window end: 2021-05-21T23:00:00Z
+
+observations:
+- obs space:
+    name: Surface
+    obsdatain:
+      obsfile: Data/ufo/testinput_tier_1/surface_obs_20210521T1200Z.nc4
+    simulated variables: [relativeHumidityAt2M]
+  geovals:
+    filename: Data/ufo/testinput_tier_1/surface_geovals_20210521T1200Z.nc4
+
+  obs function:
+    name: ModelHeightAdjustedRelativeHumidity@ObsFunction
+    options:
+      elevation:
+        name: station_elevation@MetaData
+      temperature:
+        name: airTemperatureAt2M@TestReference
+    variables: [relativeHumidityAt2M]
+    tolerance: 1.0e-6
+

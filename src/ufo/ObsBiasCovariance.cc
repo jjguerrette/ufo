@@ -15,7 +15,7 @@
 #include "ufo/ObsBiasCovariance.h"
 
 #include "ioda/distribution/Accumulator.h"
-#include "ioda/Engines/Factory.h"
+#include "ioda/Engines/EngineUtils.h"
 #include "ioda/Engines/HH.h"
 #include "ioda/Layout.h"
 #include "ioda/ObsGroup.h"
@@ -38,7 +38,7 @@ namespace ufo {
 
 ObsBiasCovariance::ObsBiasCovariance(ioda::ObsSpace & odb,
                                      const Parameters_ & params)
-  : odb_(odb), prednames_(0), vars_(odb.obsvariables()), variances_(),
+  : odb_(odb), prednames_(0), vars_(odb.assimvariables()), variances_(),
     preconditioner_(0),
     ht_rinv_h_(0), obs_num_(0), analysis_variances_(0), minimal_required_obs_number_(0),
     rank_(odb.distribution()->rank()) {

@@ -43,6 +43,7 @@
 #include "ufo/filters/QCmanager.h"
 #include "ufo/filters/SatName.h"
 #include "ufo/filters/SatwindInversionCorrection.h"
+#include "ufo/filters/SpikeAndStepCheck.h"
 #include "ufo/filters/StuckCheck.h"
 #include "ufo/filters/TemporalThinning.h"
 #include "ufo/filters/Thinning.h"
@@ -50,8 +51,8 @@
 #include "ufo/filters/TrackCheckShip.h"
 #include "ufo/filters/VariableAssignment.h"
 #include "ufo/filters/VariableTransforms.h"
-#include "ufo/gnssro/QC/BackgroundCheckRONBAM.h"
-#include "ufo/gnssro/QC/ROobserror.h"
+#include "ufo/operators/gnssro/QC/BackgroundCheckRONBAM.h"
+#include "ufo/operators/gnssro/QC/ROobserror.h"
 
 #if defined(RTTOV_FOUND)
   #include "ufo/filters/rttovonedvarcheck/RTTOVOneDVarCheck.h"
@@ -134,6 +135,8 @@ void instantiateObsFilterFactory() {
              SatwindInversionCorrectionMaker("Satwind Inversion Correction");
   static oops::interface::FilterMaker<ObsTraits, TrackCheckShip>
            ShipTrackCheckMaker("Ship Track Check");
+  static oops::interface::FilterMaker<ObsTraits, SpikeAndStepCheck>
+           SpikeAndStepCheckMaker("Spike and Step Check");
   static oops::interface::FilterMaker<ObsTraits, StuckCheck>
            StuckCheckMaker("Stuck Check");
   static oops::interface::FilterMaker<ObsTraits, TemporalThinning>

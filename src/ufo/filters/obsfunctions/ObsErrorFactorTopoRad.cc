@@ -45,7 +45,7 @@ ObsErrorFactorTopoRad::ObsErrorFactorTopoRad(const eckit::LocalConfiguration & c
   // Get instrument and satellite from sensor
   std::string inst, sat;
   splitInstSat(sensor, inst, sat);
-  ASSERT(inst == "amsua" || inst == "atms" ||
+  ASSERT(inst == "amsua" || inst == "atms"    || inst == "mhs" ||
          inst == "iasi" || inst == "cris-fsr" || inst == "airs" || inst == "avhrr3");
 
   if (inst == "amsua" || inst == "atms") {
@@ -103,6 +103,17 @@ void ObsErrorFactorTopoRad::compute(const ObsFilterData & in,
         }
       }
     }
+  } else if (inst == "mhs") {
+    std::vector<float> tao_sfc(nlocs);
+    for (size_t ich = 0; ich < nchans; ++ich) {
+      for (size_t iloc = 0; iloc < nlocs; ++iloc) {
+        out[ich][iloc] = 1.0;
+        if (zsges[iloc] > 2000.0) {
+          float factor = 2000.0/zsges[iloc];
+          out[ich][iloc] = sqrt(1.0 / factor);
+        }
+      }
+    }
   } else if (inst == "amsua" || inst == "atms") {
     // Set channel numbers
     int ich238, ich314, ich503, ich528, ich536, ich544, ich549, ich890;
@@ -133,7 +144,7 @@ void ObsErrorFactorTopoRad::compute(const ObsFilterData & in,
         (qcflagdata[iloc] != 0) ? (factor = 0.0) : (factor = 1.0);
 
         if (zsges[iloc] > 2000.0) {
-          if (channel <= ich544 || channel == ich890) {
+          if (channel <= ich544 || channel >= ich890) {
             out[ichan][iloc] = (2000.0/zsges[iloc]) * factor;
           }
           if ((zsges[iloc] > 4000.0) && (channel == ich549)) {
@@ -146,7 +157,7 @@ void ObsErrorFactorTopoRad::compute(const ObsFilterData & in,
   } else {
     oops::Log::error() << "ObsErrorFactorTopoRad: Invalid instrument (sensor) specified: " << inst
                        << "  The valid instruments are: iasi, cris-fsr, airs, avhrr3, "
-                       << "  amsua and atms"
+                       << "  amsua, atms, and mhs."
                        << std::endl;
   }
 }
