@@ -5,9 +5,11 @@ observations:
 - obs space:
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
-    simulated variables: [air_temperature]
-    observed variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+    simulated variables: [airTemperature]
+    observed variables: [airTemperature]
   obs filters:
   - filter: Gaussian Thinning
     horizontal_mesh:   1111.949266 #km = 10 deg at equator
@@ -15,9 +17,11 @@ observations:
 - obs space:
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
-    simulated variables: [air_temperature]
-    observed variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+    simulated variables: [airTemperature]
+    observed variables: [airTemperature]
   obs filters:
   - filter: Gaussian Thinning
     horizontal_mesh:   1111.949266 #km = 10 deg at equator
@@ -27,9 +31,11 @@ observations:
 - obs space:
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
-    simulated variables: [air_temperature]
-    observed variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+    simulated variables: [airTemperature]
+    observed variables: [airTemperature]
   obs filters:
   - filter: Gaussian Thinning
     horizontal_mesh: -1
@@ -38,9 +44,11 @@ observations:
 - obs space:
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
-    simulated variables: [air_temperature]
-    observed variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
+    simulated variables: [airTemperature]
+    observed variables: [airTemperature]
   obs filters:
   - filter: Gaussian Thinning
     distance_norm: maximum
@@ -53,9 +61,9 @@ observations:
     time_min: 2018-04-14T20:52:30Z
     time_max: 2018-04-15T03:07:30Z
     category_variable:
-      name: round@MetaData
+      name: MetaData/round
     priority_variable:
-      name: priority@MetaData
+      name: MetaData/priority
   passedBenchmark: 91
   passedObservationsBenchmark:
     - 349
@@ -153,9 +161,11 @@ observations:
 - obs space:
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
-    simulated variables: [air_temperature]
-    observed variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
+    simulated variables: [airTemperature]
+    observed variables: [airTemperature]
   obs filters:
   - filter: Gaussian Thinning
     distance_norm: maximum
@@ -168,9 +178,9 @@ observations:
     time_min: 2018-04-14T20:52:30Z
     time_max: 2018-04-15T03:07:30Z
     category_variable:
-      name: id_and_round@MetaData
+      name: MetaData/id_and_round
     priority_variable:
-      name: priority@MetaData
+      name: MetaData/priority
   passedBenchmark: 451
   passedObservationsBenchmark:
     - 286
@@ -628,9 +638,11 @@ observations:
 - obs space:
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
-    simulated variables: [air_temperature]
-    observed variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
+    simulated variables: [airTemperature]
+    observed variables: [airTemperature]
   obs filters:
   - filter: Gaussian Thinning
     distance_norm: maximum
@@ -644,9 +656,9 @@ observations:
     time_min: 2018-04-14T20:52:30Z
     time_max: 2018-04-15T03:07:30Z
     category_variable:
-      name: round@MetaData
+      name: MetaData/round
     priority_variable:
-      name: priority@MetaData
+      name: MetaData/priority
   passedBenchmark: 145
   passedObservationsBenchmark: &regularSpatialGridPassedObsIds
     - 223
@@ -798,11 +810,13 @@ observations:
 - obs space:
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
       obsgrouping:
         group variables: [ "round" ]
-    simulated variables: [air_temperature]
-    observed variables: [air_temperature]
+    simulated variables: [airTemperature]
+    observed variables: [airTemperature]
   obs filters:
   - filter: Gaussian Thinning
     distance_norm: maximum
@@ -816,20 +830,22 @@ observations:
     time_min: 2018-04-14T20:52:30Z
     time_max: 2018-04-15T03:07:30Z
     category_variable:
-      name: round@MetaData
+      name: MetaData/round
     priority_variable:
-      name: priority@MetaData
+      name: MetaData/priority
   passedBenchmark: 145
   passedObservationsBenchmark: *regularSpatialGridPassedObsIds
 # Same as above; a variable other than the category variable used to group observations into records
 - obs space:
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
       obsgrouping:
         group variables: [ "priority" ]
-    simulated variables: [air_temperature]
-    observed variables: [air_temperature]
+    simulated variables: [airTemperature]
+    observed variables: [airTemperature]
   obs filters:
   - filter: Gaussian Thinning
     distance_norm: maximum
@@ -843,9 +859,9 @@ observations:
     time_min: 2018-04-14T20:52:30Z
     time_max: 2018-04-15T03:07:30Z
     category_variable:
-      name: round@MetaData
+      name: MetaData/round
     priority_variable:
-      name: priority@MetaData
+      name: MetaData/priority
   passedBenchmark: 145
   passedObservationsBenchmark: *regularSpatialGridPassedObsIds
 # Observations not grouped into records; inefficient distribution
@@ -854,9 +870,11 @@ observations:
     distribution:
       name: InefficientDistribution
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
-    simulated variables: [air_temperature]
-    observed variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
+    simulated variables: [airTemperature]
+    observed variables: [airTemperature]
   obs filters:
   - filter: Gaussian Thinning
     distance_norm: maximum
@@ -870,9 +888,9 @@ observations:
     time_min: 2018-04-14T20:52:30Z
     time_max: 2018-04-15T03:07:30Z
     category_variable:
-      name: round@MetaData
+      name: MetaData/round
     priority_variable:
-      name: priority@MetaData
+      name: MetaData/priority
   passedBenchmark: 145
   passedObservationsBenchmark: *regularSpatialGridPassedObsIds
 # Observations not grouped into records; halo distribution
@@ -880,10 +898,13 @@ observations:
     name: Aircraft
     distribution:
       name: Halo
+      halo size: 0
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
-    simulated variables: [air_temperature]
-    observed variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_thinning.nc4
+    simulated variables: [airTemperature]
+    observed variables: [airTemperature]
   obs filters:
   - filter: Gaussian Thinning
     distance_norm: maximum
@@ -897,8 +918,8 @@ observations:
     time_min: 2018-04-14T20:52:30Z
     time_max: 2018-04-15T03:07:30Z
     category_variable:
-      name: round@MetaData
+      name: MetaData/round
     priority_variable:
-      name: priority@MetaData
+      name: MetaData/priority
   passedBenchmark: 145
   passedObservationsBenchmark: *regularSpatialGridPassedObsIds

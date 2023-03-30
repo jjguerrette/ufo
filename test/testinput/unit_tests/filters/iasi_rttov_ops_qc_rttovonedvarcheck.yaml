@@ -60,48 +60,53 @@ observations:
     obs options: &rttov_options
       RTTOV_default_opts: UKMO_PS45
       SatRad_compatibility: true
-      Platform_Name: &platform_id METOP
-      Sat_ID: &satellite_id 1
+      WMO_ID: &wmo_id [3]
+      Sat_ID: &sat_id [metop_1]
       Instrument_Name: &instrument_id IASI
       CoefficientPath: &coefpath Data/
       RTTOV_GasUnitConv: &gasunitconv true
       UseRHwaterForQC: &UseRHwaterForQC true
       UseColdSurfaceCheck: &UseColdSurfaceCheck false
+      RTTOV_ScaleRefOzone: &RTTOV_ScaleRefOzone true
       RTTOV_clw_data: false
       RTTOV_profile_checkinput: true
   obs space:
     name: Test the hyperspectral retrievals
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/iasi_metopb_obs_2021011500.nc4
-    simulated variables: [brightness_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/iasi_metopb_obs_2021011500.nc4
+    simulated variables: [brightnessTemperature]
     channels: *all_channels
 #   obsdataout:
-#     obsfile: Data/iasi_metopb_obs_2021011500_qc_rttovonedvarcheck_out.nc4
+#     engine:
+#       type: H5File
+#       obsfile: Data/iasi_metopb_obs_2021011500_qc_rttovonedvarcheck_out.nc4
   geovals:
     filename: Data/ufo/testinput_tier_1/geovals_iasi_2021011500Z.nc4
   obs filters:
 ### No Channels ###
   - filter: BlackList
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: *all_channels
     where:
     - variable:
-        name: qcf_NoChannels@MetaData
+        name: MetaData/qcf_NoChannels
       is_in: 1
 ### BlackList ###
   - filter: BlackList
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: *1dvar_not_used
 ### Remove channels over land
   - filter: BlackList
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: *land_not_used
     where:
     - variable:
-        name: surface_type@MetaData
+        name: MetaData/surfaceQualifier
       is_in: 0
 ### 1D-Var check ###
   - filter: RTTOV OneDVar Check
@@ -113,15 +118,16 @@ observations:
         RTTOV_GasUnitConv: *gasunitconv
         UseRHwaterForQC: false
         UseColdSurfaceCheck: false
-        Platform_Name: *platform_id
-        Sat_ID: *satellite_id
+        RTTOV_ScaleRefOzone: *RTTOV_ScaleRefOzone
+        WMO_ID: *wmo_id
+        Sat_ID: *sat_id
         Instrument_Name: *instrument_id
         CoefficientPath: *coefpath
         RTTOV_clw_data: false
     BMatrix: ../resources/bmatrix/rttov/iasi_bmatrix_70_test.dat
     RMatrix: ../resources/rmatrix/rttov/iasi_metopb_rmatrix_test.nc4
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: *1dvarchannels
     retrieval variables from geovals:
     - air_temperature # 1
@@ -144,15 +150,15 @@ observations:
     surface emissivity:
       type: principalcomponent
       EmisEigVecPath: ../resources/auxillary/IASI_EmisEigenVec.dat
-  passedBenchmark: 537
+    RecalculateBT: true
+  passedBenchmark: 477
   compareVariables:
     - reference:
-        name: n_iterations@TestReference
+        name: TestReference/numberOfIterations
       test:
-        name: n_iterations@OneDVar
-  compareVariables:
+        name: OneDVar/numberOfIterations
     - reference:
-        name: cloud_top_pressure@TestReference
+        name: TestReference/pressureAtTopOfCloud
       test:
-        name: cloud_top_pressure@OneDVar
-      absTol: 1.0e-4
+        name: OneDVar/pressureAtTopOfCloud
+      absTol: 1.0e-2

@@ -7,15 +7,19 @@ observations:
   obs space:
     name: GnssroBnd
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/gnssro_obs_2018041500_m.nc4
-    simulated variables: [bending_angle]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/gnssro_obs_2018041500_m.nc4
+    simulated variables: [bendingAngle]
 #   obsdataout:
-#     obsfile: Data/gnssro_obs_2018041500_m_ropp1d_backgroundcheck_out.nc4
+#     engine:
+#       type: H5File
+#       obsfile: Data/gnssro_obs_2018041500_m_ropp1d_backgroundcheck_out.nc4
   geovals:
     filename: Data/ufo/testinput_tier_1/gnssro_geoval_2018041500_m.nc4
   obs filters:
   - filter: Background Check
     filter variables:
-    - name: bending_angle
+    - name: bendingAngle
     threshold: 3.0
   passedBenchmark: 149

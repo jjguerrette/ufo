@@ -1,7 +1,16 @@
 obs space:
   name: sst_viirs_npp
+  obsdatain:
+    engine:
+      type: H5File
+  obsdataout:
+    engine:
+      type: H5File
+      allow overwrite: true
+  io pool:
+    write multiple files: true
   _source: noaa_so025
-  simulated variables: [sea_surface_temperature]
+  simulated variables: [seaSurfaceTemperature]
 obs operator:
   name: Identity
 obs error:
@@ -9,7 +18,7 @@ obs error:
 obs filters:
   - filter: Domain Check
     where:
-    - variable: {name: sea_area_fraction@GeoVaLs}
+    - variable: {name: GeoVaLs/sea_area_fraction}
       minvalue: 0.9
   - filter: Bounds Check
     minvalue: -2.0
@@ -18,5 +27,5 @@ obs filters:
     threshold: 5.0
   - filter: Domain Check
     where:
-    - variable: {name: sea_surface_temperature@ObsError}
+    - variable: {name: ObsError/seaSurfaceTemperature}
       minvalue: 0.001

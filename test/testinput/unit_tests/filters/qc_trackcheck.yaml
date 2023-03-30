@@ -2,7 +2,7 @@
 # results obtained with the Met Office OPS code (Ops_AirTrackCheck). The first test case is used as
 # a baseline; in subsequent test cases the filter's configuration contains one parameter
 # whose value differs from the first case. The last two cases are identical to the first one
-# except that observations are grouped explicitly by the station_id variable rather than the
+# except that observations are grouped explicitly by the stationIdentification variable rather than the
 # record number.
 
 window begin: 2000-01-01T00:00:00Z
@@ -12,12 +12,16 @@ observations:
 - obs space:
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
+        group variables: [ "stationIdentification" ]
 #   obsdataout:
-#     obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out1.nc4
-    simulated variables: [specific_humidity]
+#     engine:
+#       type: H5File
+#       obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out1.nc4
+    simulated variables: [specificHumidity]
   obs filters:
   - filter: Track Check
     temporal_resolution: PT00H00M30S
@@ -27,7 +31,7 @@ observations:
     max_climb_rate:   200.000000
     max_speed_interpolation_points: {"0":  1000.000000, "20000":   400.000000, "100000":   200.000000, "110000":   200.000000}
     rejection_threshold:     0.500000
-    pressure_coordinate: air_pressure
+    pressure_coordinate: pressure
     pressure_group: MetaData
   flaggedObservationsBenchmark: &referenceCaseFlaggedObsIds
       - 184
@@ -71,12 +75,16 @@ observations:
 - obs space:
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
+        group variables: [ "stationIdentification" ]
 #   obsdataout:
-#     obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out2.nc4
-    simulated variables: [specific_humidity]
+#     engine:
+#       type: H5File
+#       obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out2.nc4
+    simulated variables: [specificHumidity]
   obs filters:
   - filter: Track Check
     temporal_resolution: PT00H00M30S
@@ -86,7 +94,7 @@ observations:
     max_climb_rate:   200.000000
     max_speed_interpolation_points: {"0":  1000.000000, "10000":   400.000000, "35000":   200.000000, "110000":   200.000000}
     rejection_threshold:     0.500000
-    pressure_coordinate: air_pressure
+    pressure_coordinate: pressure
     pressure_group: MetaData
   flaggedObservationsBenchmark:
       - 184
@@ -141,12 +149,16 @@ observations:
 - obs space:
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
+        group variables: [ "stationIdentification" ]
 #   obsdataout:
-#     obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out3.nc
-    simulated variables: [specific_humidity]
+#     engine:
+#       type: H5File
+#       obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out3.nc
+    simulated variables: [specificHumidity]
   obs filters:
   - filter: Track Check
     temporal_resolution: PT00H00M30S
@@ -156,7 +168,7 @@ observations:
     max_climb_rate:   200.000000
     max_speed_interpolation_points: {"0":  1000.000000, "20000":   275.000000, "100000":    20.000000, "110000":    20.000000}
     rejection_threshold:     0.500000
-    pressure_coordinate: air_pressure
+    pressure_coordinate: pressure
     pressure_group: MetaData
   flaggedObservationsBenchmark:
       - 184
@@ -214,12 +226,16 @@ observations:
 - obs space:
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
+        group variables: [ "stationIdentification" ]
 #   obsdataout:
-#     obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out4.nc
-    simulated variables: [specific_humidity]
+#     engine:
+#       type: H5File
+#       obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out4.nc
+    simulated variables: [specificHumidity]
   obs filters:
   - filter: Track Check
     temporal_resolution: PT00H00M30S
@@ -229,7 +245,7 @@ observations:
     max_climb_rate:   150.000000
     max_speed_interpolation_points: {"0":  1000.000000, "20000":   400.000000, "100000":   200.000000, "110000":   200.000000}
     rejection_threshold:     0.500000
-    pressure_coordinate: air_pressure
+    pressure_coordinate: pressure
     pressure_group: MetaData
   flaggedObservationsBenchmark:
       - 184
@@ -319,12 +335,16 @@ observations:
 - obs space:
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
+        group variables: [ "stationIdentification" ]
 #   obsdataout:
-#     obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out5.nc
-    simulated variables: [specific_humidity]
+#     engine:
+#       type: H5File
+#       obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out5.nc
+    simulated variables: [specificHumidity]
   obs filters:
   - filter: Track Check
     temporal_resolution: PT00H00M30S
@@ -334,7 +354,7 @@ observations:
     max_climb_rate:   200.000000
     max_speed_interpolation_points: {"0":  1000.000000, "20000":   400.000000, "100000":   200.000000, "110000":   200.000000}
     rejection_threshold:     0.500000
-    pressure_coordinate: air_pressure
+    pressure_coordinate: pressure
     pressure_group: MetaData
   flaggedObservationsBenchmark:
       - 188
@@ -376,12 +396,16 @@ observations:
 - obs space:
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
+        group variables: [ "stationIdentification" ]
 #   obsdataout:
-#     obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out6.nc
-    simulated variables: [specific_humidity]
+#     engine:
+#       type: H5File
+#       obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out6.nc
+    simulated variables: [specificHumidity]
   obs filters:
   - filter: Track Check
     temporal_resolution: PT00H00M45S
@@ -391,7 +415,7 @@ observations:
     max_climb_rate:   200.000000
     max_speed_interpolation_points: {"0":  1000.000000, "20000":   400.000000, "100000":   200.000000, "110000":   200.000000}
     rejection_threshold:     0.500000
-    pressure_coordinate: air_pressure
+    pressure_coordinate: pressure
     pressure_group: MetaData
   flaggedObservationsBenchmark:
       - 193
@@ -401,12 +425,16 @@ observations:
 - obs space:
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
+        group variables: [ "stationIdentification" ]
 #   obsdataout:
-#     obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out7.nc
-    simulated variables: [specific_humidity]
+#     engine:
+#       type: H5File
+#       obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out7.nc
+    simulated variables: [specificHumidity]
   obs filters:
   - filter: Track Check
     temporal_resolution: PT00H00M30S
@@ -416,7 +444,7 @@ observations:
     max_climb_rate:   200.000000
     max_speed_interpolation_points: {"0":  1000.000000, "20000":   400.000000, "100000":   200.000000, "110000":   200.000000}
     rejection_threshold:     0.500000
-    pressure_coordinate: air_pressure
+    pressure_coordinate: pressure
     pressure_group: MetaData
   flaggedObservationsBenchmark:
       - 188
@@ -458,12 +486,16 @@ observations:
 - obs space:
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
+        group variables: [ "stationIdentification" ]
 #   obsdataout:
-#     obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out8.nc
-    simulated variables: [specific_humidity]
+#     engine:
+#       type: H5File
+#       obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out8.nc
+    simulated variables: [specificHumidity]
   obs filters:
   - filter: Track Check
     temporal_resolution: PT00H00M30S
@@ -473,7 +505,7 @@ observations:
     max_climb_rate:   200.000000
     max_speed_interpolation_points: {"0":  1000.000000, "20000":   400.000000, "100000":   200.000000, "110000":   200.000000}
     rejection_threshold:     0.750000
-    pressure_coordinate: air_pressure
+    pressure_coordinate: pressure
     pressure_group: MetaData
   flaggedObservationsBenchmark:
       - 188
@@ -513,10 +545,14 @@ observations:
 - obs space: # No grouping into records
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
 #   obsdataout:
-#     obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out9.nc
-    simulated variables: [specific_humidity]
+#     engine:
+#       type: H5File
+#       obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out9.nc
+    simulated variables: [specificHumidity]
   obs filters:
   - filter: Track Check
     temporal_resolution: PT00H00M30S
@@ -527,8 +563,8 @@ observations:
     max_speed_interpolation_points: {"0":  1000.000000, "20000":   400.000000, "100000":   200.000000, "110000":   200.000000}
     rejection_threshold:     0.500000
     station_id_variable:
-      name: station_id@MetaData
-    pressure_coordinate: air_pressure
+      name: MetaData/stationIdentification
+    pressure_coordinate: pressure
     pressure_group: MetaData
   flaggedObservationsBenchmark: *referenceCaseFlaggedObsIds
   flaggedBenchmark: 36
@@ -536,12 +572,16 @@ observations:
 - obs space: # Group into records (perversely) by something else than the station ID
     name: Aircraft
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
       obsgrouping:
         group variables: [ "latitude" ]
 #   obsdataout:
-#     obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out10.nc4
-    simulated variables: [specific_humidity]
+#     engine:
+#       type: H5File
+#       obsfile: Data/aircraft_obs_2018041500_m_trackcheck_out10.nc4
+    simulated variables: [specificHumidity]
   obs filters:
   - filter: Track Check
     temporal_resolution: PT00H00M30S
@@ -552,8 +592,8 @@ observations:
     max_speed_interpolation_points: {"0":  1000.000000, "20000":   400.000000, "100000":   200.000000, "110000":   200.000000}
     rejection_threshold:     0.500000
     station_id_variable:
-      name: station_id@MetaData
-    pressure_coordinate: air_pressure
+      name: MetaData/stationIdentification
+    pressure_coordinate: pressure
     pressure_group: MetaData
   flaggedObservationsBenchmark: *referenceCaseFlaggedObsIds
   flaggedBenchmark: 36

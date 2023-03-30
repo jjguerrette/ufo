@@ -4,16 +4,21 @@ window end: 2018-04-15T03:30:00Z
 observations:
 - obs operator:
     name: VertInterp
-    vertical coordinate: air_pressure
+    observation alias file: ../resources/namemap/test_name_map.yaml
   obs space:
     name: Radiosonde
     distribution:
       name: Halo
+      halo size: 0
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/sondes_obs_2018041500_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/sondes_obs_2018041500_m.nc4
 #   obsdataout:
-#     obsfile: Data/sondes_obs_2018041500_m_preqc_halo_out.nc4
-    simulated variables: [air_temperature]
+#     engine:
+#       type: H5File
+#       obsfile: Data/sondes_obs_2018041500_m_preqc_halo_out.nc4
+    simulated variables: [airTemperature]
   geovals:
     filename: Data/ufo/testinput_tier_1/sondes_geoval_2018041500_m.nc4
   obs filters:
@@ -24,11 +29,16 @@ observations:
     name: amsua_n19
     distribution:
       name: Halo
+      halo size: 0
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/amsua_n19_obs_2018041500_m.nc4
 #   obsdataout:
-#     obsfile: Data/amsua_n19_obs_2018041500_m_preqc_halo_out.nc4
-    simulated variables: [brightness_temperature]
+#     engine:
+#       type: H5File
+#       obsfile: Data/amsua_n19_obs_2018041500_m_preqc_halo_out.nc4
+    simulated variables: [brightnessTemperature]
     channels: 4-8
   obs filters:
   - filter: PreQC

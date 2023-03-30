@@ -15,17 +15,21 @@ observations:
   obs space:
     name: amsua_n19
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/amsua_n19_obs_2018041500_m_miss_val.nc4
-    simulated variables: [brightness_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/amsua_n19_obs_2018041500_m_miss_val.nc4
+    simulated variables: [brightnessTemperature]
     channels: 1
 #   obsdataout:
-#     obsfile: Data/amsua_n19_obs_2018041500_m_miss_val_out.nc4
+#     engine:
+#       type: H5File
+#       obsfile: Data/amsua_n19_obs_2018041500_m_miss_val_out.nc4
   geovals:
     filename: Data/ufo/testinput_tier_1/amsua_n19_geoval_2018041500_m.nc4
   obs filters:
   - filter: Bounds Check
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: 1
     minvalue:  50.0
     maxvalue: 400.0

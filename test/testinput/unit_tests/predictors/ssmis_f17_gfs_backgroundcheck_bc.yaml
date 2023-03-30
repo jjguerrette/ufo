@@ -12,10 +12,14 @@ observations:
   obs space:
     name: ssmis_f17
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/instruments/radiance/ssmis_f17_obs_2020110112_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/instruments/radiance/ssmis_f17_obs_2020110112_m.nc4
 #   obsdataout:
-#     obsfile: Data/ssmis_f17_hofx_2020110112_crtm_opr_out.nc4
-    simulated variables: [brightness_temperature]
+#     engine:
+#       type: H5File
+#       obsfile: Data/ssmis_f17_hofx_2020110112_crtm_opr_out.nc4
+    simulated variables: [brightnessTemperature]
     channels: &channels 1-24
   geovals:
     filename: Data/ufo/testinput_tier_1/instruments/radiance/ssmis_f17_geoval_2020110112_m.nc4
@@ -42,23 +46,24 @@ observations:
         tlapse: *ssmis_f17_tlap
       - name: emissivity
       - name: scan_angle
-        var_name: scan_position
+        var_name: sensorScanPosition
         order: 4
       - name: scan_angle
-        var_name: scan_position
+        var_name: sensorScanPosition
         order: 3
       - name: scan_angle
-        var_name: scan_position
+        var_name: sensorScanPosition
         order: 2
       - name: scan_angle
-        var_name: scan_position
+        var_name: sensorScanPosition
   obs filters:
 #step1: Gross check using abs(O-B-bias)
   - filter: Background Check
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: *channels
     absolute threshold: 3.5
     action:
       name: reject
-  passedBenchmark: 1776
+# passedBenchmark: 1776 # crtm v2.3
+  passedBenchmark: 1781 # crtm v2.4

@@ -9,7 +9,7 @@
 
 cmake_minimum_required( VERSION 3.12 )
 
-project( ufo VERSION 1.3.0 LANGUAGES C CXX Fortran )
+project( ufo VERSION 1.5.0 LANGUAGES C CXX Fortran )
 
 ## Ecbuild integration
 find_package( ecbuild 3.3.2 REQUIRED )
@@ -101,6 +101,13 @@ else( ${geos-aero_FOUND} )
     message(STATUS "GEOS-AERO NOT FOUND: Excluding  AOD operator from GEOS")
 endif( ${geos-aero_FOUND} )
 
+# OASIM
+find_package( oasim QUIET )
+if( ${oasim_FOUND} )
+    message(STATUS "OASIM FOUND; Including Ocean Atmosphere Spectral Irradiance Model")
+else( ${oasim_FOUND} )
+    message(STATUS "OASIM NOT FOUND: Excluding Ocean Atmosphere Spectral Irradiance Model")
+endif( ${oasim_FOUND} )
 ################################################################################
 # Sources
 ################################################################################

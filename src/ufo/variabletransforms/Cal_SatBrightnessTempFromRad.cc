@@ -76,21 +76,25 @@ void Cal_SatBrightnessTempFromRad::runTransform(const std::vector<bool> &apply) 
           switch (parameters_.radianceUnits.value()) {
             case RadianceUnits::WAVENUMBER: {
               bt = formulas::inversePlanck(static_cast<double>(radiance[ichan][iloc]),
-                                           static_cast<double>(spectralVariable[ichan][iloc]));
+                                           static_cast<double>(spectralVariable[ichan][iloc]),
+                                           parameters_.planck1.value(),
+                                           parameters_.planck2.value());
               break;
             }
             case RadianceUnits::FREQUENCY: {
               double freq = static_cast<double>(spectralVariable[ichan][iloc]);
               double wvn = freq / Constants::speedOfLight;  // Hz to m-1
               double rad = static_cast<double>(radiance[ichan][iloc]) * freq / wvn;
-              bt = formulas::inversePlanck(rad, wvn);
+              bt = formulas::inversePlanck(rad, wvn, parameters_.planck1.value(),
+                                           parameters_.planck2.value());
               break;
             }
             case RadianceUnits::WAVELENGTH: {
               double wvl = static_cast<double>(spectralVariable[ichan][iloc]);
               double wvn = 1.0e6 / wvl;  // microns to m-1
               double rad = static_cast<double>(radiance[ichan][iloc]) * wvl / wvn;
-              bt = formulas::inversePlanck(rad, wvn);
+              bt = formulas::inversePlanck(rad, wvn, parameters_.planck1.value(),
+                                           parameters_.planck2.value());
               break;
             }
           }
@@ -108,7 +112,7 @@ void Cal_SatBrightnessTempFromRad::runTransform(const std::vector<bool> &apply) 
 
   //  Write out the resulting data to Derived group and update qcflags
   for (size_t ichan =0; ichan < nvars; ++ichan) {
-    putObservation("brightness_temperature_" + std::to_string(channels_[ichan]),
+    putObservation("brightnessTemperature_" + std::to_string(channels_[ichan]),
                    brightnessTemperature[ichan]);
   }
 }  // runTransform

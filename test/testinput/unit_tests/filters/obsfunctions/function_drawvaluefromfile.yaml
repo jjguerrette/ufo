@@ -3,21 +3,23 @@ window end: 2030-01-01T00:00:00Z
 
 observations:
 
-# 1. Tests of DrawValueFromFile@IntObsFunction using a CSV input file
+# 1. Tests of IntObsFunction/DrawValueFromFile using a CSV input file
 
 - obs space: &ObsSpace
     name: Map a string variable to an int result by exact matching (with a fallback value), CSV
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@IntObsFunction
+    name: IntObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.csv
       group: IntResult
       interpolation:
       # ["ABC", "DEF", "GHI", "JKL", "MNO"]
-      - name: string_variable_1@MetaData
+      - name: MetaData/string_variable_1
         method: exact
     # Variable from the TestReference group storing the reference result,
     # [1, 75, 75, 75, 5]
@@ -27,13 +29,13 @@ observations:
     <<: *ObsSpace
     name: Map an int variable to an int result by nearest-neighbor matching, CSV
   obs function:
-    name: DrawValueFromFile@IntObsFunction
+    name: IntObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.csv
       group: IntResult
       interpolation:
       # [1, 2, 3, 4, 5]
-      - name: int_variable_1@MetaData
+      - name: MetaData/int_variable_1
         method: nearest
     # Variable from the TestReference group storing the reference result,
     # [1, 75, 75, 75, 5]
@@ -41,15 +43,48 @@ observations:
 
 - obs space: &ObsSpace
     <<: *ObsSpace
+    name: Demonstrate the default nearest behaviour with first for equidistant choice.
+  obs function:
+    name: IntObsFunction/DrawValueFromFile
+    options:
+      file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.csv
+      group: IntResult
+      interpolation:
+      # [3.0, 4.5, 6.0, 7.5, 9.0]
+      - name: MetaData/float_variable_1
+        method: nearest
+    # Variable from the TestReference group storing the reference result,
+    # [1, 75, 75, 75, 5]
+    variables: [assigned_int_variable_1]
+
+- obs space: &ObsSpace
+    <<: *ObsSpace
+    name: Demonstrate the nearest behaviour when highest tiebreak match is selected
+  obs function:
+    name: IntObsFunction/DrawValueFromFile
+    options:
+      file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.csv
+      group: IntResult
+      interpolation:
+      # [3.0, 4.5, 6.0, 7.5, 9.0]
+      - name: MetaData/float_variable_1
+        method: nearest
+        equidistant choice: last
+    # Variable from the TestReference group storing the reference result,
+    # [75, 75, 75, 5, 5]
+    variables: [assigned_int_variable_5]
+
+- obs space: &ObsSpace
+    <<: *ObsSpace
     name: Map a float variable to an int result by least-upper-bound matching, CSV
   obs function:
-    name: DrawValueFromFile@IntObsFunction
+    name: IntObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.csv
       group: IntResult
       interpolation:
       # [-2.5, -1.25, 0, 1.25, 2.5]
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: least upper bound
     # Variable from the TestReference group storing the reference result,
     # [1, 75, 75, 75, 5]
@@ -59,13 +94,13 @@ observations:
     <<: *ObsSpace
     name: Map a float variable to an int result by greatest-lower-bound matching, CSV
   obs function:
-    name: DrawValueFromFile@IntObsFunction
+    name: IntObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.csv
       group: IntResult
       interpolation:
       # [11.25, 12.25, 13.5, 14.75, 15.75]
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: least upper bound
     # Variable from the TestReference group storing the reference result,
     # [1, 75, 75, 75, 5]
@@ -75,13 +110,13 @@ observations:
     <<: *ObsSpace
     name: Attempt to use linear interpolation to extract an int variable
   obs function:
-    name: DrawValueFromFile@IntObsFunction
+    name: IntObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.csv
       group: IntResult
       interpolation:
       # [11.25, 12.25, 13.5, 14.75, 15.75]
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: linear
     variables: [assigned_string_variable_1]
   expect compute to throw exception with message: Linear interpolation can be used when extracting floating-point values, but not integers or strings
@@ -90,33 +125,35 @@ observations:
     <<: *ObsSpace
     name: Attempt to produce integers from a payload column of type string
   obs function:
-    name: DrawValueFromFile@IntObsFunction
+    name: IntObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.csv
       group: StringResult
       interpolation:
       # [11.25, 12.25, 13.5, 14.75, 15.75]
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: linear
     variables: [assigned_string_variable_1]
   expect compute to throw exception with message: The payload column must contain numeric data
 
 
-# 2. Tests of DrawValueFromFile@StringObsFunction using a CSV input file
+# 2. Tests of StringObsFunction/DrawValueFromFile using a CSV input file
 
 - obs space: &ObsSpace
     name: Map a string variable to a string result by exact matching (with a fallback value), CSV
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@StringObsFunction
+    name: StringObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.csv
       group: StringResult
       interpolation:
       # ["ABC", "DEF", "GHI", "JKL", "MNO"]
-      - name: string_variable_1@MetaData
+      - name: MetaData/string_variable_1
         method: exact
     # Variable from the TestReference group storing the reference result,
     # ["ABC", "XYZ", "XYZ", "XYZ", "MNO"]
@@ -126,13 +163,13 @@ observations:
     <<: *ObsSpace
     name: Map an int variable to a string result by nearest-neighbor matching, CSV
   obs function:
-    name: DrawValueFromFile@StringObsFunction
+    name: StringObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.csv
       group: StringResult
       interpolation:
       # [1, 2, 3, 4, 5]
-      - name: int_variable_1@MetaData
+      - name: MetaData/int_variable_1
         method: nearest
     # Variable from the TestReference group storing the reference result,
     # ["ABC", "XYZ", "XYZ", "XYZ", "MNO"]
@@ -142,13 +179,13 @@ observations:
     <<: *ObsSpace
     name: Map a float variable to a string result by least-upper-bound matching, CSV
   obs function:
-    name: DrawValueFromFile@StringObsFunction
+    name: StringObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.csv
       group: StringResult
       interpolation:
       # [-2.5, -1.25, 0, 1.25, 2.5]
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: least upper bound
     # Variable from the TestReference group storing the reference result,
     # ["ABC", "XYZ", "XYZ", "XYZ", "MNO"]
@@ -158,13 +195,13 @@ observations:
     <<: *ObsSpace
     name: Map a float variable to a string result by greatest-lower-bound matching, CSV
   obs function:
-    name: DrawValueFromFile@StringObsFunction
+    name: StringObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.csv
       group: StringResult
       interpolation:
       # [11.25, 12.25, 13.5, 14.75, 15.75]
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: least upper bound
     # Variable from the TestReference group storing the reference result,
     # ["ABC", "XYZ", "XYZ", "XYZ", "MNO"]
@@ -174,13 +211,13 @@ observations:
     <<: *ObsSpace
     name: Attempt to use linear interpolation to extract a string variable
   obs function:
-    name: DrawValueFromFile@StringObsFunction
+    name: StringObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.csv
       group: StringResult
       interpolation:
       # [11.25, 12.25, 13.5, 14.75, 15.75]
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: linear
     variables: [assigned_string_variable_1]
   expect compute to throw exception with message: Linear interpolation can be used when extracting floating-point values, but not integers or strings
@@ -189,32 +226,34 @@ observations:
     <<: *ObsSpace
     name: Attempt to produce strings from a payload column of type int
   obs function:
-    name: DrawValueFromFile@StringObsFunction
+    name: StringObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.csv
       group: IntResult
       interpolation:
       # [11.25, 12.25, 13.5, 14.75, 15.75]
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: linear
     variables: [assigned_string_variable_1]
   expect compute to throw exception with message: The payload column must contain strings or datetimes
 
-# 3. Tests of DrawValueFromFile@IntObsFunction using a NetCDF input file
+# 3. Tests of IntObsFunction/DrawValueFromFile using a NetCDF input file
 
 - obs space: &ObsSpace
     name: Map a string variable to an int result by exact matching (with a fallback value), NetCDF
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@IntObsFunction
+    name: IntObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.nc
       group: IntResult
       interpolation:
       # ["ABC", "DEF", "GHI", "JKL", "MNO"]
-      - name: string_variable_1@MetaData
+      - name: MetaData/string_variable_1
         method: exact
     # Variable from the TestReference group storing the reference result,
     # [1, 75, 75, 75, 5]
@@ -224,13 +263,13 @@ observations:
     <<: *ObsSpace
     name: Map an int variable to an int result by nearest-neighbor matching, NetCDF
   obs function:
-    name: DrawValueFromFile@IntObsFunction
+    name: IntObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.nc
       group: IntResult
       interpolation:
       # [1, 2, 3, 4, 5]
-      - name: int_variable_1@MetaData
+      - name: MetaData/int_variable_1
         method: nearest
     # Variable from the TestReference group storing the reference result,
     # [1, 75, 75, 75, 5]
@@ -240,13 +279,13 @@ observations:
     <<: *ObsSpace
     name: Map a float variable to an int result by least-upper-bound matching, NetCDF
   obs function:
-    name: DrawValueFromFile@IntObsFunction
+    name: IntObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.nc
       group: IntResult
       interpolation:
       # [-2.5, -1.25, 0, 1.25, 2.5]
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: least upper bound
     # Variable from the TestReference group storing the reference result,
     # [1, 75, 75, 75, 5]
@@ -256,13 +295,13 @@ observations:
     <<: *ObsSpace
     name: Map a float variable to an int result by greatest-lower-bound matching, NetCDF
   obs function:
-    name: DrawValueFromFile@IntObsFunction
+    name: IntObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.nc
       group: IntResult
       interpolation:
       # [11.25, 12.25, 13.5, 14.75, 15.75]
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: least upper bound
     # Variable from the TestReference group storing the reference result,
     # [1, 75, 75, 75, 5]
@@ -272,13 +311,13 @@ observations:
     <<: *ObsSpace
     name: Attempt to use linear interpolation to extract an int variable, NetCDF
   obs function:
-    name: DrawValueFromFile@IntObsFunction
+    name: IntObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.nc
       group: IntResult
       interpolation:
       # [11.25, 12.25, 13.5, 14.75, 15.75]
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: linear
     variables: [assigned_string_variable_1]
   expect compute to throw exception with message: Linear interpolation can be used when extracting floating-point values, but not integers or strings
@@ -286,17 +325,19 @@ observations:
 - obs space: &ObsSpace
     name: Attempt to use bilinear interpolation involving an int payload
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@IntObsFunction
+    name: IntObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced.nc
       group: IntResult2D
       interpolation:
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: bilinear
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: bilinear
     variables: [assigned_float_variable_bilin]
   expect compute to throw exception with message: Bilinear interpolation can be used when extracting floating-point values, but not integers or strings
@@ -304,38 +345,42 @@ observations:
 - obs space: &ObsSpace
     name: Payload array with scalar coordinates.
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@IntObsFunction
+    name: IntObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced5.nc
       group: IntResult2D
       interpolation:
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: nearest
         extrapolation mode: nearest
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: nearest
     variables: [assigned_int_variable_3]
     tolerance: 1.0e-6
 
 
-# 4. Tests of DrawValueFromFile@StringObsFunction using a NetCDF input file
+# 4. Tests of StringObsFunction/DrawValueFromFile using a NetCDF input file
 
 - obs space: &ObsSpace
     name: Map a string variable to a string result by exact matching (with a fallback value), NetCDF
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@StringObsFunction
+    name: StringObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.nc
       group: StringResult
       interpolation:
       # ["ABC", "DEF", "GHI", "JKL", "MNO"]
-      - name: string_variable_1@MetaData
+      - name: MetaData/string_variable_1
         method: exact
     # Variable from the TestReference group storing the reference result,
     # ["ABC", "XYZ", "XYZ", "XYZ", "MNO"]
@@ -345,13 +390,13 @@ observations:
     <<: *ObsSpace
     name: Map an int variable to a string result by nearest-neighbor matching, NetCDF
   obs function:
-    name: DrawValueFromFile@StringObsFunction
+    name: StringObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.nc
       group: StringResult
       interpolation:
       # [1, 2, 3, 4, 5]
-      - name: int_variable_1@MetaData
+      - name: MetaData/int_variable_1
         method: nearest
     # Variable from the TestReference group storing the reference result,
     # ["ABC", "XYZ", "XYZ", "XYZ", "MNO"]
@@ -361,13 +406,13 @@ observations:
     <<: *ObsSpace
     name: Map a float variable to a string result by least-upper-bound matching, NetCDF
   obs function:
-    name: DrawValueFromFile@StringObsFunction
+    name: StringObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.nc
       group: StringResult
       interpolation:
       # [-2.5, -1.25, 0, 1.25, 2.5]
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: least upper bound
     # Variable from the TestReference group storing the reference result,
     # ["ABC", "XYZ", "XYZ", "XYZ", "MNO"]
@@ -377,13 +422,13 @@ observations:
     <<: *ObsSpace
     name: Map a float variable to a string result by greatest-lower-bound matching, NetCDF
   obs function:
-    name: DrawValueFromFile@StringObsFunction
+    name: StringObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.nc
       group: StringResult
       interpolation:
       # [11.25, 12.25, 13.5, 14.75, 15.75]
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: least upper bound
     # Variable from the TestReference group storing the reference result,
     # ["ABC", "XYZ", "XYZ", "XYZ", "MNO"]
@@ -393,13 +438,13 @@ observations:
     <<: *ObsSpace
     name: Attempt to use linear interpolation to extract a string variable
   obs function:
-    name: DrawValueFromFile@StringObsFunction
+    name: StringObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.nc
       group: StringResult
       interpolation:
       # [11.25, 12.25, 13.5, 14.75, 15.75]
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: linear
     variables: [assigned_string_variable_1]
   expect compute to throw exception with message: Linear interpolation can be used when extracting floating-point values, but not integers or strings
@@ -407,37 +452,41 @@ observations:
 - obs space: &ObsSpace
     name: Attempt to use bilinear interpolation involving a string payload
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@StringObsFunction
+    name: StringObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced.nc
       group: StringResult2D
       interpolation:
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: bilinear
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: bilinear
     variables: [assigned_float_variable_bilin_0]
   expect compute to throw exception with message: Bilinear interpolation can be used when extracting floating-point values, but not integers or strings
 
-# 5. Tests of DrawValueFromFile@ObsFunction (float) using a NetCDF input file
+# 5. Tests of ObsFunction/DrawValueFromFile (float) using a NetCDF input file
 
 - obs space: &ObsSpace
     name: Attempt to use bilinear interpolation to extract a float variable
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced.nc
       group: FloatResult2D
       interpolation:
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: bilinear
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: bilinear
     variables: [assigned_float_variable_bilin_0]
     tolerance: 1.0e-6
@@ -445,17 +494,19 @@ observations:
 - obs space: &ObsSpace
     name: Attempt to use bilinear interpolation not as the final calls
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced.nc
       group: FloatResult2D
       interpolation:
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: bilinear
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: nearest
     variables: [assigned_float_variable_bilin_0]
   expect constructor to throw exception with message: Bilinear interpolation can only be supplied as the final two arguments
@@ -463,17 +514,19 @@ observations:
 - obs space: &ObsSpace
     name: Attempt to use bilinear interpolation with only one variable
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced.nc
       group: FloatResult2D
       interpolation:
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: nearest
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: bilinear
     variables: [assigned_float_variable_bilin_0]
   expect constructor to throw exception with message: Bilinear interpolation requires two variables
@@ -481,17 +534,19 @@ observations:
 - obs space: &ObsSpace
     name: Attempt to use linear interpolation not as the final argument
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced.nc
       group: FloatResult2D
       interpolation:
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: linear
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: nearest
     variables: [assigned_float_variable_bilin_0]
   expect constructor to throw exception with message: Linear interpolation can only be supplied as the very last argument
@@ -499,37 +554,41 @@ observations:
 - obs space: &ObsSpace
     name: Attempt to use linear interpolation more than one variable
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced.nc
       group: FloatResult2D
       interpolation:
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: linear
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: linear
     variables: [assigned_float_variable_bilin_0]
-  expect constructor to throw exception with message: Linear interpolation can only be supplied as the very last argument
+  expect constructor to throw exception with message: Linear interpolation requires one variable
 
 - obs space: &ObsSpace
     name: 3D payload array with bilinear interpolation
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
       group: FloatResult2D
       interpolation:
-      - name: int_variable_1@MetaData
+      - name: MetaData/int_variable_1
         method: nearest
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: bilinear
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: bilinear
     variables: [assigned_float_variable_bilin_0]
     tolerance: 1.0e-6
@@ -537,19 +596,21 @@ observations:
 - obs space: &ObsSpace
     name: 3D payload array with bilinear interpolation alt. mapping
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
       group: FloatResult2D
       interpolation:
-      - name: int_variable_1@MetaData
+      - name: MetaData/int_variable_1
         method: nearest
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: bilinear
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: bilinear
     variables: [assigned_float_variable_bilin_0]
     tolerance: 1.0e-6
@@ -557,19 +618,21 @@ observations:
 - obs space: &ObsSpace
     name: 3D payload array with linear interpolation
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
       group: FloatResult2D
       interpolation:
-      - name: int_variable_1@MetaData
+      - name: MetaData/int_variable_1
         method: nearest
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: nearest
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: linear
     variables: [assigned_float_variable_lin_0]
     tolerance: 1.0e-6
@@ -577,19 +640,21 @@ observations:
 - obs space: &ObsSpace
     name: 3D payload array with linear interpolation coordinate mapped to the final dimension
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
       group: FloatResult2D
       interpolation:
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: nearest
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: nearest
-      - name: int_variable_1@MetaData
+      - name: MetaData/int_variable_1
         method: linear
     variables: [assigned_float_variable_lin_1]
     tolerance: 1.0e-6
@@ -597,38 +662,42 @@ observations:
 - obs space: &ObsSpace
     name: 3D payload array with bilinear interpolation coords mapped to the final two dimensions
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
       group: FloatResult2D
       interpolation:
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: nearest
-      - name: int_variable_1@MetaData
+      - name: MetaData/int_variable_1
         method: bilinear
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: bilinear
     variables: [assigned_float_variable_bilin_1]
     tolerance: 1.0e-6
 
-# 6. Tests of DrawValueFromFile@ObsFunction out-of-bounds
+# 6. Tests of ObsFunction/DrawValueFromFile out-of-bounds
 
 - obs space: &ObsSpace
     name: "'exact' method with default extrapolation"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_extrap.nc
       group: FloatResult
       interpolation:
       # [3, 4.5, 6, 7.5, 9 ]
-      - name: float_variable_2@MetaData
+      - name: MetaData/float_variable_2
         method: exact
     variables: [assigned_float_variable_exact]
   expect compute to throw exception with message: "No match found for exact match extraction of value '-10' of the variable 'MetaData/float_variable_2'"
@@ -636,16 +705,18 @@ observations:
 - obs space: &ObsSpace
     name: "'exact' method with 'error' extrapolation"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_extrap.nc
       group: FloatResult
       interpolation:
       # [3, 4.5, 6, 7.5, 9 ]
-      - name: float_variable_2@MetaData
+      - name: MetaData/float_variable_2
         method: exact
         extrapolation mode: error
     variables: [assigned_float_variable_exact]
@@ -654,16 +725,18 @@ observations:
 - obs space: &ObsSpace
     name: "Unrecognised extrapolation mode"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_extrap.nc
       group: FloatResult
       interpolation:
       # [3, 4.5, 6, 7.5, 9 ]
-      - name: float_variable_2@MetaData
+      - name: MetaData/float_variable_2
         method: exact
         extrapolation mode: dummy
     variables: [assigned_float_variable_exact]
@@ -672,16 +745,18 @@ observations:
 - obs space: &ObsSpace
     name: "'exact' method with 'nearest' extrapolation"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_extrap.nc
       group: FloatResult
       interpolation:
       # [3, 4.5, 6, 7.5, 9 ]
-      - name: float_variable_2@MetaData
+      - name: MetaData/float_variable_2
         method: exact
         extrapolation mode: nearest
     variables: [assigned_float_variable_exact]
@@ -690,16 +765,18 @@ observations:
 - obs space: &ObsSpace
     name: "'exact' method with 'missing' extrapolation"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_extrap.nc
       group: FloatResult
       interpolation:
       # [3, 4.5, 6, 7.5, 9 ]
-      - name: float_variable_2@MetaData
+      - name: MetaData/float_variable_2
         method: exact
         extrapolation mode: missing
     variables: [assigned_float_variable_exact]
@@ -708,16 +785,18 @@ observations:
 - obs space: &ObsSpace
     name: "'nearest' method with default extrapolation"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_extrap.nc
       group: FloatResult
       interpolation:
       # [3, 4.5, 6, 7.5, 9 ]
-      - name: float_variable_2@MetaData
+      - name: MetaData/float_variable_2
         method: nearest
     variables: [assigned_float_variable_exact]
   expect compute to throw exception with message: "No match found for 'nearest' extraction of value '-10' of the variable 'MetaData/float_variable_2'.  Value is out of bounds.  Consider using extrapolation."
@@ -725,16 +804,18 @@ observations:
 - obs space: &ObsSpace
     name: "'nearest' method with 'error' extrapolation"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_extrap.nc
       group: FloatResult
       interpolation:
       # [3, 4.5, 6, 7.5, 9 ]
-      - name: float_variable_2@MetaData
+      - name: MetaData/float_variable_2
         method: nearest
         extrapolation mode: error
     variables: [assigned_float_variable_nearest]
@@ -743,16 +824,18 @@ observations:
 - obs space: &ObsSpace
     name: "'nearest' method with 'nearest' extrapolation"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_extrap.nc
       group: FloatResult
       interpolation:
       # [3, 4.5, 6, 7.5, 9 ]
-      - name: float_variable_2@MetaData
+      - name: MetaData/float_variable_2
         method: nearest
         extrapolation mode: nearest
     # Variable from the TestReference group storing the reference result,
@@ -763,16 +846,18 @@ observations:
 - obs space: &ObsSpace
     name: "'nearest' method with 'missing' extrapolation"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_extrap.nc
       group: FloatResult
       interpolation:
       # [3, 4.5, 6, 7.5, 9 ]
-      - name: float_variable_2@MetaData
+      - name: MetaData/float_variable_2
         method: nearest
         extrapolation mode: missing
     # Variable from the TestReference group storing the reference result,
@@ -783,16 +868,18 @@ observations:
 - obs space: &ObsSpace
     name: "'linear' method with default extrapolation"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_extrap.nc
       group: FloatResult
       interpolation:
       # [3, 4.5, 6, 7.5, 9 ]
-      - name: float_variable_2@MetaData
+      - name: MetaData/float_variable_2
         method: linear
     variables: [assigned_float_variable_exact]
     tolerance: 1.0e-6
@@ -801,16 +888,18 @@ observations:
 - obs space: &ObsSpace
     name: "'linear' method with 'error' extrapolation"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_extrap.nc
       group: FloatResult
       interpolation:
       # [3, 4.5, 6, 7.5, 9 ]
-      - name: float_variable_2@MetaData
+      - name: MetaData/float_variable_2
         method: linear
         extrapolation mode: error
     variables: [assigned_float_variable_nearest]
@@ -820,16 +909,18 @@ observations:
 - obs space: &ObsSpace
     name: "'linear' method with 'nearest' extrapolation"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_extrap.nc
       group: FloatResult
       interpolation:
       # [3, 4.5, 6, 7.5, 9 ]
-      - name: float_variable_2@MetaData
+      - name: MetaData/float_variable_2
         method: linear
         extrapolation mode: nearest
     # Variable from the TestReference group storing the reference result,
@@ -840,16 +931,18 @@ observations:
 - obs space: &ObsSpace
     name: "'linear' method with 'missing' extrapolation"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_extrap.nc
       group: FloatResult
       interpolation:
       # [3, 4.5, 6, 7.5, 9 ]
-      - name: float_variable_2@MetaData
+      - name: MetaData/float_variable_2
         method: linear
         extrapolation mode: missing
     # Variable from the TestReference group storing the reference result,
@@ -860,19 +953,21 @@ observations:
 - obs space: &ObsSpace
     name: "'bilinear' method with default extrapolation, first var"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
       group: FloatResult2D
       interpolation:
-      - name: int_variable_1@MetaData
+      - name: MetaData/int_variable_1
         method: nearest
-      - name: float_variable_1@MetaData
+      - name: MetaData/float_variable_1
         method: bilinear
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: bilinear
     variables: [assigned_float_variable_exact]
   expect compute to throw exception with message: "No match found for 'bilinear' interpolation of value '3' of the variable 'MetaData/float_variable_1'.  Value is out of bounds.  Consider using extrapolation."
@@ -880,20 +975,22 @@ observations:
 - obs space: &ObsSpace
     name: "'bilinear' method with 'error' extrapolation, first var"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
       group: FloatResult2D
       interpolation:
-      - name: int_variable_1@MetaData
+      - name: MetaData/int_variable_1
         method: nearest
-      - name: float_variable_1@MetaData
+      - name: MetaData/float_variable_1
         method: bilinear
         extrapolation mode: error
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: bilinear
     variables: [assigned_float_variable_exact]
   expect compute to throw exception with message: "No match found for 'bilinear' interpolation of value '3' of the variable 'MetaData/float_variable_1'.  Value is out of bounds.  Consider using extrapolation."
@@ -901,19 +998,21 @@ observations:
 - obs space: &ObsSpace
     name: "'bilinear' method with default extrapolation, second var"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
       group: FloatResult2D
       interpolation:
-      - name: int_variable_1@MetaData
+      - name: MetaData/int_variable_1
         method: nearest
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: bilinear
-      - name: float_variable_2@MetaData
+      - name: MetaData/float_variable_2
         method: bilinear
     variables: [assigned_float_variable_exact]
   expect compute to throw exception with message: "No match found for 'bilinear' interpolation of value '-10' of the variable 'MetaData/float_variable_2'.  Value is out of bounds.  Consider using extrapolation."
@@ -921,19 +1020,21 @@ observations:
 - obs space: &ObsSpace
     name: "'bilinear' method with 'nearest' extrapolation second var"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
       group: FloatResult2D
       interpolation:
-      - name: int_variable_1@MetaData
+      - name: MetaData/int_variable_1
         method: nearest
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: bilinear
-      - name: float_variable_2@MetaData
+      - name: MetaData/float_variable_2
         method: bilinear
         extrapolation mode: nearest
     variables: [assigned_float_variable_outofbounds_nearest_2d]
@@ -942,19 +1043,21 @@ observations:
 - obs space: &ObsSpace
     name: "'bilinear' method with 'missing' extrapolation second var"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
       group: FloatResult2D
       interpolation:
-      - name: int_variable_1@MetaData
+      - name: MetaData/int_variable_1
         method: nearest
-      - name: latitude@MetaData
+      - name: MetaData/latitude
         method: bilinear
-      - name: float_variable_2@MetaData
+      - name: MetaData/float_variable_2
         method: bilinear
         extrapolation mode: missing
     variables: [assigned_float_variable_outofbounds_missing]
@@ -963,20 +1066,22 @@ observations:
 - obs space: &ObsSpace
     name: "'bilinear' method with 'missing' extrapolation, first var"
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
       group: FloatResult2D
       interpolation:
-      - name: int_variable_1@MetaData
+      - name: MetaData/int_variable_1
         method: nearest
-      - name: float_variable_1@MetaData
+      - name: MetaData/float_variable_1
         method: bilinear
         extrapolation mode: missing
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: bilinear
     variables: [assigned_float_variable_outofbounds_missing]
     tolerance: 1.0e-6
@@ -984,20 +1089,348 @@ observations:
 - obs space: &ObsSpace
     name: match based approach, early return of missing (extrapolation missing).
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
   obs function:
-    name: DrawValueFromFile@ObsFunction
+    name: ObsFunction/DrawValueFromFile
     options:
       file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
       group: FloatResult2D
       interpolation:
-      - name: int_variable_1@MetaData
+      - name: MetaData/int_variable_1
         method: nearest
-      - name: float_variable_1@MetaData
+      - name: MetaData/float_variable_1
         method: nearest
         extrapolation mode: missing
-      - name: longitude@MetaData
+      - name: MetaData/longitude
         method: nearest
     variables: [assigned_float_variable_outofbounds_missing]
     tolerance: 1.0e-6
+
+- obs space: &ObsSpace
+    name: 3D payload array with trilinear interpolation
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
+  obs function:
+    name: ObsFunction/DrawValueFromFile
+    options:
+      file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
+      group: FloatResult2D
+      interpolation:
+      - name: MetaData/latitude
+        method: trilinear
+        coordinate transformation: none
+      - name: MetaData/pressure
+        method: trilinear
+        coordinate transformation: none
+      - name: MetaData/longitude
+        method: trilinear
+        coordinate transformation: none
+    variables: [assigned_float_variable_trilin]
+    tolerance: 1.0e-6
+
+- obs space: &ObsSpace
+    name: 3D payload array with trilinear interpolation, log-linear in pressure
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
+  obs function:
+    name: ObsFunction/DrawValueFromFile
+    options:
+      file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
+      group: FloatResult2D
+      interpolation:
+      - name: MetaData/latitude
+        method: trilinear
+        coordinate transformation: none
+      - name: MetaData/pressure
+        method: trilinear
+        coordinate transformation: loglinear
+      - name: MetaData/longitude
+        method: trilinear
+        coordinate transformation: none
+    variables: [assigned_float_variable_trilin_logp]
+    tolerance: 1.0e-6
+
+- obs space: &ObsSpace
+    name: 3D payload array with trilinear interpolation, log-linear in longitude
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
+  obs function:
+    name: ObsFunction/DrawValueFromFile
+    options:
+      file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
+      group: FloatResult2D
+      interpolation:
+      - name: MetaData/latitude
+        method: trilinear
+        coordinate transformation: none
+      - name: MetaData/pressure
+        method: trilinear
+        coordinate transformation: none
+      - name: MetaData/longitude
+        method: trilinear
+        coordinate transformation: loglinear
+    variables: [assigned_float_variable_trilin_loglon]
+    tolerance: 1.0e-6
+
+- obs space: &ObsSpace
+    name: 3D payload array with trilinear interpolation, log-linear in pressure and longitude
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
+  obs function:
+    name: ObsFunction/DrawValueFromFile
+    options:
+      file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
+      group: FloatResult2D
+      interpolation:
+      - name: MetaData/latitude
+        method: trilinear
+        coordinate transformation: none
+      - name: MetaData/pressure
+        method: trilinear
+        coordinate transformation: loglinear
+      - name: MetaData/longitude
+        method: trilinear
+        coordinate transformation: loglinear
+    variables: [assigned_float_variable_trilin_logploglon]
+    tolerance: 1.0e-6
+
+- obs space: &ObsSpace
+    name: 3D payload array with trilinear interpolation, incorrect coordinate type
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
+  obs function:
+    name: ObsFunction/DrawValueFromFile
+    options:
+      file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
+      group: FloatResult2D
+      interpolation:
+      - name: MetaData/int_variable_1
+        method: trilinear
+      - name: MetaData/pressure
+        method: trilinear
+      - name: MetaData/longitude
+        method: trilinear
+    variables: [assigned_float_variable_trilin]
+  expect compute to throw exception with message: Trilinear interpolation must be performed with float coordinates.
+
+- obs space: &ObsSpace
+    name: 3D payload array with trilinear interpolation, incorret number of trilinear operations
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
+  obs function:
+    name: ObsFunction/DrawValueFromFile
+    options:
+      file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
+      group: FloatResult2D
+      interpolation:
+      - name: MetaData/int_variable_1
+        method: trilinear
+      - name: MetaData/pressure
+        method: trilinear
+    variables: [assigned_float_variable_trilin]
+  expect constructor to throw exception with message: Trilinear interpolation requires three variables.
+
+- obs space: &ObsSpace
+    name: 3D payload array with trilinear interpolation, multiple interpolation operations requested
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
+  obs function:
+    name: ObsFunction/DrawValueFromFile
+    options:
+      file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
+      group: FloatResult2D
+      interpolation:
+      - name: MetaData/int_variable_1
+        method: trilinear
+      - name: MetaData/pressure
+        method: trilinear
+      - name: MetaData/pressure
+        method: bilinear
+    variables: [assigned_float_variable_trilin]
+  expect constructor to throw exception with message: Cannot use multiple interpolation methods.
+
+- obs space: &ObsSpace
+    name: 3D payload array with trilinear interpolation, trilinear does not appear at the end
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
+  obs function:
+    name: ObsFunction/DrawValueFromFile
+    options:
+      file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
+      group: FloatResult2D
+      interpolation:
+      - name: MetaData/pressure
+        method: trilinear
+      - name: MetaData/longitude
+        method: trilinear
+      - name: MetaData/string_variable_1
+        method: exact
+    variables: [assigned_float_variable_trilin]
+  expect constructor to throw exception with message: Trilinear interpolation can only be supplied as the final three arguments.
+
+- obs space: &ObsSpace
+    name: 3D payload array with trilinear interpolation, log-linear in latitude (expect exception)
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
+  obs function:
+    name: ObsFunction/DrawValueFromFile
+    options:
+      file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
+      group: FloatResult2D
+      interpolation:
+      - name: MetaData/latitude
+        method: trilinear
+        coordinate transformation: loglinear
+      - name: MetaData/pressure
+        method: trilinear
+        coordinate transformation: none
+      - name: MetaData/longitude
+        method: trilinear
+        coordinate transformation: none
+    variables: [assigned_float_variable_trilin_logp]
+  expect compute to throw exception with message: Cannot perform log-linear interpolation for variable 'MetaData/latitude'. At least one value is negative.
+
+- obs space: &ObsSpace
+    name: 3D payload array with trilinear interpolation, log-linear in pressure with data values < 0 (expect exception)
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata.nc
+    simulated variables: [airTemperature]
+  obs function:
+    name: ObsFunction/DrawValueFromFile
+    options:
+      file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
+      group: FloatResult2D
+      interpolation:
+      - name: MetaData/latitude
+        method: trilinear
+        coordinate transformation: none
+      - name: MetaData/pressure_negative
+        method: trilinear
+        coordinate transformation: loglinear
+      - name: MetaData/longitude
+        method: trilinear
+        coordinate transformation: none
+    variables: [assigned_float_variable_trilin_logp]
+  expect compute to throw exception with message: Cannot perform log-linear interpolation for variable 'MetaData/pressure_negative'. At least one value is negative.
+
+- obs space: &ObsSpace
+    name: 1D payload array with channels
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata_channels.nc
+#    obsdataout:
+#      engine:
+#        type: H5File
+#        obsfile: Data/variable_assignment_testdata_1d_channels_out.nc
+    simulated variables: [airTemperature]
+    channels: &all_chans 1-3
+  obs function:
+    name: IntObsFunction/DrawValueFromFile
+    channels: *all_chans
+    options:
+      channels: *all_chans
+      file: Data/ufo/testinput_tier_1/drawvaluefromfile_simple.nc
+      group: IntResult
+      interpolation:
+      - name: MetaData/int_variable_1
+        method: nearest
+        extrapolation mode: nearest
+        use channel list: true
+    variables: [assigned_int_variable_0]
+    tolerance: 100
+
+- obs space: &ObsSpace
+    name: 2D payload array with channels in first variable
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata_channels.nc
+#    obsdataout:
+#      engine:
+#        type: H5File
+#        obsfile: Data/variable_assignment_testdata_2d_channels_out.nc
+    simulated variables: [airTemperature]
+    channels: &all_chans 1-3
+  obs function:
+    name: ObsFunction/DrawValueFromFile
+    channels: *all_chans
+    options:
+      channels: *all_chans
+      file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
+      group: FloatResult2D
+      interpolation:
+      - name: MetaData/float_variable_2
+        method: nearest
+      - name: MetaData/pressure
+        method: bilinear
+      - name: MetaData/float_variable_1
+        method: bilinear
+        extrapolation mode: nearest
+        use channel list: true
+    variables: [assigned_float_variable_0]
+    tolerance: 1.0E-6
+
+- obs space: &ObsSpace
+    name: 3D payload array with channels
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/variable_assignment_testdata_channels.nc
+#    obsdataout:
+#      engine:
+#        type: H5File
+#        obsfile: Data/variable_assignment_testdata_3d_channels_out.nc
+    simulated variables: [airTemperature]
+    channels: &all_chans 1-3
+  obs function:
+    name: ObsFunction/DrawValueFromFile
+    channels: *all_chans
+    options:
+      channels: *all_chans
+      file: Data/ufo/testinput_tier_1/drawvaluefromfile_advanced4.nc
+      group: FloatResult2D
+      interpolation:
+      - name: MetaData/float_variable_2
+        method: trilinear
+      - name: MetaData/pressure
+        method: trilinear
+      - name: MetaData/float_variable_1
+        method: trilinear
+        extrapolation mode: nearest
+        use channel list: true
+    variables: [assigned_float_variable_1]
+    tolerance: 1.0E-6
+

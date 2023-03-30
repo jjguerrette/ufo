@@ -6,9 +6,18 @@
 obs space:
   name: viirs_npp_aod-thinned # thinned observations 10%
   #name: viirs_npp_aod # full res observations can be quite slow
-  _source: noaa 
-  simulated variables: [aerosol_optical_depth]
-  observed variables: [aerosol_optical_depth]
+  obsdatain:
+    engine:
+      type: H5File
+  obsdataout:
+    engine:
+      type: H5File
+      allow overwrite: true
+  io pool:
+    write multiple files: true
+  _source: noaa
+  simulated variables: [aerosolOpticalDepth]
+  observed variables: [aerosolOpticalDepth]
   channels: 4
 obs operator:
   name: AodCRTM

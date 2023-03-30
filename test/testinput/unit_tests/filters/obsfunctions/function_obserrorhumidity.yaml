@@ -5,19 +5,23 @@ observations:
 - obs space:
     name: test_humidity_obserror_singular
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/sondes_q_obs_2020121500_singular.nc4
-    simulated variables: [specific_humidity]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/sondes_q_obs_2020121500_singular.nc4
+    simulated variables: [specificHumidity]
 #   obsdataout:
-#     obsfile: Data/sondes_q_obs_2020121500_singular_obserr_out.nc4
+#     engine:
+#       type: H5File
+#       obsfile: Data/sondes_q_obs_2020121500_singular_obserr_out.nc4
   geovals:
     filename: Data/ufo/testinput_tier_1/sondes_q_geoval_2020121500.nc4
   obs operator:
     name: VertInterp
   obs function:
-    name: ObsErrorModelHumidity@ObsFunction
+    name: ObsFunction/ObsErrorModelHumidity
     options:
       xvar:
-        name: MetaData/air_pressure
+        name: MetaData/pressure
       xvals: [50000]  # Pressure (Pa)
       errors: [0.2]   # RH error
     variables: [specific_humidity_obserr]
@@ -26,19 +30,23 @@ observations:
 - obs space:
     name: test_humidity_obserror_vector
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/sondes_q_obs_2020121500_vector.nc4
-    simulated variables: [specific_humidity]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/sondes_q_obs_2020121500_vector.nc4
+    simulated variables: [specificHumidity]
 #   obsdataout:
-#     obsfile: Data/sondes_q_obs_2020121500_vector_obserr_out.nc4
+#     engine:
+#       type: H5File
+#       obsfile: Data/sondes_q_obs_2020121500_vector_obserr_out.nc4
   geovals:
     filename: Data/ufo/testinput_tier_1/sondes_q_geoval_2020121500.nc4
   obs operator:
     name: VertInterp
   obs function:
-    name: ObsErrorModelHumidity@ObsFunction
+    name: ObsFunction/ObsErrorModelHumidity
     options:
       xvar:
-        name: MetaData/air_pressure
+        name: MetaData/pressure
       xvals: [25000, 20000, 10]  # Pressure (Pa)
       errors: [0.2, 0.4, 0.8]    # RH error
     variables: [specific_humidity_obserr]
@@ -47,19 +55,23 @@ observations:
 - obs space:
     name: test_humidity_obserror_UKMO
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/sondes_q_obs_2020121500_UKMO.nc4
-    simulated variables: [specific_humidity]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/sondes_q_obs_2020121500_UKMO.nc4
+    simulated variables: [specificHumidity]
 #   obsdataout:
-#     obsfile: Data/sondes_q_obs_2020121500_UKMO_obserr_out.nc4
+#     engine:
+#       type: H5File
+#       obsfile: Data/sondes_q_obs_2020121500_UKMO_obserr_out.nc4
   geovals:
     filename: Data/ufo/testinput_tier_1/sondes_q_geoval_2020121500.nc4
   obs operator:
     name: VertInterp
   obs function:
-    name: ObsErrorModelHumidity@ObsFunction
+    name: ObsFunction/ObsErrorModelHumidity
     options:
       xvar:
-        name: MetaData/air_pressure
+        name: MetaData/pressure
       xvals: [50000]  # Pressure (Pa)
       errors: [0.2]   # RH error
       Formulation: Sonntag  #formula for sat. vapor pressure

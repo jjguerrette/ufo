@@ -17,10 +17,14 @@ observations:
   obs space:
     name: gmi_gpm
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/gmi_gpm_obs_2020120100_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/gmi_gpm_obs_2020120100_m.nc4
 #   obsdataout:
-#     obsfile: Data/gmi_gpm_obs_2020120100_m_crtm_out.nc4
-    simulated variables: [brightness_temperature]
+#     engine:
+#       type: H5File
+#       obsfile: Data/gmi_gpm_obs_2020120100_m_crtm_out.nc4
+    simulated variables: [brightnessTemperature]
     channels: 1-13
   geovals:
     filename: Data/ufo/testinput_tier_1/gmi_gpm_geoval_2020120100_m.nc4

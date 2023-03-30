@@ -3,15 +3,16 @@ Horizontal mesh 20000:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ -2, -1, 0, 1, 2 ]
         lons: [ 178, 179, 180, 181, 182 ]
         dateTimes: [ 240, 252, 264,
                      276, 288 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [ 100000, 100000, 100000, 100000, 100000]
   GaussianThinning:
     horizontal_mesh: 20000
@@ -23,15 +24,16 @@ Horizontal mesh 20000, extreme longitudes, 0 to 360 degrees:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0,  0,   0,   0,   0,   0 ]
         lons: [ 0, 90, 179, 181, 270, 359.9999 ]
         dateTimes: [ 240, 252, 264,
                      276, 288, 300 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [ 100000, 100000, 100000, 100000, 100000, 100000]
   GaussianThinning:
     horizontal_mesh: 20000
@@ -43,15 +45,16 @@ Horizontal mesh 20000, extreme longitudes, -180 to 180 degrees:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0,  0,   0,   0,   0,   0 ]
         lons: [ 0, 90, 179, -179, -90, -0.0001 ]
         dateTimes: [ 240, 252, 264,
                      276, 288, 300 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [ 100000, 100000, 100000, 100000, 100000, 100000]
   GaussianThinning:
     horizontal_mesh: 20000
@@ -63,15 +66,16 @@ Horizontal mesh 20000, extreme latitudes:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ -90, -45, 0, 45, 90 ]
         lons: [ 90, 90, 90, 90, 90 ]
         dateTimes: [ 240, 252, 264,
                      276, 288 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [ 100000, 100000, 100000, 100000, 100000]
   GaussianThinning:
     horizontal_mesh: 20000
@@ -83,16 +87,17 @@ Horizontal mesh 10000:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [0, 0, 0,    0,   0,   0,    0,   0,   0     ]
         lons: [0, 1, 2,  238, 239, 240,  358, 359, 359.9999]
         dateTimes: [ 240, 240, 240,
                      240, 240, 240,
                      240, 240, 240]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [1, 1, 1,  1, 1, 1,  1, 1, 1]
   GaussianThinning:
     horizontal_mesh: 10000
@@ -104,16 +109,17 @@ Vertical mesh, single bin:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [0, 1, 2, 3, 4, 5, 6, 7]
         lons: [0, 1, 2, 3, 4, 5, 6, 7]
         dateTimes: [ 241, 242, 243,
                      244, 245, 246,
                      247, 248]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [8, 7, 6, 5, 4, 3, 2, 1]
   GaussianThinning:
     horizontal_mesh: -1
@@ -128,16 +134,17 @@ Vertical mesh, two bins:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [0, 1, 2, 3, 4, 5, 6, 7]
         lons: [0, 1, 2, 3, 4, 5, 6, 7]
         dateTimes: [ 241, 242, 243,
                      244, 245, 246,
                      247, 248]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [8, 7, 6, 5, 4, 3, 2, 1]
   GaussianThinning:
     horizontal_mesh: -1
@@ -152,16 +159,17 @@ Vertical mesh, two bins, all observations in single bin:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [0, 1, 2, 3, 4, 5, 6, 7]
         lons: [0, 1, 2, 3, 4, 5, 6, 7]
         dateTimes: [ 241, 242, 243,
                      244, 245, 246,
                      247, 248]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [8, 7, 6, 5, 4, 3, 2, 1]
   GaussianThinning:
     horizontal_mesh: -1
@@ -176,16 +184,17 @@ Thinning in time, single bin:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [0, 1, 2, 3, 4, 5, 6, 7]
         lons: [0, 1, 2, 3, 4, 5, 6, 7]
         dateTimes: [ 248, 247, 246,
                      245, 244, 243,
                      242, 241]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [0, 1, 2, 3, 4, 5, 6, 7]
   GaussianThinning:
     horizontal_mesh: -1
@@ -201,16 +210,17 @@ Thinning in time, two bins:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [0, 1, 2, 3, 4, 5, 6, 7]
         lons: [0, 1, 2, 3, 4, 5, 6, 7]
         dateTimes: [ 248, 247, 246,
                      245, 244, 243,
                      242, 241]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [0, 1, 2, 3, 4, 5, 6, 7]
   GaussianThinning:
     horizontal_mesh: -1
@@ -226,16 +236,17 @@ Thinning in time, two bins, all observations in single bin:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [0, 1, 2, 3, 4, 5, 6, 7]
         lons: [0, 1, 2, 3, 4, 5, 6, 7]
         dateTimes: [ 248, 247, 246,
                      245, 244, 243,
                      242, 241]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [0, 1, 2, 3, 4, 5, 6, 7]
   GaussianThinning:
     horizontal_mesh: -1
@@ -250,16 +261,17 @@ Vertical mesh, two bins, single category:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [0, 1, 2, 3, 4, 5, 6, 7]
         lons: [0, 1, 2, 3, 4, 5, 6, 7]
         dateTimes: [ 241, 242, 243,
                      244, 245, 246,
                      247, 248]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [8, 7, 6, 5, 4, 3, 2, 1]
   category: [0, 0, 0, 0, 0, 0, 0, 0]
   GaussianThinning:
@@ -268,7 +280,7 @@ Vertical mesh, two bins, single category:
     vertical_min: 1
     vertical_max: 5
     category_variable:
-      name: category@MetaData
+      name: MetaData/category
     distance_norm: maximum
   expected_thinned_obs_indices: [0, 1, 2, 3, 5, 7]
 
@@ -277,16 +289,17 @@ Vertical mesh, two bins, two categories:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [0, 1, 2, 3, 4, 5, 6, 7]
         lons: [0, 1, 2, 3, 4, 5, 6, 7]
         dateTimes: [ 241, 242, 243,
                      244, 245, 246,
                      247, 248]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [4, 3, 4, 3, 2, 1, 2, 1]
   category: [1, 1, 0, 0, 0, 0, 1, 1]
   GaussianThinning:
@@ -295,7 +308,7 @@ Vertical mesh, two bins, two categories:
     vertical_min: 1
     vertical_max: 5
     category_variable:
-      name: category@MetaData
+      name: MetaData/category
     distance_norm: maximum
   expected_thinned_obs_indices: [1, 3, 5, 7]
 
@@ -304,16 +317,17 @@ Vertical mesh, two bins, two categories, where clause:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [1, 0, 1, 0, 0, 1, 0, 1]
         lons: [0, 1, 2, 3, 4, 5, 6, 7]
         dateTimes: [ 241, 242, 243,
                      244, 245, 246,
                      247, 248]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [4, 4.4, 4, 4.3, 4.2, 4, 4.1, 4]
   category: [1, 1, 0, 0, 0, 0, 1, 1]
   GaussianThinning:
@@ -322,11 +336,11 @@ Vertical mesh, two bins, two categories, where clause:
     vertical_min: 1
     vertical_max: 5
     category_variable:
-      name: category@MetaData
+      name: MetaData/category
     distance_norm: maximum
     where:
     - variable:
-        name: latitude@MetaData
+        name: MetaData/latitude
       maxvalue: 0
   expected_thinned_obs_indices: [1, 3]
 
@@ -335,16 +349,17 @@ Vertical mesh, two bins, two string-valued categories, where clause:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [1, 0, 1, 0, 0, 1, 0, 1]
         lons: [0, 1, 2, 3, 4, 5, 6, 7]
         dateTimes: [ 241, 242, 243,
                      244, 245, 246,
                      247, 248]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [4, 4.4, 4, 4.3, 4.2, 4, 4.1, 4]
   string_category: ["1", "1", "0", "0", "0", "0", "1", "1"]
   GaussianThinning:
@@ -353,11 +368,11 @@ Vertical mesh, two bins, two string-valued categories, where clause:
     vertical_min: 1
     vertical_max: 5
     category_variable:
-      name: string_category@MetaData
+      name: MetaData/string_category
     distance_norm: maximum
     where:
     - variable:
-        name: latitude@MetaData
+        name: MetaData/latitude
       maxvalue: 0
   expected_thinned_obs_indices: [1, 3]
 
@@ -366,16 +381,17 @@ Vertical mesh, two bins, equal priorities:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [0, 1, 2, 3, 4, 5, 6, 7]
         lons: [0, 1, 2, 3, 4, 5, 6, 7]
         dateTimes: [ 241, 242, 243,
                      244, 245, 246,
                      247, 248]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [8, 7, 6, 5, 4, 3, 2, 1]
   priority: [0, 0, 0, 0, 0, 0, 0, 0]
   GaussianThinning:
@@ -384,7 +400,7 @@ Vertical mesh, two bins, equal priorities:
     vertical_min: 1
     vertical_max: 5
     priority_variable:
-      name: priority@MetaData
+      name: MetaData/priority
     distance_norm: maximum
   expected_thinned_obs_indices: [0, 1, 2, 3, 5, 7]
 
@@ -393,16 +409,17 @@ Vertical mesh, two bins, nonequal priorities:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [0, 1, 2, 3, 4, 5, 6, 7]
         lons: [0, 1, 2, 3, 4, 5, 6, 7]
         dateTimes: [ 241, 242, 243,
                      244, 245, 246,
                      247, 248]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [4, 3, 4, 3, 2, 1, 2, 1]
   priority: [1, 1, 0, 0, 0, 0, 1, 1]
   GaussianThinning:
@@ -411,7 +428,7 @@ Vertical mesh, two bins, nonequal priorities:
     vertical_min: 1
     vertical_max: 5
     priority_variable:
-      name: priority@MetaData
+      name: MetaData/priority
     distance_norm: maximum
   expected_thinned_obs_indices: [1, 2, 3, 4, 5, 7]
 
@@ -420,16 +437,17 @@ Vertical mesh, single bin, nonequal priorities, where clause:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [1, 0, 1, 0, 0, 1, 0, 1]
         lons: [0, 1, 2, 3, 4, 5, 6, 7]
         dateTimes: [ 241, 242, 243,
                      244, 245, 246,
                      247, 248]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [4, 4.4, 4, 4.3, 4.2, 4, 4.1, 4]
   priority: [0, 0, 0, 1, 1, 0, 0, 0]
   GaussianThinning:
@@ -438,11 +456,11 @@ Vertical mesh, single bin, nonequal priorities, where clause:
     vertical_min: 3
     vertical_max: 5
     priority_variable:
-      name: priority@MetaData
+      name: MetaData/priority
     distance_norm: maximum
     where:
     - variable:
-        name: latitude@MetaData
+        name: MetaData/latitude
       maxvalue: 0
   expected_thinned_obs_indices: [1, 3, 6]
 
@@ -451,9 +469,10 @@ Vertical mesh, single bin, two categories, nonequal priorities, where clause:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1]
         lons: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
         dateTimes: [ 241, 242, 243,
@@ -463,7 +482,7 @@ Vertical mesh, single bin, two categories, nonequal priorities, where clause:
                      244, 245, 246,
                      247, 248]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [4, 4.4, 4, 4.3, 4.2, 4, 4.1, 4, 4, 4.1, 4, 4.2, 4.3, 4, 4.4, 4]
   category: [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1]
   priority: [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0]
@@ -473,13 +492,13 @@ Vertical mesh, single bin, two categories, nonequal priorities, where clause:
     vertical_min: 3
     vertical_max: 5
     category_variable:
-      name: category@MetaData
+      name: MetaData/category
     priority_variable:
-      name: priority@MetaData
+      name: MetaData/priority
     distance_norm: maximum
     where:
     - variable:
-        name: latitude@MetaData
+        name: MetaData/latitude
       maxvalue: 0
   expected_thinned_obs_indices: [1, 3, 6, 9, 12, 14]
 
@@ -488,15 +507,16 @@ ops_compatibility_mode but round_horizontal_bin_count_to_nearest = false:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ -2, -1, 0, 1, 2 ]
         lons: [ 178, 179, 180, 181, 182 ]
         dateTimes: [ 240, 252, 264,
                      276, 288 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [ 100000, 100000, 100000, 100000, 100000]
   GaussianThinning:
     ops_compatibility_mode: true
@@ -508,15 +528,16 @@ ops_compatibility_mode but distance_norm = geodesic:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ -2, -1, 0, 1, 2 ]
         lons: [ 178, 179, 180, 181, 182 ]
         dateTimes: [ 240, 252, 264,
                      276, 288 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   air_pressures: [ 100000, 100000, 100000, 100000, 100000]
   GaussianThinning:
     ops_compatibility_mode: true
@@ -528,15 +549,16 @@ Thinning in time, obs in single bin, records are single obs:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [0, 1, 2, 3, 4, 5, 6]
         lons: [0, 1, 2, 3, 4, 5, 6]
         dateTimes: [ 250, 250, 250, 250,
                      280, 280, 280 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
       obsgrouping:
         group variables: [ "dateTime" ]
   air_pressures: [4, 3, 4, 3, 2, 1, 2]
@@ -549,7 +571,7 @@ Thinning in time, obs in single bin, records are single obs:
     time_max: '2010-01-01T00:06:00Z'
     time_mesh: 'PT1M'
     priority_variable:
-      name: priority@MetaData
+      name: MetaData/priority
     records_are_single_obs: true
     distance_norm: maximum
   expected_thinned_obs_indices: [4, 5, 6]
@@ -559,15 +581,16 @@ Thinning in time, obs in single bin, records are single obs, no priority:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [0, 1, 2, 3, 4, 5, 6]
         lons: [0, 1, 2, 3, 4, 5, 6]
         dateTimes: [ 250, 250, 250, 250,
                      280, 280, 280 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
       obsgrouping:
         group variables: [ "dateTime" ]
   air_pressures: [4, 3, 4, 3, 2, 1, 2]
@@ -587,9 +610,10 @@ Thinning in time, obs in single bin, records are single obs, category variable s
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [0, 1, 2, 3, 4, 5, 6, 7]
         lons: [0, 1, 2, 3, 4, 5, 6, 7]
         dateTimes: [ 250, 250,
@@ -597,7 +621,7 @@ Thinning in time, obs in single bin, records are single obs, category variable s
                      280, 280,
                      290, 290 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
       obsgrouping:
         group variables: [ "dateTime" ]
   air_pressures: [4, 3, 4, 3, 2, 1, 2, 4]
@@ -612,7 +636,7 @@ Thinning in time, obs in single bin, records are single obs, category variable s
     records_are_single_obs: true
     distance_norm: maximum
     category_variable:
-      name: category@MetaData
+      name: MetaData/category
   expected_thinned_obs_indices: [0, 1, 6, 7]
 
 Thinning in time, obs in single bin, records are single obs, four categories per record:
@@ -620,9 +644,10 @@ Thinning in time, obs in single bin, records are single obs, four categories per
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Aircraft
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [0, 1, 2, 3, 4, 5, 6, 7]
         lons: [0, 1, 2, 3, 4, 5, 6, 7]
         dateTimes: [ 250, 250,
@@ -630,7 +655,7 @@ Thinning in time, obs in single bin, records are single obs, four categories per
                      280, 280,
                      280, 280 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
       obsgrouping:
         group variables: [ "dateTime" ]
   air_pressures: [4, 3, 4, 3, 2, 1, 2, 4]
@@ -645,5 +670,5 @@ Thinning in time, obs in single bin, records are single obs, four categories per
     records_are_single_obs: true
     distance_norm: maximum
     category_variable:
-      name: category@MetaData
+      name: MetaData/category
   expect_exception_with_message_during_operation: Cannot have multiple categories per record

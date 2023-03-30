@@ -9,22 +9,26 @@ observations:
 - obs space:
     name: Radiosonde
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_average_pressure_obs_extended.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_average_pressure_obs_extended.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
-        sort variable: "air_pressure"
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
         sort order: "descending"
-    simulated variables: [air_temperature]
+    simulated variables: [airTemperature]
     extension:
       allocate companion records with length: 71
 #   obsdataout:
-#     obsfile: Data/met_office_conventional_profile_processing_average_pressure_obsfilter_out.nc4
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_conventional_profile_processing_average_pressure_obsfilter_out.nc4
   geovals:
     filename: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_average_pressure_geovals_extended.nc4
   obs filters:
   - filter: Conventional Profile Processing
     filter variables:
-    - name: air_temperature
+    - name: airTemperature
     Checks: ["Basic", "AveragePressure"]
     compareWithOPS: false
     flagBasicChecksFail: true
@@ -40,22 +44,26 @@ observations:
 - obs space:
     name: Radiosonde, GeoVaLs reversed
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_average_pressure_obs_extended.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_average_pressure_obs_extended.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
-        sort variable: "air_pressure"
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
         sort order: "descending"
-    simulated variables: [air_temperature]
+    simulated variables: [airTemperature]
     extension:
       allocate companion records with length: 71
 #   obsdataout:
-#     obsfile: Data/met_office_conventional_profile_processing_average_pressure_obsfilter_out.nc4
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_conventional_profile_processing_average_pressure_obsfilter_out.nc4
   geovals:
     filename: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_average_geovals_extended_reversed.nc4
   obs filters:
   - filter: Conventional Profile Processing
     filter variables:
-    - name: air_temperature
+    - name: airTemperature
     Checks: ["Basic", "AveragePressure"]
     compareWithOPS: false
     flagBasicChecksFail: true
@@ -69,22 +77,26 @@ observations:
 - obs space:
     name: Radiosonde
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_average_pressure_obs_extended.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_average_pressure_obs_extended.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
-        sort variable: "air_pressure"
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
         sort order: "descending"
-    simulated variables: [air_temperature]
+    simulated variables: [airTemperature]
     extension:
       allocate companion records with length: 71
 #   obsdataout:
-#     obsfile: Data/met_office_conventional_profile_processing_average_pressure_obsfilter_out.nc4
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_conventional_profile_processing_average_pressure_obsfilter_out.nc4
   geovals:
     filename: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_average_pressure_geovals_extended.nc4
   obs filters:
   - filter: Conventional Profile Processing
     filter variables:
-    - name: air_temperature
+    - name: airTemperature
     Checks: ["Basic", "AveragePressure"]
     compareWithOPS: false
     flagBasicChecksFail: true

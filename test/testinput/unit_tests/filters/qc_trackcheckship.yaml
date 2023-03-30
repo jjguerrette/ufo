@@ -8,12 +8,16 @@ observations:
 - obs space:
     name: Ship
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/sfcship_synthetic_airtemp_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/sfcship_synthetic_airtemp_m.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
+        group variables: [ "stationIdentification" ]
 #   obsdataout:
-#     obsfile: Data/sfcship_synthetic_airtemp_m_trackcheck_out1.nc4
-    simulated variables: [air_temperature]
+#     engine:
+#       type: H5File
+#       obsfile: Data/sfcship_synthetic_airtemp_m_trackcheck_out1.nc4
+    simulated variables: [airTemperature]
   obs filters:
   - filter: Ship Track Check
     unit testing mode: false
@@ -63,12 +67,16 @@ observations:
 - obs space:
     name: Ship
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/sfcship_synthetic_airtemp_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/sfcship_synthetic_airtemp_m.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
+        group variables: [ "stationIdentification" ]
 #   obsdataout:
-#     obsfile: Data/sfcship_synthetic_airtemp_m_trackcheck_out2.nc4
-    simulated variables: [air_temperature]
+#     engine:
+#       type: H5File
+#       obsfile: Data/sfcship_synthetic_airtemp_m_trackcheck_out2.nc4
+    simulated variables: [airTemperature]
   obs filters:
   - filter: Ship Track Check
     unit testing mode: false
@@ -90,10 +98,14 @@ observations:
 - obs space:
     name: Ship
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/sfcship_synthetic_airtemp_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/sfcship_synthetic_airtemp_m.nc4
 #   obsdataout:
-#     obsfile: Data/sfcship_synthetic_airtemp_m_trackcheck_out3.nc4
-    simulated variables: [air_temperature]
+#     engine:
+#       type: H5File
+#       obsfile: Data/sfcship_synthetic_airtemp_m_trackcheck_out3.nc4
+    simulated variables: [airTemperature]
   obs filters:
   - filter: Ship Track Check
     unit testing mode: false
@@ -103,7 +115,7 @@ observations:
     max speed (m/s): 0.01
     rejection threshold: 0.5
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   flaggedObservationsBenchmark: *referenceFlaggedObsIds
   flaggedBenchmark: 35
   benchmarkFlag: 21 # track
@@ -112,12 +124,16 @@ observations:
 - obs space:
     name: Ship
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/sfcship_synthetic_airtemp_m.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/sfcship_synthetic_airtemp_m.nc4
       obsgrouping:
         group variables: [ "latitude" ]
 #   obsdataout:
-#     obsfile: Data/sfcship_synthetic_airtemp_m_trackcheck_out4.nc4
-    simulated variables: [air_temperature]
+#     engine:
+#       type: H5File
+#       obsfile: Data/sfcship_synthetic_airtemp_m_trackcheck_out4.nc4
+    simulated variables: [airTemperature]
   obs filters:
   - filter: Ship Track Check
     unit testing mode: false
@@ -127,21 +143,25 @@ observations:
     max speed (m/s): 0.01
     rejection threshold: 0.5
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   flaggedObservationsBenchmark: *referenceFlaggedObsIds
   flaggedBenchmark: 35
   benchmarkFlag: 21 # track
 - obs space:
     name: Ocean Profile, records are single obs
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/shiptrack_recordssingleobs_testdata.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/shiptrack_recordssingleobs_testdata.nc4
       obsgrouping:
         group variables: [ "dateTime" ]
-        sort variable: ocean_depth
+        sort variable: depthBelowWaterSurface
         sort group: ObsValue
 #   obsdataout:
-#     obsfile: Data/shiptrackcheck_recordssingleobs_out.nc4
-    simulated variables: [ocean_temperature]
+#     engine:
+#       type: H5File
+#       obsfile: Data/shiptrackcheck_recordssingleobs_out.nc4
+    simulated variables: [waterTemperature]
   obs filters:
   - filter: Ship Track Check
     unit testing mode: false
@@ -151,7 +171,7 @@ observations:
     max speed (m/s): 2
     rejection threshold: 0.5
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
     records_are_single_obs: true
   flaggedObservationsBenchmark:
       - 55
@@ -189,14 +209,18 @@ observations:
 - obs space:
     name: Ocean Profile, records are single obs, no station ID var (all one track)
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/shiptrack_recordssingleobs_testdata.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/shiptrack_recordssingleobs_testdata.nc4
       obsgrouping:
-        group variables: [ "station_id", "dateTime" ]
-        sort variable: ocean_depth
+        group variables: [ "stationIdentification", "dateTime" ]
+        sort variable: depthBelowWaterSurface
         sort group: ObsValue
 #   obsdataout:
-#     obsfile: Data/shiptrackcheck_recordssingleobs_nostationid_out.nc4
-    simulated variables: [ocean_temperature]
+#     engine:
+#       type: H5File
+#       obsfile: Data/shiptrackcheck_recordssingleobs_nostationid_out.nc4
+    simulated variables: [waterTemperature]
   obs filters:
   - filter: Ship Track Check
     unit testing mode: false
@@ -233,10 +257,14 @@ observations:
 - obs space:
     name: Ocean Profile, records are single obs but not grouped into records
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/shiptrack_recordssingleobs_testdata.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/shiptrack_recordssingleobs_testdata.nc4
 #   obsdataout:
-#     obsfile: Data/shiptrackcheck_recordssingleobs_nostationgrouping_out.nc4
-    simulated variables: [ocean_temperature]
+#     engine:
+#       type: H5File
+#       obsfile: Data/shiptrackcheck_recordssingleobs_nostationgrouping_out.nc4
+    simulated variables: [waterTemperature]
   obs filters:
   - filter: Ship Track Check
     unit testing mode: false
@@ -246,6 +274,6 @@ observations:
     max speed (m/s): 2
     rejection threshold: 0.5
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
     records_are_single_obs: true
   expectExceptionWithMessage: "Cannot treat records as single obs"

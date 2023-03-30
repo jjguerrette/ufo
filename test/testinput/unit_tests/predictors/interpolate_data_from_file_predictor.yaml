@@ -5,44 +5,52 @@ observations:
 - obs space:
     name: Radiosonde
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/sondes_obs_2018041500_s_interpolate_data_from_file_predictors.nc4
-    simulated variables: [air_temperature, eastward_wind, northward_wind, specific_humidity]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/sondes_obs_2018041500_s_interpolate_data_from_file_predictors.nc4
+    simulated variables: [airTemperature, windEastward, windNorthward, specificHumidity]
 #   obsdataout:
-#     obsfile: Data/sondes_obs_2018041500_s_interpolate_data_from_file_predictors_out.nc4
+#     engine:
+#       type: H5File
+#       obsfile: Data/sondes_obs_2018041500_s_interpolate_data_from_file_predictors_out.nc4
   obs bias:
     static bc:
       predictors:
       - name: interpolate_data_from_file
         corrected variables:
-        - name: air_temperature
+        - name: airTemperature
           file: Data/ufo/testinput_tier_1/bias_interpolation_air_temperature.nc4
           interpolation:
-          - name: station_id@MetaData
+          - name: MetaData/stationIdentification
             method: exact
-        - name: specific_humidity
+        - name: specificHumidity
           file: Data/ufo/testinput_tier_1/bias_interpolation_specific_humidity.nc4
           interpolation:
-          - name: station_id@MetaData
+          - name: MetaData/stationIdentification
             method: exact
   tolerance: 1.0e-16
 - obs space:
     name: Satellite
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/mhs_metop-b_obs_2018041500_m_interpolate_date_from_file_predictors.nc4
-    simulated variables: [brightness_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/mhs_metop-b_obs_2018041500_m_interpolate_date_from_file_predictors.nc4
+    simulated variables: [brightnessTemperature]
     channels: &channels 2-4
-#   obsdataout:
-#     obsfile: Data/mhs_metop-b_obs_2018041500_m_interpolate_date_from_file_predictors_out.nc4
+#    obsdataout:
+#      engine:
+#        type: H5File
+#        obsfile: Data/mhs_metop-b_obs_2018041500_m_interpolate_date_from_file_predictors_out.nc4
   obs bias:
     static bc:
       predictors:
       - name: interpolate_data_from_file
         corrected variables:
-        - name: brightness_temperature
+        - name: brightnessTemperature
           channels: *channels
           file: Data/ufo/testinput_tier_1/bias_interpolation_brightness_temperature.nc4
           interpolation:
-          - name: scan_position@MetaData
+          - name: MetaData/sensorScanPosition
             method: nearest  # In practice, 'exact' would probably be used. 'nearest' is used
                              # here to reduce the size of the NetCDF file used by this test.
                              # The predictor's output will depend on the scan position and also (because the

@@ -686,39 +686,53 @@ end subroutine ufo_geovals_maxloc_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine ufo_geovals_fill_c(c_key, c_nloc, c_indx, c_nval, c_vals, c_levelsTopDown) bind(c, name="ufo_geovals_fill_f90")
+subroutine ufo_geovals_fill_c(c_key, lvar, c_var, c_nloc, c_indx, c_nlev, c_vals, c_levelsTopDown) &
+  bind(c, name="ufo_geovals_fill_f90")
+use ufo_vars_mod, only: MAXVARLEN
+use string_f_c_mod, only: c_f_string
 implicit none
 integer(c_int), intent(in) :: c_key
+integer(c_int), intent(in) :: lvar
+character(kind=c_char, len=1), intent(in) :: c_var(lvar+1)
 integer(c_int), intent(in) :: c_nloc
 integer(c_int), intent(in) :: c_indx(c_nloc)
-integer(c_int), intent(in) :: c_nval
-real(c_double), intent(in) :: c_vals(c_nval)
+integer(c_int), intent(in) :: c_nlev
+real(c_double), intent(in) :: c_vals(c_nloc, c_nlev)
 logical(c_bool), intent(in) :: c_levelsTopDown
 
 type(ufo_geovals), pointer :: geovals
+character(len=MAXVARLEN) :: varname
 
 call ufo_geovals_registry%get(c_key, geovals)
+call c_f_string(c_var, varname)
 
-call ufo_geovals_fill(geovals, c_nloc, c_indx, c_nval, c_vals, c_levelsTopDown)
+call ufo_geovals_fill(geovals, varname, c_nloc, c_indx, c_nlev, c_vals, c_levelsTopDown)
 
 end subroutine ufo_geovals_fill_c
 
 ! ------------------------------------------------------------------------------
 
-subroutine ufo_geovals_fillad_c(c_key, c_nloc, c_indx, c_nval, c_vals, c_levelsTopDown) bind(c, name="ufo_geovals_fillad_f90")
+subroutine ufo_geovals_fillad_c(c_key, lvar, c_var, c_nloc, c_indx, c_nlev, c_vals, c_levelsTopDown) &
+  bind(c, name="ufo_geovals_fillad_f90")
+use ufo_vars_mod, only: MAXVARLEN
+use string_f_c_mod, only: c_f_string
 implicit none
 integer(c_int), intent(in) :: c_key
+integer(c_int), intent(in) :: lvar
+character(kind=c_char, len=1), intent(in) :: c_var(lvar+1)
 integer(c_int), intent(in) :: c_nloc
 integer(c_int), intent(in) :: c_indx(c_nloc)
-integer(c_int), intent(in) :: c_nval
-real(c_double), intent(inout) :: c_vals(c_nval)
+integer(c_int), intent(in) :: c_nlev
+real(c_double), intent(inout) :: c_vals(c_nloc, c_nlev)
 logical(c_bool), intent(in) :: c_levelsTopDown
 
 type(ufo_geovals), pointer :: geovals
+character(len=MAXVARLEN) :: varname
+call c_f_string(c_var, varname)
 
 call ufo_geovals_registry%get(c_key, geovals)
 
-call ufo_geovals_fillad(geovals, c_nloc, c_indx, c_nval, c_vals, c_levelsTopDown)
+call ufo_geovals_fillad(geovals, varname, c_nloc, c_indx, c_nlev, c_vals, c_levelsTopDown)
 
 end subroutine ufo_geovals_fillad_c
 
@@ -736,6 +750,7 @@ type(c_ptr), value, intent(in) :: c_vars
 type(ufo_geovals), pointer :: self
 character(max_string)      :: filename
 integer :: loc_multiplier
+logical :: levels_are_top_down
 character(len=:), allocatable :: str
 type(fckit_configuration) :: f_conf
 type(oops_variables)      :: vars
@@ -755,9 +770,15 @@ else
   loc_multiplier = 1
 endif
 
+if (f_conf%has("levels_are_top_down")) then
+  call f_conf%get_or_die("levels_are_top_down", levels_are_top_down)
+else
+  levels_are_top_down = .True.
+endif
+
 vars = oops_variables(c_vars)
 ! read geovals
-call ufo_geovals_read_netcdf(self, filename, loc_multiplier, c_obspace, vars)
+call ufo_geovals_read_netcdf(self, filename, loc_multiplier, levels_are_top_down, c_obspace, vars)
 
 end subroutine ufo_geovals_read_file_c
 

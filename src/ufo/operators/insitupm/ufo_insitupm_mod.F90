@@ -116,6 +116,8 @@ subroutine destructor(self)
 implicit none
 type(ufo_insitupm), intent(inout) :: self
 
+if (allocated(self%tracer_modes_cmaq)) deallocate(self%tracer_modes_cmaq)
+
 end subroutine destructor
 
 ! ------------------------------------------------------------------------------
@@ -181,7 +183,7 @@ character(len=MAXVARLEN), dimension(:), allocatable:: tracer_name
 
   if(self%v_coord .eq. "height_asl") then  
   ! Obs station elevation and model heights (asl) at obs loc
-  call obsspace_get_db(obss, "MetaData", "station_elevation", obss_metadata)
+  call obsspace_get_db(obss, "MetaData", "stationElevation", obss_metadata)
 
   call ufo_geovals_get_var(geovals, var_geomz, hgt_profile)
   allocate(hgt(nlayers,nlocs))
@@ -204,7 +206,7 @@ character(len=MAXVARLEN), dimension(:), allocatable:: tracer_name
 
   else if(self%v_coord .eq. "log_pressure") then  !log scale
   ! Obs air pressure at obs loc
-  call obsspace_get_db(obss, "MetaData", "air_pressure", obss_metadata)
+  call obsspace_get_db(obss, "MetaData", "pressure", obss_metadata)
 
   ! Calculate the vertical interpolation weights
   do iloc = 1, nlocs 

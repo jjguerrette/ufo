@@ -34,10 +34,27 @@ set ( variabletransforms_files
       Formulas.cc
       Formulas.h
 )
+if( ${gsw_FOUND} )
+      set ( variabletransforms_oceanfiles
+            OceanConversions/OceanDensity.cc
+            OceanConversions/OceanDensity.h
+            OceanConversions/OceanDepthToPressure.cc
+            OceanConversions/OceanDepthToPressure.h
+            OceanConversions/OceanTempToTheta.cc
+            OceanConversions/OceanTempToTheta.h
+            OceanConversions/OceanTempToConservativeTemp.cc
+            OceanConversions/OceanTempToConservativeTemp.h
+            OceanConversions/OceanPracticalSalinityToAbsoluteSalinity.cc
+            OceanConversions/OceanPracticalSalinityToAbsoluteSalinity.h
+      )
+      
+      PREPEND( _p_variabletransforms_oceanfiles       "variabletransforms"       ${variabletransforms_oceanfiles} )
+endif( ${gsw_FOUND} )
 
 PREPEND( _p_variabletransforms_files       "variabletransforms"       ${variabletransforms_files} )
 
 set ( variabletransforms_src_files
       ${_p_variabletransforms_files}
+      ${_p_variabletransforms_oceanfiles}
       PARENT_SCOPE
 )

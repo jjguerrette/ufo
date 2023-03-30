@@ -1,0 +1,65 @@
+window begin: 2017-12-31T21:00:00Z
+window end: 2030-01-01T03:00:00Z
+
+observations:
+- obs space:
+    name: Ocean temperature to potential temperature conversion
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/oceanprofile_theta_pressure_testdata.nc4
+    simulated variables: [waterTemperature, salinity, waterPotentialTemperature]
+    observed variables: [waterTemperature, salinity]
+    derived variables: [waterPotentialTemperature]
+  obs filters:
+  - filter: Variable Transforms
+    where:
+    - variable:
+        name: ObsValue/waterTemperature
+      is_defined:
+    Transform: OceanTempToTheta
+    ocean pressure group: TestReference
+    ocean salinity group: TestReference
+
+  # Make the ObsErrorData and QCflagsData normal variables for the purposes of
+  # the test comparison
+  - filter: Variable Assignment
+    assignments:
+    - name: TestObsError/waterPotentialTemperature
+      type: float
+      source variable: ObsErrorData/waterPotentialTemperature
+
+  compareVariables:
+    - reference:
+        name: TestReference/waterPotentialTemperature
+      test:
+        name: DerivedObsValue/waterPotentialTemperature
+      relTol: 2.0e-4
+    - reference:
+        name: ObsError/waterTemperature
+      test:
+        name: TestObsError/waterPotentialTemperature
+  passedBenchmark: 665  # 219 + Non-missing salinity
+                        # 227 + Non-missing waterTemperature
+                        # 219 + Non-missing waterPotentialTemperature (waterTemperature & salinity)
+                        # = 665
+
+- obs space:
+    name: Ocean temperature to potential temperature conversion exception
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/oceanprofile_theta_pressure_testdata.nc4
+    simulated variables: [waterTemperature, salinity]
+    observed variables: [waterTemperature, salinity]
+  obs filters:
+  - filter: Variable Transforms
+    where:
+    - variable:
+        name: ObsValue/waterTemperature
+      is_defined:
+    Transform: OceanTempToTheta
+    ocean pressure group: TestReference
+    ocean salinity group: TestReference
+  expectExceptionWithMessage: "Both `waterPotentialTemperature` and `waterTemperature` must be observed or derived variables for the OceanTempToTheta variable transform."
+

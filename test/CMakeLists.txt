@@ -36,12 +36,11 @@ ecbuild_add_resources( TARGET ufo_test_scripts
 # Create Data directory for test data and symlink files
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data)
 
-
-# Currently only use jedi_release_2.4.0 CRTM coefficients
-set( CRTM_COEFFS_BRANCH "jedi_release_2.4.0" )
+set( CRTM_COEFFS_BRANCH "2.4.0_skylab_3.0" )
+#set( CRTM_COEFFS_BRANCH "3.0.0_skylab_4.0" )
 
 # Test data filenames
-set(ufo_test_data  ufo_testinput_tier_1_1.3.0.tar.gz)
+set(ufo_test_data  ufo_testinput_tier_1_1.6.0.tar.gz)
 set(crtm_test_data crtm_coefficients_${CRTM_COEFFS_BRANCH}.tar.gz)
 
 #############################################
@@ -234,6 +233,11 @@ ecbuild_add_executable( TARGET  test_RecordHandler.x
                         LIBS    ufo
                        )
 
+ecbuild_add_executable( TARGET  test_NearestNeighborInterpolation.x
+                        SOURCES mains/TestNearestNeighborInterpolation.cc
+                        LIBS    ufo
+                       )
+
 ####################################################################
 # Establish test tiering
 
@@ -268,6 +272,14 @@ ecbuild_add_test( TARGET  test_ufo_dataextractor
                   ENVIRONMENT OOPS_TRAPFPE=1
                   LIBS    ufo
                   TEST_DEPENDS ufo_get_ufo_test_data )
+
+# Test nearest_neighbor interpolation
+ecbuild_add_test( TARGET  test_ufo_nearest_neighbor_interpolation
+                  SOURCES mains/TestNearestNeighborInterpolation.cc
+                  ARGS    "testinput/empty.yaml"
+                  ENVIRONMENT OOPS_TRAPFPE=1
+                  LIBS    ufo
+                  TEST_DEPENDS test_NearestNeighborInterpolation.x)
 
 # Test Parameters
 if (eckit_VERSION VERSION_GREATER_EQUAL 1.16)
@@ -393,12 +405,16 @@ SpcCoeff/Little_Endian/iasi_metop-a.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/iasi_metop-a.TauCoeff.bin
 SpcCoeff/Little_Endian/iasi_metop-b.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/iasi_metop-b.TauCoeff.bin
+SpcCoeff/Little_Endian/iasi_metop-c.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/iasi_metop-c.TauCoeff.bin
 SpcCoeff/Little_Endian/mhs_metop-a.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/mhs_metop-a.TauCoeff.bin
 SpcCoeff/Little_Endian/mhs_metop-b.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/mhs_metop-b.TauCoeff.bin
 SpcCoeff/Little_Endian/mhs_metop-c.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/mhs_metop-c.TauCoeff.bin
+SpcCoeff/Little_Endian/mhs_n18.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/mhs_n18.TauCoeff.bin
 SpcCoeff/Little_Endian/mhs_n19.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/mhs_n19.TauCoeff.bin
 SpcCoeff/Little_Endian/sndrD1_g15.SpcCoeff.bin
@@ -435,6 +451,8 @@ SpcCoeff/Little_Endian/avhrr3_n18.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/avhrr3_n18.TauCoeff.bin
 SpcCoeff/Little_Endian/cris-fsr_n20.SpcCoeff.bin
 TauCoeff/ODPS/Little_Endian/cris-fsr_n20.TauCoeff.bin
+SpcCoeff/Little_Endian/tropics_sv1_srf_v1.SpcCoeff.bin
+TauCoeff/ODPS/Little_Endian/tropics_sv1_srf_v1.TauCoeff.bin
 )
 
 if( crtm_FOUND )
@@ -452,10 +470,16 @@ list( APPEND rttov_test_input
 rttov7pred54L/rtcoef_dmsp_17_ssmis.dat
 rttov7pred54L/rtcoef_gcom-w_1_amsr2.dat
 rttov7pred54L/rtcoef_metop_1_amsuamhs.dat
+rttov7pred54L/rtcoef_metop_2_amsuamhs.dat
+rttov7pred54L/rtcoef_metop_3_amsuamhs.dat
+rttov7pred54L/rtcoef_noaa_15_amsuamhs.dat
+rttov7pred54L/rtcoef_noaa_18_amsuamhs.dat
+rttov7pred54L/rtcoef_noaa_19_amsuamhs.dat
 rttov7pred54L/rtcoef_metop_1_iasi.dat
 rttov7pred54L/rtcoef_noaa_19_amsua.dat
+rttov7pred54L/rtcoef_jpss_0_atms.dat
 rttov7pred54L/rtcoef_noaa_20_atms.dat
-mietable/mietable_metop_amsuamhs.dat
+mietable/mietable_metop_amsuamhs.bin
 )
 
 # Symlink RTcoef files
@@ -463,7 +487,7 @@ CREATE_SYMLINK_FILENAME( ${rttov_SOURCE_DIR}/rtcoef_rttov12
                          ${CMAKE_CURRENT_BINARY_DIR}/Data
                          ${rttov_test_input} )
 
-file(ARCHIVE_EXTRACT INPUT ${rttov_SOURCE_DIR}/rtcoef_rttov12/mietable/mietable_metop_amsuamhs.tgz
+file(ARCHIVE_EXTRACT INPUT ${rttov_SOURCE_DIR}/rtcoef_rttov12/mietable/mietable_metop_amsuamhs.tar.zst
                      DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Data )
 
 endif( ${rttov_FOUND} )

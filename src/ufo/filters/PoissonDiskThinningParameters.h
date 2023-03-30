@@ -23,7 +23,7 @@
 namespace ufo {
 
 enum class ExclusionVolumeShape {
-  CYLINDER, ELLIPSOID
+  CYLINDER, ELLIPSOID, BOX
 };
 
 struct ExclusionVolumeShapeParameterTraitsHelper {
@@ -31,7 +31,8 @@ struct ExclusionVolumeShapeParameterTraitsHelper {
   static constexpr char enumTypeName[] = "ExclusionVolumeShape";
   static constexpr util::NamedEnumerator<ExclusionVolumeShape> namedValues[] = {
     { ExclusionVolumeShape::CYLINDER, "cylinder" },
-    { ExclusionVolumeShape::ELLIPSOID, "ellipsoid" }
+    { ExclusionVolumeShape::ELLIPSOID, "ellipsoid" },
+    { ExclusionVolumeShape::BOX, "box" }
   };
 };
 
@@ -92,6 +93,14 @@ class PoissonDiskThinningParameters : public FilterParametersBase {
   oops::OptionalParameter<util::ScalarOrMap<Priority, float>> minHorizontalSpacing{
     "min_horizontal_spacing", this};
 
+  /// Latitude distance in degrees. Must be used with volumeshape \c box.
+  oops::OptionalParameter<util::ScalarOrMap<Priority, float>> minLatitudeSpacing{
+    "min_latitude_spacing", this};
+
+  /// Longitude distance in degrees. Must be used with volumeshape \c box.
+  oops::OptionalParameter<util::ScalarOrMap<Priority, float>> minLongitudeSpacing{
+    "min_longitude_spacing", this};
+
   /// Size of the exclusion volume in the vertical direction (in Pa).
   ///
   /// Like min_horizontal_spacing, this can be either a constant or a map.
@@ -119,6 +128,13 @@ class PoissonDiskThinningParameters : public FilterParametersBase {
   ///   the following condition is met:
   ///   * geodesic_distance((lat, lon), (lat', lon'))^2 / min_horizontal_spacing^2 +
   ///     (p - p')^2 / min_vertical_spacing^2 + (t - t')^2 / min_time_spacing^2 < 1.
+  ///  - \c box: the exclusion volume of an observation taken at latitude lat, longitude lon,
+  ///   pressure p and time t is the set of all locations (lat', lon', p', t') for which the
+  ///   following conditions are met:
+  ///   * |lat - lat'| < minLatitudeSpacing
+  ///   * |lon - lon'| < minLongitudeSpacing
+  ///   * |p - p'| < min_vertical_spacing
+  ///   * |t - t'| < min_time_spacing.
   oops::Parameter<ExclusionVolumeShape> exclusionVolumeShape{"exclusion_volume_shape",
                                                              ExclusionVolumeShape::CYLINDER, this};
 
@@ -147,6 +163,20 @@ class PoissonDiskThinningParameters : public FilterParametersBase {
   ///
   /// If this parameter is not set, all observations are assumed to have equal priority.
   oops::OptionalParameter<Variable> priorityVariable{"priority_variable", this};
+
+  /// True to accept the observation within an exclusion zone whose value is closest to the median.
+  /// If false or unspecified, observations are retained in the order they are found if they
+  /// are not within the exclusion zone of another retained observation. This option should be used
+  /// with caution. The effective exclusion volume from which the median is found will often not
+  /// be the shape or size that is anticipated because of overlap with other exclusion volumes.
+  oops::Parameter<bool> selectMedian{"select median", false, this};
+
+  /// If select median is true, write median can be set to true to write the median values to the
+  /// DerivedObsValue group. The values written will be the central observation value if there
+  /// is an odd number of values going into the median, the mean of the two central observation
+  /// values if there is an even number going into the median or a fill value if the observation
+  /// was used to find a median but is not the median observation. Defaults to false.
+  oops::Parameter<bool> writeMedian{"write median", false, this};
 
   /// If true, observations will be randomly shuffled before being inspected as candidates
   /// for retaining.

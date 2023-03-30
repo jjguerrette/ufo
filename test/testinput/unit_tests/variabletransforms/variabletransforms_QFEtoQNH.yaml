@@ -6,8 +6,10 @@ observations:
 - obs space:
     name: Surface
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/QFEtoQNH_obs_20210521T1200Z.nc4
-    simulated variables: [surface_pressure]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/QFEtoQNH_obs_20210521T1200Z.nc4
+    simulated variables: [surfacePressure]
   obs filters:
   - filter: Create Diagnostic Flags
     filter variables:
@@ -21,21 +23,21 @@ observations:
     UseValidDataOnly: false
   compareVariables:
     - reference:
-        name: Pstation@TestReference
+        name: TestReference/Pstation
       test:
-        name: stationPressure@DerivedObsValue
+        name: DerivedObsValue/stationPressure
       relTol: 1.0e-5
     - reference:
-        name: PStationErr@TestReference
+        name: TestReference/PStationErr
       test:
-        name: stationPressure@DerivedObsError
+        name: DerivedObsError/stationPressure
       absTol: 1.0e-5
     - reference:
-        name: QNHhPaFlag@TestReference
+        name: TestReference/QNHhPaFlag
       test:
         name: DiagnosticFlags/QNHhPa/stationPressure
     - reference:
-        name: QNHinHgFlag@TestReference
+        name: TestReference/QNHinHgFlag
       test:
         name: DiagnosticFlags/QNHinHg/stationPressure
 
@@ -43,8 +45,10 @@ observations:
 - obs space:
     name: Surface
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/QFEtoQNH_obs_20210521T1200Z.nc4
-    simulated variables: [surface_pressure]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/QFEtoQNH_obs_20210521T1200Z.nc4
+    simulated variables: [surfacePressure]
   obs filters:
   - filter: Create Diagnostic Flags
     filter variables:
@@ -61,8 +65,10 @@ observations:
 - obs space:
     name: Surface
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/QFEtoQNH_obs_20210521T1200Z.nc4
-    simulated variables: [surface_pressure]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/QFEtoQNH_obs_20210521T1200Z.nc4
+    simulated variables: [surfacePressure]
   obs filters:
   - filter: Create Diagnostic Flags
     filter variables:
@@ -79,8 +85,10 @@ observations:
 - obs space:
     name: Surface
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/QFEtoQNH_obs_20210521T1200Z.nc4
-    simulated variables: [surface_pressure]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/QFEtoQNH_obs_20210521T1200Z.nc4
+    simulated variables: [surfacePressure]
   obs filters:
   - filter: Create Diagnostic Flags
     filter variables:

@@ -9,21 +9,25 @@ observations:
 - obs space:
     name: Radiosonde
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_bkgqc_repobs.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_bkgqc_repobs.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
-        sort variable: "air_pressure"
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
         sort order: "descending"
-    simulated variables: [air_temperature, relative_humidity, eastward_wind, northward_wind, height]
+    simulated variables: [airTemperature, relativeHumidity, windEastward, windNorthward, height]
 #   obsdataout:
-#     obsfile: Data/met_office_conventional_profile_processing_bkgqc_repobs_seperate_filters__out.nc4
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_conventional_profile_processing_bkgqc_repobs_seperate_filters__out.nc4
   obs filters:
   - filter: Conventional Profile Processing
     filter variables:
-    - name: air_temperature
-    - name: relative_humidity
-    - name: eastward_wind
-    - name: northward_wind
+    - name: airTemperature
+    - name: relativeHumidity
+    - name: windEastward
+    - name: windNorthward
     - name: height
     Checks: ["Basic", "Time"]
     compareWithOPS: false
@@ -32,10 +36,10 @@ observations:
     BChecks_Skip: true
   - filter: Conventional Profile Processing
     filter variables:
-    - name: air_temperature
-    - name: relative_humidity
-    - name: eastward_wind
-    - name: northward_wind
+    - name: airTemperature
+    - name: relativeHumidity
+    - name: windEastward
+    - name: windNorthward
     - name: height
     Checks: ["Basic", "PermanentReject"]
     compareWithOPS: false
@@ -44,10 +48,10 @@ observations:
     BChecks_Skip: true
   - filter: Conventional Profile Processing
     filter variables:
-    - name: air_temperature
-    - name: relative_humidity
-    - name: eastward_wind
-    - name: northward_wind
+    - name: airTemperature
+    - name: relativeHumidity
+    - name: windEastward
+    - name: windNorthward
     - name: height
     Checks: ["Basic", "BackgroundTemperature"]
     compareWithOPS: false
@@ -56,10 +60,10 @@ observations:
     BChecks_Skip: true
   - filter: Conventional Profile Processing
     filter variables:
-    - name: air_temperature
-    - name: relative_humidity
-    - name: eastward_wind
-    - name: northward_wind
+    - name: airTemperature
+    - name: relativeHumidity
+    - name: windEastward
+    - name: windNorthward
     - name: height
     Checks: ["Basic", "BackgroundRelativeHumidity"]
     compareWithOPS: false
@@ -68,10 +72,10 @@ observations:
     BChecks_Skip: true
   - filter: Conventional Profile Processing
     filter variables:
-    - name: air_temperature
-    - name: relative_humidity
-    - name: eastward_wind
-    - name: northward_wind
+    - name: airTemperature
+    - name: relativeHumidity
+    - name: windEastward
+    - name: windNorthward
     - name: height
     Checks: ["Basic", "BackgroundWindSpeed"]
     compareWithOPS: false
@@ -80,10 +84,10 @@ observations:
     BChecks_Skip: true
   - filter: Conventional Profile Processing
     filter variables:
-    - name: air_temperature
-    - name: relative_humidity
-    - name: eastward_wind
-    - name: northward_wind
+    - name: airTemperature
+    - name: relativeHumidity
+    - name: windEastward
+    - name: windNorthward
     - name: height
     Checks: ["Basic", "BackgroundGeopotentialHeight"]
     compareWithOPS: false

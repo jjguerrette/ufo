@@ -112,7 +112,7 @@ subroutine atmvertinterplay_tlad_settraj_(self, geovals_in, obss)
   nlevs = self%nlevels(1)
   nsig = modelpres%nval - 1
   self%nval = modelpres%nval
-  call obsspace_get_db(obss, "MetaData", "air_pressure", airpressure)
+  call obsspace_get_db(obss, "MetaData", "pressure", airpressure)
 
   allocate(self%modelpressures(modelpres%nval,self%nlocs))
   self%modelpressures(1:nsig+1,1:self%nlocs) = modelpres%vals(1:nsig+1,1:self%nlocs)
@@ -202,10 +202,13 @@ end subroutine atmvertinterplay_tlad_cleanup_
 
 ! ------------------------------------------------------------------------------
 
-subroutine  destructor(self)
+subroutine destructor(self)
   type(ufo_atmvertinterplay_tlad), intent(inout)  :: self
 
   call self%cleanup()
+
+  if (allocated(self%nlevels)) deallocate(self%nlevels)
+  if (allocated(self%coefficients)) deallocate(self%coefficients)
 
 end subroutine destructor
 

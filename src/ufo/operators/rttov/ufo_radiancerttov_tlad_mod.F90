@@ -29,7 +29,7 @@ module ufo_radiancerttov_tlad_mod
   !> Fortran derived type for radiancerttov trajectory
   type, public :: ufo_radiancerttov_tlad
     private
-    character(len=MAXVARLEN), public, allocatable :: varin(:)  ! variables requested from the model
+    character(len=MAXVARLEN), public, allocatable :: varin(:)      ! variables which will be part of the analysis.
     integer, allocatable                          :: channels(:)
     integer, allocatable                          :: coefindex(:)  ! list of the coefindex for the channels to simulate.
     type(rttov_conf)                              :: conf
@@ -50,9 +50,6 @@ module ufo_radiancerttov_tlad_mod
     procedure :: simobs_ad  => ufo_radiancerttov_simobs_ad
   end type ufo_radiancerttov_tlad
 
-  character(len=maxvarlen), dimension(1), parameter :: varin_default_tlad = &
-    (/var_ts/)
-
 contains
 
   ! ------------------------------------------------------------------------------
@@ -65,11 +62,12 @@ contains
 
     type(fckit_configuration)                    :: f_confOpts ! RTcontrol
     type(fckit_configuration)                    :: f_confLinOper
-    integer                                      :: nvars_in
-    integer                                      :: ind, jspec, ii, jj, jnew
+    integer                                      :: ind, jspec, ii, jj, jnew, nvars
     logical                                      :: setup_linear_model = .true.
+    character(len=:), allocatable                :: str_array(:)
 
-    call f_confOper % get_or_die("obs options",f_confOpts)
+    call f_confOper % get_or_die("obs options", f_confOpts)
+    call f_confOper % get_or_die("linear obs operator", f_confLinOper)
 
     ! Last argument is false because its setting up the forward model configuration
     ! This is not used at the moment so I have removed the setup.
@@ -84,26 +82,11 @@ contains
       call abor1_ftn(message)
     end if
 
-    nvars_in = size(varin_default_tlad) + self%conf%ngas + 5 ! 5 near-surface parameters
-
-    allocate(self%varin(nvars_in))
-    self%varin(1:size(varin_default_tlad)) = varin_default_tlad
-    ind = size(varin_default_tlad) + 1
-
-    do jspec = 1, self%conf%ngas
-      self%varin(ind) = self%conf%Absorbers(jspec)
-      ind = ind + 1
-    end do
-
-    self%varin(ind) = var_sfc_t2m
-    ind = ind + 1
-    self%varin(ind) = var_sfc_q2m
-    ind = ind + 1
-    self%varin(ind) = var_sfc_tskin
-    ind = ind + 1
-    self%varin(ind) = var_sfc_u10
-    ind = ind + 1
-    self%varin(ind) = var_sfc_v10
+    ! Read in list of incremented variables from the yaml
+    nvars = f_confLinOper % get_size("increment variables")
+    allocate(self % varin(nvars))
+    call f_confLinOper % get_or_die("increment variables", str_array)
+    self % varin(1:nvars) = str_array
 
     ! channels contains a list of instrument channels. From this we need to work out the coefindex
     ! which RTTOV needs to index the entry in the coefficient file.  This allows cut down
@@ -176,10 +159,11 @@ contains
 
     integer(kind=jpim)                           :: errorstatus ! Return error status of RTTOV subroutine calls
 
-    integer                                      :: i_inst, nchan_total, ichan, jchan
-    integer                                      :: iprof, prof, iprof_rttov
-    integer                                      :: nprof_sim, nprof_max_sim, ichan_sim
+    integer                                      :: iprof_rttov, iprof, ichan, ichan_sim, jchan
+    integer                                      :: nprof_sim, nprof_max_sim, nchan_total
+    integer                                      :: nchan_sim
     integer                                      :: prof_start, prof_end
+    integer                                      :: sensor_index
 
     logical                                      :: jacobian_needed
     real(kind_real), allocatable                 :: sfc_emiss(:,:)
@@ -211,17 +195,15 @@ contains
     write(message,'(A, A, I0, A, I0, A)') &
       trim(routine_name), ': Allocating ', self % nprofiles, ' profiles with ', self % nlevels, ' levels'
     call fckit_log%debug(message)
-    call self % RTprof_K % alloc_profs(errorstatus, self % conf, self % nprofiles, self % nlevels, init=.true., asw=1)
+    call self % RTprof_K % alloc_profiles(errorstatus, self % conf, self % nprofiles, self % nlevels, init=.true., asw=1)
 
     !Assign the atmospheric and surface data from the GeoVaLs
     write(message,'(A, A, I0, A, I0, A)') trim(routine_name), ': Creating RTTOV profiles from geovals'
     call fckit_log%debug(message)
-    call self % RTprof_K % setup(geovals,obss,self % conf)
+    call self % RTprof_K % setup_rtprof(geovals,obss,self % conf)
 
     !DAR: Removing sensor_loop until it's demonstrated to be needed and properly tested
     ! at the moment self % channels is a single 1D array so cannot adequately contain more than one set of channels
-!    Sensor_Loop:do i_inst = 1, self % conf % nSensors
-    i_inst = 1
 
     ! Number of channels to be simulated for this instrument (from the configuration, not necessarily the full instrument complement)
     nchan_inst = size(self % channels)
@@ -236,7 +218,7 @@ contains
     ! Allocate memory for *ALL* RTTOV_K channels
     write(message,'(A,A,I0,A)') &
       trim(routine_name), ': Allocating Trajectory resources for RTTOV K: ', self % nprofiles * nchan_inst, ' total channels'
-    call self % RTprof_K % alloc_profs_K(errorstatus, self % conf, self % nprofiles * nchan_inst, self % nlevels, init=.true., asw=1)
+    call self % RTprof_K % alloc_profiles_k(errorstatus, self % conf, self % nprofiles * nchan_inst, self % nlevels, init=.true., asw=1)
 
     ! Used for keeping track of profiles for setting emissivity
     allocate(self % RTprof_K % chanprof ( self % nprofiles * nchan_inst )) 
@@ -295,10 +277,10 @@ contains
         iprof = prof_start + iprof_rttov - 1
 
         ! print profile information if requested
-        if(any(self % conf % inspect == iprof)) call self % RTprof_K % print(self % conf, iprof, i_inst)
+        if(any(self % conf % inspect == iprof)) call self % RTprof_K % print_rtprof(self % conf, iprof)
 
-        ! check RTTOV profile and flag it if it fails the check
-        if(self % conf % RTTOV_profile_checkinput) call self % RTprof_K % check(self % conf, iprof, i_inst, errorstatus)
+        ! check RTTOV profile will be valid for RTTOV and flag it if it fails the check
+        call self % RTprof_K % check_rtprof(self % conf, iprof, errorstatus)
 
         if (errorstatus == errorstatus_success) then 
           ! check sfc_emiss valid if read in
@@ -320,6 +302,11 @@ contains
             self % RTprof_K % chanprof(nchan_total + ichan_sim) % chan = self % coefindex(ichan)
           end do
           nchan_sim = ichan_sim
+
+          ! Pick the last valid (unskipped) observation to get the sensor index
+          ! but it will always be the same as the first because prof_by_prof is true for nsensors > 1
+          ! This is to guard against a bad satellite identifier sneaking in when only processing one instrument.
+          sensor_index = self % RTProf_K % sensor_index_array(iprof)
         endif
 
       end do
@@ -367,7 +354,7 @@ contains
         self % conf % rttov_opts,                     &! in    options structure
         self % RTprof_K % profiles(prof_start:prof_start + nprof_sim - 1), &! in    profile array
         self % RTprof_K % profiles_k(nchan_total + 1 : nchan_total + nchan_sim), &! in    profile array
-        self % conf % rttov_coef_array(i_inst), &! in    coefficients structure
+        self % conf % rttov_coef_array(sensor_index),                &! in    coefficients structure
         self % RTprof_K % transmission,                            &! inout computed transmittances
         self % RTprof_K % transmission_k,                          &! inout computed transmittances
         self % RTprof_K % radiance,                                &! inout computed radiances
@@ -377,13 +364,12 @@ contains
         emissivity_k = self % RTprof_K % emissivity_k(1:nchan_sim))!,           &! inout input/output emissivities per channel      
       
       if ( errorstatus /= errorstatus_success ) then
-        write(message,'(A, A, 2I6)') trim(routine_name), 'after rttov_k: error ', errorstatus, i_inst, &
-                                     ' skipping profiles ', prof_start, ' -- ', prof_start + nprof_sim - 1
+        write(message,'(A, A, 2I6)') trim(routine_name), 'after rttov_k: error\n', 'skipping profiles ', prof_start, ' -- ', prof_start + nprof_sim - 1
         call fckit_log%info(message)
       else
         ! Put simulated diagnostics into hofxdiags
         ! ----------------------------------------------
-        if(hofxdiags%nvar > 0)     call populate_hofxdiags(self % RTprof_K, chanprof, self % conf, prof_start, hofxdiags)
+        if(hofxdiags%nvar > 0) call populate_hofxdiags(self % RTprof_K, chanprof, self % conf, prof_start, hofxdiags)
       end if
       
       ! increment profile and channel counters
@@ -398,7 +384,7 @@ contains
     ! Deallocate structures for rttov_direct
     call self % RTprof_K % alloc_k(errorstatus, self % conf, -1, -1, -1, asw=0)
     call self % RTprof_K % alloc_direct(errorstatus, self % conf, -1, -1, -1, asw=0)
-    call self % RTprof_K % alloc_profs(errorstatus, self % conf, -1, -1, asw=0)
+    call self % RTprof_K % alloc_profiles(errorstatus, self % conf, -1, -1, asw=0)
     
  
     ! Set flag that the tracectory was set
@@ -420,23 +406,23 @@ end subroutine ufo_radiancerttov_tlad_settraj
     integer,                     intent(in)    :: nvars, nlocs
     real(c_double),              intent(inout) :: hofx(nvars, nlocs)
 
-    character(len=*), parameter                :: myname_="ufo_radiancerttov_simobs_tl"
-    integer                                    :: ichan, jchan, prof, jspec
-
-    type(ufo_geoval), pointer                  :: geoval_d, geoval_d2
+    type(ufo_geoval), pointer                  :: geoval_d
+    integer                                    :: ichan, jchan, prof, jspec, ivar
+    character(len = MAXVARLEN)                 :: varname
+    character(len = *), parameter              :: myname_="ufo_radiancerttov_simobs_tl"
 
     ! Initial checks
     ! --------------
 
     ! Check if trajectory was set
     if (.not. self % ltraj) then
-      write(message,*) myname_, ' trajectory wasnt set!'
+      write(message, *) myname_, ' trajectory wasnt set!'
       call abor1_ftn(message)
     end if
 
     ! Check if nlocs is consistent in geovals & hofx
     if (geovals % nlocs /= self % nprofiles) then
-      write(message,*) myname_, ' error: nlocs inconsistent!'
+      write(message, *) myname_, ' error: nlocs inconsistent!'
       call abor1_ftn(message)
     end if
 
@@ -444,114 +430,81 @@ end subroutine ufo_radiancerttov_tlad_settraj
     ! ---------------
     hofx(:,:) = zero
 
-    ! Temperature
-    ! -----------
-    call ufo_geovals_get_var(geovals, var_ts, geoval_d) ! var_ts = air_temperature
+    do ivar = 1, size(self % varin)
+      varname = self % varin(ivar)
+      select case (trim(varname))
+        ! Variables with nlevels
+        case (var_ts, var_q, var_mixr, var_clw)
+          call ufo_geovals_get_var(geovals, trim(varname), geoval_d)
 
-    ! Check model levels is consistent in geovals
-    if (geoval_d % nval /= self % nlevels) then
-      write(message,*) myname_, ' error: layers inconsistent!'
-      call abor1_ftn(message)
+          ! Check model levels is consistent in geovals
+          if (geoval_d % nval /= self % nlevels) then
+            write(message, *) myname_, ' error: layers inconsistent!'
+            call abor1_ftn(message)
+          end if
 
-    end if
+          do ichan = 1, self % nchan_total, size(self % channels)
+            prof = self % RTprof_K % chanprof(ichan) % prof
+            do jchan = 1, size(self % channels)
+              if (trim(varname) == var_ts) then
+                hofx(jchan, prof) = hofx(jchan, prof) + &
+                  sum(self % RTprof_K % profiles_k(ichan+jchan-1) % t(self % nlevels:1:-1) * &
+                      geoval_d % vals(1:geoval_d % nval, prof))
+              else if (trim(varname) == var_q) then
+                ! scale_fac = 1 if Jacobain is in kg/kg
+                ! scale_fac converts from ppmv to kg/kg if Jacobain wrt ppmv
+                hofx(jchan, prof) = hofx(jchan, prof) + &
+                  sum(self % RTprof_K % profiles_k(ichan+jchan-1) % q(self % nlevels:1:-1) * &
+                      geoval_d % vals(1:geoval_d % nval, prof)) * self%conf%scale_fac(gas_id_watervapour)
+              else if (trim(varname) == var_mixr) then
+                ! scale_fac = 1 if Jacobain is in kg/kg
+                ! scale_fac converts from ppmv to kg/kg if Jacobain wrt ppmv
+                ! humidity_mixing_ratio (var_mixr) is in g/kg therefore need additional conversion factor
+                hofx(jchan, prof) = hofx(jchan, prof) + &
+                  sum(self % RTprof_K % profiles_k(ichan+jchan-1) % q(self % nlevels:1:-1) * &
+                      geoval_d % vals(1:geoval_d % nval, prof)) * self%conf%scale_fac(gas_id_watervapour) / g_to_kg
+              else if (trim(varname) == var_clw) then
+                hofx(jchan, prof) = hofx(jchan, prof) + &
+                  sum(self % RTprof_K % profiles_k(ichan+jchan-1) % clw(self % nlevels:1:-1) * &
+                      geoval_d % vals(1:geoval_d % nval, prof))
+              end if
+            end do
+          end do
+        ! Variables with 1 level - surface
+        case (var_sfc_t2m, var_sfc_q2m, var_sfc_u10, var_sfc_v10, var_sfc_tskin)
+          call ufo_geovals_get_var(geovals, trim(varname), geoval_d)
 
-    do ichan = 1, self % nchan_total, size(self%channels)
-      prof = self % RTprof_K % chanprof(ichan) % prof
-      do jchan = 1, size(self%channels)
-        hofx(jchan,prof) = hofx(jchan,prof) + &
-          sum(self % RTprof_K % profiles_k(ichan+jchan-1) % t(self % nlevels:1:-1) * geoval_d % vals(1:geoval_d % nval,prof))
-      enddo
-    end do
+          do ichan = 1, self % nchan_total, size(self % channels)
+            prof = self % RTprof_K % chanprof(ichan) % prof
+            do jchan = 1, size(self%channels)
+              if (trim(varname) == var_sfc_t2m) then
+                hofx(jchan, prof) = hofx(jchan, prof) + &
+                  self % RTprof_K % profiles_k(ichan+jchan-1) % s2m % t * geoval_d % vals(1, prof)
+              else if (trim(varname) == var_sfc_q2m) then
+                ! scale_fac = 1 if Jacobain is in kg/kg
+                ! scale_fac converts from ppmv to kg/kg if Jacobain wrt ppmv
+                hofx(jchan, prof) = hofx(jchan, prof) + &
+                  self % RTprof_K % profiles_k(ichan+jchan-1) % s2m % q * &
+                  geoval_d % vals(1,prof) * self%conf%scale_fac(gas_id_watervapour)
+              else if (trim(varname) == var_sfc_u10) then
+                hofx(jchan, prof) = hofx(jchan, prof) + &
+                  self % RTprof_K % profiles_k(ichan+jchan-1) % s2m % u * geoval_d % vals(1, prof)
+              else if (trim(varname) == var_sfc_v10) then
+                hofx(jchan, prof) = hofx(jchan, prof) + &
+                  self % RTprof_K % profiles_k(ichan+jchan-1) % s2m % v * geoval_d % vals(1, prof)
+              else if (trim(varname) == var_sfc_tskin) then
+                hofx(jchan, prof) = hofx(jchan, prof) + &
+                  self % RTprof_K % profiles_k(ichan+jchan-1) % skin % t * geoval_d % vals(1, prof)
+              end if
+            end do
+          end do
 
-    do jspec = 1, self%conf%ngas
-      call ufo_geovals_get_var(geovals, self%conf%Absorbers(jspec), geoval_d)
+        case default
+          write(message,*) trim(varname), ' in increment list but not setup in ', myname_
+          call abor1_ftn(message)
+      end select
 
-      ! Check model levels is consistent in geovals
-      if (geoval_d % nval /= self % nlevels) then
-        write(message,*) myname_, ' error: layers inconsistent!'
-        call abor1_ftn(message)
-      end if
-
-      ! Absorbers
-      ! ---------
-      ! This is where CO2 and friends will live as well as CLW
-      do ichan = 1, self % nchan_total, size(self%channels)
-        prof = self % RTprof_K % chanprof(ichan) % prof
-          do jchan = 1, size(self%channels)
-            if(self%conf%Absorbers(jspec) == var_q) then
-              hofx(jchan,prof) = hofx(jchan,prof) + &
-                sum(self % RTprof_K % profiles_k(ichan+jchan-1) % q(self % nlevels:1:-1) * &
-                    geoval_d % vals(1:geoval_d % nval,prof)) * self%conf%scale_fac(gas_id_watervapour)
-            elseif(self%conf%Absorbers(jspec) == var_mixr) then
-              hofx(jchan,prof) = hofx(jchan,prof) + &
-                sum(self % RTprof_K % profiles_k(ichan+jchan-1) % q(self % nlevels:1:-1) * &
-                    geoval_d % vals(1:geoval_d % nval,prof)) * self%conf%scale_fac(gas_id_watervapour) / g_to_kg
-            elseif(self%conf%Absorbers(jspec) == var_clw) then
-              hofx(jchan,prof) = hofx(jchan,prof) + &
-                sum(self % RTprof_K % profiles_k(ichan+jchan-1) % clw(self % nlevels:1:-1) * &
-                    geoval_d % vals(1:geoval_d % nval,prof))
-            endif
-          enddo
-      end do
-    enddo
-
-    ! Cloud
-    ! --------------------------
-    !IR 
-
-
-    ! Surface + Single-valued Variables
-    ! --------------------------
-    !CTP/cloudfrac
-    !O3total
-    !LWP
-
-    !T2m
-    call ufo_geovals_get_var(geovals, var_sfc_t2m, geoval_d)
-
-    do ichan = 1, self % nchan_total, size(self%channels)
-      prof = self % RTprof_K % chanprof(ichan) % prof
-      do jchan = 1, size(self%channels)
-        hofx(jchan,prof) = hofx(jchan,prof) + &
-          self % RTprof_K % profiles_k(ichan+jchan-1) % s2m % t * geoval_d % vals(1,prof)
-      enddo
-    end do
-
-    !q2m
-    call ufo_geovals_get_var(geovals, var_sfc_q2m, geoval_d)
-
-    do ichan = 1, self % nchan_total, size(self%channels)
-      prof = self % RTprof_K % chanprof(ichan) % prof
-      do jchan = 1, size(self%channels)
-        hofx(jchan,prof) = hofx(jchan,prof) + &
-          self % RTprof_K % profiles_k(ichan+jchan-1) % s2m % q * &
-          geoval_d % vals(1,prof) * self%conf%scale_fac(gas_id_watervapour)
-      enddo
-    end do
-
-    !windspeed
-    call ufo_geovals_get_var(geovals, var_sfc_u10, geoval_d)
-    call ufo_geovals_get_var(geovals, var_sfc_v10, geoval_d2)
-
-    do ichan = 1, self % nchan_total, size(self%channels)
-      prof = self % RTprof_K % chanprof(ichan) % prof
-      do jchan = 1, size(self%channels)
-        hofx(jchan,prof) = hofx(jchan,prof) + &
-          self % RTprof_K % profiles_k(ichan+jchan-1) % s2m % u * geoval_d % vals(1,prof) + &
-          self % RTprof_K % profiles_k(ichan+jchan-1) % s2m % v * geoval_d2 % vals(1,prof)
-      enddo
-    end do
-
-    !Tskin
-    call ufo_geovals_get_var(geovals, var_sfc_tskin, geoval_d)
-
-    do ichan = 1, self % nchan_total, size(self%channels)
-      prof = self % RTprof_K % chanprof(ichan) % prof
-      do jchan = 1, size(self%channels)
-        hofx(jchan,prof) = hofx(jchan,prof) + &
-          self % RTprof_K % profiles_k(ichan+jchan-1) % skin % t * geoval_d % vals(1,prof)
-      enddo
-    end do
+    end do ! main variable loop
 
   end subroutine ufo_radiancerttov_simobs_tl
 
@@ -568,12 +521,11 @@ end subroutine ufo_radiancerttov_tlad_settraj
     integer,                       intent(in)    :: nvars, nlocs
     real(c_double),                intent(in)    :: hofx(nvars, nlocs)
 
-    type(ufo_geoval), pointer                    :: geoval_d, geoval_d2
-
+    type(ufo_geoval), pointer                    :: geoval_d
     real(c_double)                               :: missing
-    integer                                      :: ichan, jchan, prof, jspec
-
-    character(len=*), parameter                  :: myname_ = "ufo_radiancerttov_simobs_ad"
+    integer                                      :: ichan, jchan, prof, jspec, ivar
+    character(len = MAXVARLEN)                   :: varname
+    character(len = *), parameter                :: myname_ = "ufo_radiancerttov_simobs_ad"
 
     ! Set missing value
     missing = missing_value(missing)
@@ -593,116 +545,78 @@ end subroutine ufo_radiancerttov_tlad_settraj
       call abor1_ftn(message)
     end if
 
-    ! Temperature
-    ! -----------
-    call ufo_geovals_get_var(geovals, var_ts, geoval_d) ! var_ts = air_temperature
+    do ivar = 1, size(self % varin)
+      varname = self % varin(ivar)
+      select case (trim(varname))
+        ! Variables with nlevels
+        case (var_ts, var_q, var_mixr, var_clw)
+          call ufo_geovals_get_var(geovals, trim(varname), geoval_d)
 
-    do ichan = 1, self % nchan_total, size(self%channels)
-      prof = self % RTprof_K % chanprof(ichan) % prof
-      do jchan = 1, size(self%channels)
-        if (hofx(jchan, prof) /= missing) then
-          geoval_d % vals(:,prof) = geoval_d % vals(:,prof) + &
-            self % RTprof_K % profiles_k(ichan+jchan-1) % t(self % nlevels:1:-1) * hofx(jchan,prof)
-        endif
-      enddo
-    end do
-    
-    ! Absorbers
-    ! ---------
-    ! This is where CO2 and friends will live as well as CLW
+          do ichan = 1, self % nchan_total, size(self % channels)
+            prof = self % RTprof_K % chanprof(ichan) % prof
+            do jchan = 1, size(self % channels)
+              if (hofx(jchan, prof) /= missing) then
+                if (trim(varname) == var_ts) then
+                  geoval_d % vals(:, prof) = geoval_d % vals(:, prof) + &
+                    self % RTprof_K % profiles_k(ichan+jchan-1) % t(self % nlevels:1:-1) * hofx(jchan, prof)
+                else if (trim(varname) == var_q) then
+                  ! scale_fac = 1 if Jacobain is in kg/kg
+                  ! scale_fac converts from ppmv to kg/kg if Jacobain wrt ppmv
+                  geoval_d % vals(:, prof) = geoval_d % vals(:, prof) + &
+                    self % RTprof_K % profiles_k(ichan+jchan-1) % q(self % nlevels:1:-1) * hofx(jchan, prof) * &
+                    self%conf%scale_fac(gas_id_watervapour)
+                else if (trim(varname) == var_mixr) then
+                  ! scale_fac = 1 if Jacobain is in kg/kg
+                  ! scale_fac converts from ppmv to kg/kg if Jacobain wrt ppmv
+                  ! humidity_mixing_ratio (var_mixr) is in g/kg therefore need additional conversion factor
+                  geoval_d % vals(:, prof) = geoval_d % vals(:, prof) + &
+                    (self % RTprof_K % profiles_k(ichan+jchan-1) % q(self % nlevels:1:-1) * hofx(jchan, prof)) * &
+                    self%conf%scale_fac(gas_id_watervapour) / g_to_kg
+                else if (trim(varname) == var_clw) then
+                  geoval_d % vals(:, prof) = geoval_d % vals(:, prof) + &
+                    self % RTprof_K % profiles_k(ichan+jchan-1) % clw(self % nlevels:1:-1) * hofx(jchan, prof)
+                end if
+              endif
+            enddo
+          end do
+        ! Variables with 1 level - surface
+        case (var_sfc_t2m, var_sfc_q2m, var_sfc_u10, var_sfc_v10, var_sfc_tskin)
+          call ufo_geovals_get_var(geovals, trim(varname), geoval_d) 
 
-    do jspec = 1, self%conf%ngas
-      call ufo_geovals_get_var(geovals, self%conf%Absorbers(jspec), geoval_d)
+          do ichan = 1, self % nchan_total, size(self % channels)
+            prof = self % RTprof_K % chanprof(ichan) % prof
+            do jchan = 1, size(self%channels)
+              if (hofx(jchan, prof) /= missing) then
+                if (trim(varname) == var_sfc_t2m) then
+                  geoval_d % vals(1, prof) = geoval_d % vals(1, prof) + &
+                    self % RTprof_K % profiles_k(ichan+jchan-1) % s2m % t * hofx(jchan, prof)
+                else if (trim(varname) == var_sfc_q2m) then
+                  ! scale_fac = 1 if Jacobain is in kg/kg
+                  ! scale_fac converts from ppmv to kg/kg if Jacobain wrt ppmv
+                  geoval_d % vals(1, prof) = geoval_d % vals(1, prof) + &
+                    self % RTprof_K % profiles_k(ichan+jchan-1) % s2m % q * &
+                    hofx(jchan, prof) * self%conf%scale_fac(gas_id_watervapour)
+                else if (trim(varname) == var_sfc_u10) then
+                  geoval_d % vals(1, prof) = geoval_d % vals(1, prof) + &
+                    self % RTprof_K % profiles_k(ichan+jchan-1) % s2m % u * hofx(jchan, prof)
+                else if (trim(varname) == var_sfc_v10) then
+                  geoval_d % vals(1, prof) = geoval_d % vals(1, prof) + &
+                    self % RTprof_K % profiles_k(ichan+jchan-1) % s2m % v * hofx(jchan, prof)
+                else if (trim(varname) == var_sfc_tskin) then
+                  geoval_d % vals(1, prof) = geoval_d % vals(1, prof) + &
+                    self % RTprof_K % profiles_k(ichan+jchan-1) % skin % t * hofx(jchan, prof)
+                end if
+              end if
+            end do
+          end do
 
-      do ichan = 1, self % nchan_total, size(self%channels)
-        prof = self % RTprof_K % chanprof(ichan) % prof
-        do jchan = 1, size(self%channels)
-          if (hofx(jchan, prof) /= missing) then
-            
-            if(self%conf%Absorbers(jspec) == var_q) then
-              geoval_d % vals(:,prof) = geoval_d % vals(:,prof) + &
-                self % RTprof_K % profiles_k(ichan+jchan-1) % q(self % nlevels:1:-1) * hofx(jchan,prof) * &
-                self%conf%scale_fac(gas_id_watervapour)
-            elseif(self%conf%Absorbers(jspec) == var_mixr) then
-              geoval_d % vals(:,prof) = geoval_d % vals(:,prof) + &
-                (self % RTprof_K % profiles_k(ichan+jchan-1) % q(self % nlevels:1:-1) * hofx(jchan,prof)) * &
-                self%conf%scale_fac(gas_id_watervapour) / g_to_kg
-            elseif(self%conf%Absorbers(jspec) == var_clw) then
-              geoval_d % vals(:,prof) = geoval_d % vals(:,prof) + &
-                self % RTprof_K % profiles_k(ichan+jchan-1) % clw(self % nlevels:1:-1) * hofx(jchan,prof)
-            endif
-          endif
-        enddo
-      enddo
-    enddo
+        case default
+          write(message,*) trim(varname), ' in increment list but not setup in ', myname_
+          call abor1_ftn(message)
+      end select
 
-    ! Cloud
-    ! --------------------------
-    !IR 
+    end do ! main variable loop
 
-    ! Surface + Single-valued Variables
-    ! --------------------------
-    !CTP/cloudfrac
-    !O3total
-    !LWP
-    !T2m
-
-    call ufo_geovals_get_var(geovals, var_sfc_t2m, geoval_d) 
-
-    do ichan = 1, self % nchan_total, size(self%channels)
-      prof = self % RTprof_K % chanprof(ichan) % prof
-      do jchan = 1, size(self%channels)
-        if (hofx(jchan, prof) /= missing) then
-          geoval_d % vals(1,prof) = geoval_d % vals(1,prof) + &
-            self % RTprof_K % profiles_k(ichan+jchan-1) % s2m % t * hofx(jchan,prof)
-        endif
-      enddo
-    end do
-
-    !q2m
-    call ufo_geovals_get_var(geovals, var_sfc_q2m, geoval_d) 
-
-    do ichan = 1, self % nchan_total, size(self%channels)
-      prof = self % RTprof_K % chanprof(ichan) % prof
-      do jchan = 1, size(self%channels)
-        if (hofx(jchan, prof) /= missing) then
-          geoval_d % vals(1,prof) = geoval_d % vals(1,prof) + &
-            self % RTprof_K % profiles_k(ichan+jchan-1) % s2m % q * &
-            hofx(jchan,prof) * self%conf%scale_fac(gas_id_watervapour)
-        endif
-      enddo
-    end do
-      
-    !windspeed
-    call ufo_geovals_get_var(geovals, var_sfc_u10, geoval_d)
-    call ufo_geovals_get_var(geovals, var_sfc_v10, geoval_d2)
-
-    do ichan = 1, self % nchan_total, size(self%channels)
-      prof = self % RTprof_K % chanprof(ichan) % prof
-      do jchan = 1, size(self%channels)
-        if (hofx(jchan, prof) /= missing) then
-          geoval_d % vals(1,prof) = geoval_d % vals(1,prof) + &
-            self % RTprof_K % profiles_k(ichan+jchan-1) % s2m % u * hofx(jchan,prof)
-          
-          geoval_d2 % vals(1,prof) = geoval_d2 % vals(1,prof) + &
-            self % RTprof_K % profiles_k(ichan+jchan-1) % s2m % v * hofx(jchan,prof)
-        endif
-      enddo
-    end do
-
-    !Tskin
-    call ufo_geovals_get_var(geovals, var_sfc_tskin, geoval_d)
-
-    do ichan = 1, self % nchan_total, size(self%channels)
-      prof = self % RTprof_K % chanprof(ichan) % prof
-      do jchan = 1, size(self%channels)
-        if (hofx(jchan, prof) /= missing) then
-          geoval_d % vals(1,prof) = geoval_d % vals(1,prof) + &
-            self % RTprof_K % profiles_k(ichan+jchan-1) % skin % t * hofx(jchan,prof)
-        endif
-      enddo
-    end do
-      
     ! Once all geovals set replace flag
     ! ---------------------------------
     if (.not. geovals % linit ) geovals % linit=.true.

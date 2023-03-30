@@ -14,6 +14,7 @@
 #include <cmath>
 #include <limits>
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "ufo/filters/gnssroonedvarcheck/GNSSROOneDVarCheck.h"
@@ -34,6 +35,10 @@ GNSSROOneDVarCheck::GNSSROOneDVarCheck(ioda::ObsSpace & obsdb,
 {
   oops::Log::debug() << "GNSSROOneDVarCheck contructor starting" << std::endl;
 
+  std::set<int> channelset = oops::parseIntSet(parameters_.channelList);
+  std::vector<int> channels;
+  std::copy(channelset.begin(), channelset.end(), std::back_inserter(channels));
+
   // Setup fortran object
   ufo_gnssroonedvarcheck_create_f90(key_,
                                     obsdb,
@@ -49,7 +54,9 @@ GNSSROOneDVarCheck::GNSSROOneDVarCheck(ioda::ObsSpace & obsdb,
                                     parameters_.pseudo_ops.value(),
                                     parameters_.vert_interp_ops.value(),
                                     parameters_.y_test.value(),
-                                    GNSSROOneDVarCheck::qcFlag());
+                                    GNSSROOneDVarCheck::qcFlag(),
+                                    channels.size(),
+                                    channels[0]);
 
   oops::Log::debug() << "GNSSROOneDVarCheck contructor complete. " << std::endl;
 }
@@ -78,7 +85,8 @@ void GNSSROOneDVarCheck::applyFilter(const std::vector<bool> & apply,
   }
 
   // Save qc flags to database for retrieval in fortran - needed for channel selection
-  flags_->save("FortranQC");    // temporary measure as per ROobserror qc
+  flags_->save("FortranQC");      // temporary measure as per ROobserror qc
+  obserr_->save("FortranERR");    // Pass latest errors to 1DVar
 
   // Pass it all to fortran
   ufo_gnssroonedvarcheck_apply_f90(key_,

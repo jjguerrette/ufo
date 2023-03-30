@@ -87,7 +87,7 @@ subroutine ufo_rttovonedvarcheck_minimize_ml(config,    &
                                          b_matrix,      &
                                          b_inv,         &
                                          b_sigma,       &
-                                         local_geovals, &
+                                         firstguess_geovals, &
                                          hofxdiags,     &
                                          rttov_simobs,  &
                                          profile_index, &
@@ -101,7 +101,7 @@ type(ufo_rttovonedvarcheck_rsubmatrix), intent(inout) :: r_matrix !< observation
 real(kind_real), intent(in)       :: b_matrix(:,:)   !< state error covariance
 real(kind_real), intent(in)       :: b_inv(:,:)      !< inverse state error covariance
 real(kind_real), intent(in)       :: b_sigma(:)      !< standard deviations of the state error covariance diagonal
-type(ufo_geovals), intent(inout)  :: local_geovals   !< model data at obs location
+type(ufo_geovals), intent(inout)  :: firstguess_geovals !< background model data at obs location
 type(ufo_geovals), intent(inout)  :: hofxdiags       !< model data containing the jacobian
 type(ufo_radiancerttov), intent(inout) :: rttov_simobs !< rttov simulated obs object
 type(ufo_rttovonedvarcheck_profindex), intent(in) :: profile_index !< index array for x vector
@@ -114,7 +114,6 @@ logical                         :: outOfRange      ! out of range flag for check
 logical                         :: Converged       ! converged flag
 logical                         :: Error           ! error flag
 integer                         :: iter            ! iteration counter
-integer                         :: RTerrorcode     ! error code for RTTOV
 integer                         :: nchans          ! number of satellite channels used
 integer                         :: ii, jj          ! counters
 integer                         :: usedchan, allchans ! counters
@@ -138,6 +137,7 @@ real(kind_real), allocatable    :: Y(:)
 real(kind_real), allocatable    :: Y0(:)
 real(kind_real), allocatable    :: output_BT_usedchans(:)
 real(kind_real)                 :: Jout(3)
+real(kind_real)                 :: tskin
 type(ufo_geovals)               :: geovals
 type(ufo_geoval), pointer       :: geoval
 
@@ -163,7 +163,7 @@ allocate(AbsDiffprofile(nprofelements))
 allocate(Ydiff(nchans))
 allocate(Y(nchans))
 allocate(Y0(nchans))
-geovals = local_geovals
+call ufo_geovals_copy(firstguess_geovals, geovals)
 
 call fckit_log % debug("Using ML solver")
 
@@ -199,19 +199,17 @@ Iterations: do iter = 1, config % max1DVarIterations
                                        profile_index, GuessProfile(:), &
                                        hofxdiags, rttov_simobs, Y(:), H_matrix)
 
-  if (iter == 1) then
-    RTerrorcode = 0
+  if (ob % rterror) then
+    call fckit_log % warning("Radiative transfer error exit and reject profile")
+    exit Iterations
+  end if
+
+  if (iter == 1) then    
     Diffprofile(:) = zero
     BackProfile(:) = GuessProfile(:)
     Y0(:) = Y(:)
     call ufo_rttovonedvarcheck_subset_to_all_by_channels(ob % channels_used, Y0, &
                                      ob % channels_all, ob % background_BT)
-  end if
-
-  ! exit on error
-  if (RTerrorcode /= 0) then
-    write(*,*) "Radiative transfer error"
-    exit Iterations
   end if
 
   ! Calculate Obs diff and initial cost
@@ -300,7 +298,7 @@ Iterations: do iter = 1, config % max1DVarIterations
 
   if (inversionStatus /= 0) then
     inversionStatus = 1
-    write(*,*) "inversion failed"
+    call fckit_log % warning("inversion failed exiting iterations")
     exit Iterations
   end if
 
@@ -402,8 +400,21 @@ if (converged) then
   
   ! Recalculate final BTs for all channels
   call ufo_rttovonedvarcheck_get_bts(config, geovals, ob, ob % channels_all, &
-                                     profile_index, GuessProfile(:), &
                                      rttov_simobs, ob % output_BT)
+
+  ! Recalculate BTs for all channels using the background profile and
+  ! update the Tskin over land, surface emissivity, ctp, eca if retrieved.
+  ! surface emissivity, ctp and eca are in the ob structure
+  if (config % RecalculateBT) then
+    ! Update Tskin
+    call ufo_geovals_get_var(geovals, var_sfc_tskin, geoval)
+    tskin = geoval%vals(1, 1)
+    call ufo_geovals_get_var(firstguess_geovals, var_sfc_tskin, geoval)
+    geoval%vals(1, 1) = tskin
+    ! Calculate BT
+    call ufo_rttovonedvarcheck_get_bts(config, firstguess_geovals, ob, ob % channels_all, &
+                                       rttov_simobs, ob % recalc_BT)
+  end if
 
   ! Fill the final BT diff
   allocate(output_BT_usedchans(size(ob % channels_used)))
@@ -558,10 +569,11 @@ real(kind_real)                     :: Xdiff(nprofelements)
 real(kind_real)                     :: Emiss(nchans)
 real(kind_real)                     :: H_matrix_tmp(nchans,nprofelements)
 logical                             :: CalcEmiss(nchans)
-integer                             :: StatusOK = 0
-integer                             :: RTStatus = 0
+integer, parameter                  :: StatusOK = 0
+integer                             :: RTStatus
 
 Status = StatusOK
+RTStatus = 0
 
 !---------------------------------------------------------------------------
 ! 1. Calculate HTR-1 for the three allowed forms of R matrix. if required, the
@@ -624,7 +636,7 @@ DescentLoop : do while (JCost > JOld .and.                       &
                      New_DeltaProfile, &
                      Status)
   if (Status /= 0) then
-     write(*,*) 'Error in Cholesky decomposition'
+     call fckit_log % warning("Error in Cholesky decomposition")
   end if
 
   !------------------------------------------------------------------------
@@ -646,8 +658,8 @@ DescentLoop : do while (JCost > JOld .and.                       &
 
     ! Get new hofx
     call ufo_rttovonedvarcheck_get_bts(config, geovals, ob, ob % channels_used, &
-                                       profile_index, GuessProfile(:), &
                                        rttov_simobs, BriTemp(:))
+    if (ob % rterror) RTStatus = 1
 
     !------------------------------------------------------------------------
     ! 5.6. Calculate the new cost function.
@@ -664,7 +676,7 @@ DescentLoop : do while (JCost > JOld .and.                       &
       Ydiff(:) = ob % yobs(:) - BriTemp(:)
       call ufo_rttovonedvarcheck_CostFunction(Xdiff, b_inv, Ydiff, r_matrix, Jout)
       Jcost = Jout(1)
-      if (Status /= StatusOK) goto 9999
+      if (Status /= StatusOK) return
     end if
 
   else
@@ -689,8 +701,6 @@ end do DescentLoop
 DeltaProfile = New_DeltaProfile
 Gamma = Gamma / ten
 JOld = JCost
-
-9999 continue
 
 end subroutine ufo_rttovonedvarcheck_ML
 

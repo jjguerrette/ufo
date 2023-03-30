@@ -9,10 +9,14 @@ observations:
   obs space:
     name: SeaIceFraction
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/icec-2018-04-15.nc
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/icec-2018-04-15.nc
 #   obsdataout:
-#     obsfile: Data/icec-2018-04-15_seaicefraction_opr_out.nc
-    simulated variables: [sea_ice_area_fraction]
+#     engine:
+#       type: H5File
+#       obsfile: Data/icec-2018-04-15_seaicefraction_opr_out.nc
+    simulated variables: [seaIceFraction]
   geovals:
     filename: Data/ufo/testinput_tier_1/icec-2018-04-15_geovals.nc
   rms ref: 2.5

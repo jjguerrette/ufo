@@ -5,25 +5,29 @@ observations:
 - obs space:
     name: Profile level count
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/function_profilelevelcount.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/function_profilelevelcount.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
-        sort variable: "air_pressure"
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
         sort order: "descending"
-    simulated variables: [air_temperature]
+    simulated variables: [airTemperature]
 #   obsdataout:
-#     obsfile: Data/function_profilelevelcount_out1.nc4
+#     engine:
+#       type: H5File
+#       obsfile: Data/function_profilelevelcount_out1.nc4
   obs filters:
   - filter: Variable Assignment
     assignments:
-    - name: number_of_levels@DerivedMetaData
+    - name: DerivedMetaData/number_of_levels
       type: int
       function:
-        name: ProfileLevelCount@IntObsFunction
+        name: IntObsFunction/ProfileLevelCount
         options:
           where:
             - variable:
-                name: apply@MetaData
+                name: MetaData/apply
               is_in: 1
   compareVariables:
   - test:
@@ -34,78 +38,90 @@ observations:
 - obs space:
     name: Profile level count, where clause not used
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/function_profilelevelcount.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/function_profilelevelcount.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
-        sort variable: "air_pressure"
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
         sort order: "descending"
-    simulated variables: [air_temperature]
+    simulated variables: [airTemperature]
 #   obsdataout:
-#     obsfile: Data/function_profilelevelcount_out2.nc4
+#     engine:
+#       type: H5File
+#       obsfile: Data/function_profilelevelcount_out2.nc4
   obs filters:
   - filter: Variable Assignment
     assignments:
-    - name: number_of_levels@DerivedMetaData
+    - name: DerivedMetaData/number_of_levels
       type: int
       function:
-        name: ProfileLevelCount@IntObsFunction
+        name: IntObsFunction/ProfileLevelCount
   compareVariables:
   - test:
-      name: number_of_levels@DerivedMetaData
+      name: DerivedMetaData/number_of_levels
     reference:
-      name: number_of_levels_without_where@TestReference
+      name: TestReference/number_of_levels_without_where
 
 - obs space:
     name: Grouping not performed, throwing an exception
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/function_profilelevelcount.nc4
-    simulated variables: [air_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/function_profilelevelcount.nc4
+    simulated variables: [airTemperature]
 #   obsdataout:
-#     obsfile: Data/function_profilelevelcount_out3.nc4
+#     engine:
+#       type: H5File
+#       obsfile: Data/function_profilelevelcount_out3.nc4
   obs filters:
   - filter: Variable Assignment
     assignments:
-    - name: number_of_levels@DerivedMetaData
+    - name: DerivedMetaData/number_of_levels
       type: int
       function:
-        name: ProfileLevelCount@IntObsFunction
+        name: IntObsFunction/ProfileLevelCount
         options:
           where:
             - variable:
-                name: apply@MetaData
+                name: MetaData/apply
               is_in: 1
   expectExceptionWithMessage: Group variables configuration is empty
 
 - obs space:
     name: Profile level count, where clause using logical `or`
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/function_profilelevelcount.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/function_profilelevelcount.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
-        sort variable: "air_pressure"
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
         sort order: "descending"
-    simulated variables: [air_temperature]
+    simulated variables: [airTemperature]
 #   obsdataout:
-#     obsfile: Data/function_profilelevelcount_out4.nc4
+#     engine:
+#       type: H5File
+#       obsfile: Data/function_profilelevelcount_out4.nc4
   obs filters:
   - filter: Variable Assignment
     assignments:
-    - name: number_of_levels@DerivedMetaData
+    - name: DerivedMetaData/number_of_levels
       type: int
       function:
-        name: ProfileLevelCount@IntObsFunction
+        name: IntObsFunction/ProfileLevelCount
         options:
           where:
             - variable:
-                name: apply@MetaData
+                name: MetaData/apply
               is_in: 1
             - variable:
-                name: apply@MetaData
+                name: MetaData/apply
               is_in: 0
           where operator: or
   compareVariables:
   - test:
-      name: number_of_levels@DerivedMetaData
+      name: DerivedMetaData/number_of_levels
     reference:
       # expect all locations to be selected
-      name: number_of_levels_without_where@TestReference
+      name: TestReference/number_of_levels_without_where

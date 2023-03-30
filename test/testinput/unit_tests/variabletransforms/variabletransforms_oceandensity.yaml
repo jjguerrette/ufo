@@ -1,0 +1,57 @@
+window begin: 2017-12-31T21:00:00Z
+window end: 2030-01-01T03:00:00Z
+
+observations:
+- obs space:
+    name: Ocean density calculation
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/oceanprofile_theta_pressure_testdata.nc4
+    simulated variables: [waterTemperature, salinity, waterDensity]
+    observed variables: [waterTemperature, salinity]
+    derived variables: [waterDensity]
+  obs filters:
+  - filter: Variable Transforms
+    where:
+    - variable:
+        name: ObsValue/waterTemperature
+      is_defined:
+    - variable:
+        name: TestReference/absoluteSalinity
+      is_defined:
+    Transform: OceanDensity
+    ocean pressure group: TestReference
+    ocean salinity group: TestReference
+  compareVariables:
+    - reference:
+        name: TestReference/waterDensity
+      test:
+        name: DerivedObsValue/waterDensity
+      relTol: 2.0e-4
+  passedBenchmark: 665  # 219 + Non-missing salinity
+                        # 227 + Non-missing waterTemperature
+                        # 219 + Non-missing waterDensity (waterTemperature & salinity)
+                        # = 665
+
+- obs space:
+    name: Ocean density calculation throws exception
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/oceanprofile_theta_pressure_testdata.nc4
+    simulated variables: [waterTemperature, salinity]
+    observed variables: [waterTemperature, salinity]
+  obs filters:
+  - filter: Variable Transforms
+    where:
+    - variable:
+        name: ObsValue/waterTemperature
+      is_defined:
+    - variable:
+        name: TestReference/absoluteSalinity
+      is_defined:
+    Transform: OceanDensity
+    ocean pressure group: TestReference
+    ocean salinity group: TestReference
+  expectExceptionWithMessage: "`waterDensity` must be an observed or derived variable for the `OceanDensity` variable transform."

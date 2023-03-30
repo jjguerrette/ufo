@@ -2,8 +2,12 @@
 # Thinning filter makes it retain the same observations as the Ops_Thinning function from the
 # Met Office OPS system when run in serial.
 
-window begin: 2020-05-11T02:59:59Z  # Shifted back by 1 s to include obs taken at 03:00:00
-window end: 2020-05-11T09:00:00Z
+# Shifted back by 1 s to include obs taken at 03:00:00
+window begin: 2020-05-11T02:59:59Z
+# Also shifted back by 1 s to preserve a 6 h-long window
+# Note the obsfile used in this test has no obs at the window end time, so shifting the end
+# forward by 1 s does not affect the number of obs processed by the test.
+window end: 2020-05-11T08:59:59Z
 
 # The first two tests operate on test data containing series of observations that differ by only
 # one coordinate (latitude, longitude, time or pressure); many of these have the same distance from
@@ -15,10 +19,14 @@ observations:
 - obs space:
     name: Longitudes from -180 to 180
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_gauss_thinning_lon_-180_to_180_obs.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_gauss_thinning_lon_-180_to_180_obs.nc4
 #   obsdataout:
-#     obsfile: Data/met_office_gauss_thinning_lon_-180_to_180_obs_out1.nc4
-    simulated variables: [air_temperature]
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_gauss_thinning_lon_-180_to_180_obs_out1.nc4
+    simulated variables: [airTemperature]
   obs filters:
   - filter: Gaussian Thinning
     ops_compatibility_mode: true
@@ -48,10 +56,14 @@ observations:
 - obs space:
     name: Longitudes from 0 to 360  # Same obs, but with negative longitudes shifted upwards by 360 deg
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_gauss_thinning_lon_0_to_360_obs.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_gauss_thinning_lon_0_to_360_obs.nc4
 #   obsdataout:
-#     obsfile: Data/met_office_gauss_thinning_lon_-180_to_180_obs_out2.nc4
-    simulated variables: [air_temperature]
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_gauss_thinning_lon_-180_to_180_obs_out2.nc4
+    simulated variables: [airTemperature]
   obs filters:
   - filter: Gaussian Thinning
     ops_compatibility_mode: true
@@ -83,10 +95,14 @@ observations:
 - obs space:
     name: Ground GNSS, no thinning scores
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_gauss_thinning_groundgnss_obs.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_gauss_thinning_groundgnss_obs.nc4
 #   obsdataout:
-#     obsfile: Data/met_office_gauss_thinning_lon_-180_to_180_obs_out3.nc4
-    simulated variables: [ZTD]
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_gauss_thinning_lon_-180_to_180_obs_out3.nc4
+    simulated variables: [zenithTotalDelay]
   obs filters:
   - filter: Gaussian Thinning
     ops_compatibility_mode: true
@@ -2291,10 +2307,14 @@ observations:
 - obs space:
     name: Ground GNSS, with thinning scores
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_gauss_thinning_groundgnss_obs.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_gauss_thinning_groundgnss_obs.nc4
 #   obsdataout:
-#     obsfile: Data/met_office_gauss_thinning_lon_-180_to_180_obs_out4.nc4
-    simulated variables: [ZTD]
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_gauss_thinning_lon_-180_to_180_obs_out4.nc4
+    simulated variables: [zenithTotalDelay]
   obs filters:
   - filter: Gaussian Thinning
     ops_compatibility_mode: true
@@ -2303,7 +2323,7 @@ observations:
     time_min: 2020-05-11T03:00:00Z
     time_max: 2020-05-11T09:00:00Z
     priority_variable:
-      name: thinning_score@MetaData
+      name: MetaData/thinningPriority
   passedObservationsBenchmark:
   - 0
   - 5
@@ -4505,10 +4525,14 @@ observations:
 - obs space:
     name: Ground GNSS pick latest only
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_gauss_thinning_groundgnssnames_obs.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_gauss_thinning_groundgnssnames_obs.nc4
 #   obsdataout:
-#     obsfile: Data/met_office_gauss_thinning_lon_-180_to_180_obs_out5.nc4
-    simulated variables: [ZTD]
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_gauss_thinning_lon_-180_to_180_obs_out5.nc4
+    simulated variables: [zenithTotalDelay]
   obs filters:
   - filter: Gaussian Thinning
     ops_compatibility_mode: true
@@ -4518,7 +4542,7 @@ observations:
     time_min: 2020-05-11T02:30:00Z
     time_max: 2020-05-11T09:00:00Z
     category_variable:
-      name: full_site_name@MetaData
+      name: MetaData/stationACCombined
   passedObservationsBenchmark:
   - 0
   - 5
@@ -7877,10 +7901,14 @@ observations:
 - obs space:
     name: Ground GNSS pick latest with prior Gaussian thin
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_gauss_thinning_groundgnssnames_obs.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_gauss_thinning_groundgnssnames_obs.nc4
 #   obsdataout:
-#     obsfile: Data/met_office_gauss_thinning_lon_-180_to_180_obs_out6.nc4
-    simulated variables: [ZTD]
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_gauss_thinning_lon_-180_to_180_obs_out6.nc4
+    simulated variables: [zenithTotalDelay]
   obs filters:
   - filter: Gaussian Thinning
     ops_compatibility_mode: true
@@ -7896,7 +7924,7 @@ observations:
     time_min: 2020-05-11T02:30:00Z
     time_max: 2020-05-11T09:00:00Z
     category_variable:
-      name: full_site_name@MetaData
+      name: MetaData/stationACCombined
   passedObservationsBenchmark:
   - 0
   - 10
@@ -8923,28 +8951,32 @@ observations:
 - obs space:
     name: Ground GNSS pick latest testing priority_variable
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_gauss_thinning_groundgnssnames_obs.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_gauss_thinning_groundgnssnames_obs.nc4
 #   obsdataout:
-#     obsfile: Data/met_office_gauss_thinning_lon_-180_to_180_obs_out7.nc4
-    simulated variables: [ZTD]
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_gauss_thinning_lon_-180_to_180_obs_out7.nc4
+    simulated variables: [zenithTotalDelay]
   obs filters:
 
   - filter: Variable Assignment
     where:
     - variable:
-        name: full_site_name@MetaData
+        name: MetaData/stationACCombined
       matches_wildcard: 'ACOR-MTGH'
     assignments:
-    - name: priority@MetaData
+    - name: MetaData/thinningPriority
       type: int
       value: 1
   - filter: Variable Assignment
     where:
     - variable:
-        name: full_site_name@MetaData
+        name: MetaData/stationACCombined
       matches_wildcard: 'ACOR-MTRH'
     assignments:
-    - name: priority@MetaData
+    - name: MetaData/thinningPriority
       type: int
       value: 2
 
@@ -8956,7 +8988,7 @@ observations:
     time_min: 2020-05-11T02:30:00Z
     time_max: 2020-05-11T09:00:00Z
     priority_variable:
-      name: priority@MetaData
+      name: MetaData/thinningPriority
   passedObservationsBenchmark:
   - 5700
   - 6785

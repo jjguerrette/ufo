@@ -1,0 +1,55 @@
+window begin: 2020-05-11T02:59:59Z  # Shifted back by 1 s to include obs taken at 03:00:00
+window end: 2020-05-11T09:00:00Z
+
+observations:
+- obs space:
+    name: Ground GNSS Cut Site_name to station name
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/stringmanipulation_obs.nc4
+    simulated variables: [zenithTotalDelay]
+    
+  obs filters:  
+  - filter: Variable Assignment
+    assignments:
+    - name: MetaData/stationIdentification
+      type: string
+      function:
+        name: StringObsFunction/StringManipulation
+        options:
+          string operation: stringcut
+          variable: [MetaData/stationACCombined]
+          startIndex: 0 
+          cutLength: 4
+
+  compareVariables:
+    - test:
+        name: MetaData/stationIdentification
+      reference:
+        name: TestReference/stationIdentification
+
+
+# Test that without startIndex and cutLength defined for stringcut an exception will be raised.  
+- obs space:
+    name: Ground GNSS Cut Site_name to station name
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/stringmanipulation_obs.nc4
+    simulated variables: [zenithTotalDelay]
+    
+  obs filters: 
+  - filter: Variable Assignment
+    assignments:
+    - name: MetaData/stationIdentification
+      type: string
+      function:
+        name: StringObsFunction/StringManipulation
+        options:
+          string operation: stringcut
+          variable: [MetaData/stationACCombined]
+
+  expectExceptionWithMessage: startIndex and cutLength need to be set for stringcut
+  
+

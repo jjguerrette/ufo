@@ -48,7 +48,7 @@ class SurfaceEmissivityParameters : public oops::Parameters {
   oops::Parameter<double> EmissSeaIceDefault{"EmissSeaIceDefault", 0.92, this};
 
   /// Location of emissivity values to be read from the database e.g.
-  /// default is surface_emissivity_<chan>@DerivedObsValue
+  /// default is DerivedObsValue/emissivity_<chan>
   oops::Parameter<std::string> groupInObsSpace{"group in obs space", "DerivedObsValue", this};
 
   /// Default eigen value path is blank but needs to be present if using PC emiss
@@ -155,6 +155,10 @@ class RTTOVOneDVarCheckParameters : public FilterParametersBase {
 
   /// Output the surface to space transmittance if the profile converges
   oops::Parameter<bool> Store1DVarTransmittance{"Store1DVarTransmittance", false, this};
+
+  /// Recalculate the brightness temperature using retrieval values if the
+  /// profile has converged
+  oops::Parameter<bool> RecalculateBT{"RecalculateBT", false, this};
 
   /// Turn on extra diagnostics
   oops::Parameter<bool> FullDiagnostics{"FullDiagnostics", false, this};

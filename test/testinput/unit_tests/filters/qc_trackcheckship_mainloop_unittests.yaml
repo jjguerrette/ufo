@@ -3,14 +3,15 @@ Normal ship track:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]    
-    generate:
-      list:
+    simulated variables: [airTemperature]    
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 1, 2 ]
         lons: [ 0, 0, 0 ]
         dateTimes: [ 0, 3600, 7200 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1 ]
   Ship Track Check:
     unit testing mode: true
@@ -20,7 +21,7 @@ Normal ship track:
     max speed (m/s): 1000 # (1 lat/lon unit diff/hr ~ 30.8)
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: []
   expected error category: []
 Ship track error first segment category 2:
@@ -32,15 +33,16 @@ Ship track error first segment category 2:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]    
-    generate:
-      list:
+    simulated variables: [airTemperature]    
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 1, 1.1, 1.1 ]
         lons: [ 0, 0, 0, 0.1 ]
         dateTimes: [ 0, 3600,
         7200, 10800 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1 ]
   Ship Track Check:
     unit testing mode: true
@@ -50,7 +52,7 @@ Ship track error first segment category 2:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [1]
   expected error category: [2]
 Ship track error first segment category 1:
@@ -58,15 +60,16 @@ Ship track error first segment category 1:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]    
-    generate:
-      list:
+    simulated variables: [airTemperature]    
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 1, 1.5]
         lons: [ 0, 0, 0]
         dateTimes: [ 0, 3600,
                      7200]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -76,7 +79,7 @@ Ship track error first segment category 1:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [0]
   expected error category: [1]
 Ship track error last segment category 2:
@@ -84,15 +87,16 @@ Ship track error last segment category 2:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature] 
-    generate:
-      list:
+    simulated variables: [airTemperature] 
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0.5, 0, 1 ]
         lons: [ 0, 0, 0, 0 ]
         dateTimes: [ 0, 3600,
                      7200, 10800]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1 ]
   Ship Track Check:
     unit testing mode: true
@@ -102,7 +106,7 @@ Ship track error last segment category 2:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [2]
   expected error category: [2]
 Ship track error last segment category 1:
@@ -110,15 +114,16 @@ Ship track error last segment category 1:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0, 1 ]
         lons: [ 0, 0, 0 ]
         dateTimes: [ 0, 3600,
                      7200]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1 ]
   Ship Track Check:
     unit testing mode: true
@@ -128,7 +133,7 @@ Ship track error last segment category 1:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [2]
   expected error category: [1]
 Ship track error middle segment prev fast category 4:
@@ -136,15 +141,16 @@ Ship track error middle segment prev fast category 4:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0.999, -0.001, -0.002]
         lons: [ 0, 0, 0, 0]
         dateTimes: [ 0, 3600,
                      7200, 10800]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -154,7 +160,7 @@ Ship track error middle segment prev fast category 4:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [1]
   expected error category: [4]
 Ship track error middle segment prev fast category 104:
@@ -162,15 +168,16 @@ Ship track error middle segment prev fast category 104:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0.999, 1.999, 2.5 ]
         lons: [ 0, 0, 0, 0 ]
         dateTimes: [ 0, 3600,
                      7200, 10800 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [ 1.0 ]
+        obs errors: [ 1.0 ]
   station_ids: [ 1, 1, 1, 1 ]
   Ship Track Check:
     unit testing mode: true
@@ -180,7 +187,7 @@ Ship track error middle segment prev fast category 104:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [ 1, 2 ]
   expected error category: [ 104 ]
 Ship track error middle segment next fast category 4:
@@ -188,15 +195,16 @@ Ship track error middle segment next fast category 4:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0.5, 1.5, 0.501]
         lons: [ 0, 0, 0, 0]
         dateTimes: [ 0, 3600,
                      7200, 10800]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -206,7 +214,7 @@ Ship track error middle segment next fast category 4:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [2]
   expected error category: [4]
 Ship track error middle segment next fast category 104:
@@ -216,15 +224,16 @@ Ship track error middle segment next fast category 104:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0.5, 1.5, 2.499]
         lons: [ 0, 0, 0, 0]
         dateTimes: [ 0, 3600,
                      7200, 10800]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -234,7 +243,7 @@ Ship track error middle segment next fast category 104:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [1,2]
   expected error category: [104]
 Ship track error middle segment average fast category 5: #uses time res to control speedAveraged more predictably
@@ -242,15 +251,16 @@ Ship track error middle segment average fast category 5: #uses time res to contr
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]  
-    generate:
-      list:
+    simulated variables: [airTemperature]  
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0.1, 1.1, 1.1]
         lons: [ 0, 0, 0, 0.5]
         dateTimes: [ 0, 3600,
                      7200, 7200]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -260,7 +270,7 @@ Ship track error middle segment average fast category 5: #uses time res to contr
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [1]
   expected error category: [5]
 Ship track error middle segment prev average fast category 5:
@@ -268,15 +278,16 @@ Ship track error middle segment prev average fast category 5:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]  
-    generate:
-      list:
+    simulated variables: [airTemperature]  
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0.5, 1.5, 0.6 ]
         lons: [ 0, 0, 0, 0]
         dateTimes: [ 0, 3600,
                      3600, 7200]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -286,7 +297,7 @@ Ship track error middle segment prev average fast category 5:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [ 2 ]
   expected error category: [ 5 ]
 Ship track error middle segment prev average fast category 105:
@@ -294,15 +305,16 @@ Ship track error middle segment prev average fast category 105:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]   
-    generate:
-      list:
+    simulated variables: [airTemperature]   
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0.5, 1.5, 2.0 ]
         lons: [ 0, 0, 0, 0 ]
         dateTimes: [ 0, 3600,
                      3600, 7200 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [ 1.0 ]
+        obs errors: [ 1.0 ]
   station_ids: [ 1, 1, 1, 1 ]
   Ship Track Check:
     unit testing mode: true
@@ -312,7 +324,7 @@ Ship track error middle segment prev average fast category 105:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [ 1, 2 ]
   expected error category: [ 105 ]
 Ship track error middle segment prev angle large category 6:
@@ -320,15 +332,16 @@ Ship track error middle segment prev angle large category 6:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]   
-    generate:
-      list:
+    simulated variables: [airTemperature]   
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0.1, 0.1, 0.1]
         lons: [ 0, 0, 1, 1.5]
         dateTimes: [ 0, 3600,
                      7200, 10800]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -338,7 +351,7 @@ Ship track error middle segment prev angle large category 6:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [1]
   expected error category: [6]
 Ship track error middle segment angle large category 6:
@@ -346,15 +359,16 @@ Ship track error middle segment angle large category 6:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0.1, 1.1, 1.1]
         lons: [ 0, 0, 0, 0.1]
         dateTimes: [ 0, 3600,
                      7200, 10800]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -364,7 +378,7 @@ Ship track error middle segment angle large category 6:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [2]
   expected error category: [6]
 Ship track error middle segment previous previous angle large category 7:
@@ -372,16 +386,17 @@ Ship track error middle segment previous previous angle large category 7:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]  
-    generate:
-      list:
+    simulated variables: [airTemperature]  
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0, 0.1, 1.1, 1.1]
         lons: [ 0, 0.1, 0.1, 0.1, 0.1]
         dateTimes: [ 0, 3600,
                      7200, 10800,
                      14400]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -391,7 +406,7 @@ Ship track error middle segment previous previous angle large category 7:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [2]
   expected error category: [7]
 Ship track error middle segment next angle large category 7:
@@ -399,16 +414,17 @@ Ship track error middle segment next angle large category 7:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]   
-    generate:
-      list:
+    simulated variables: [airTemperature]   
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0.1, 1.1, 1.2, 1.2]
         lons: [ 0, 0, 0, 0, 0.1]
         dateTimes: [ 0, 3600,
                      7200, 10800,
                      14400]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -418,7 +434,7 @@ Ship track error middle segment next angle large category 7:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [2]
   expected error category: [7]
 Ship track error middle segment prev speed < half next speed category 8:
@@ -426,15 +442,16 @@ Ship track error middle segment prev speed < half next speed category 8:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]  
-    generate:
-      list:
+    simulated variables: [airTemperature]  
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0, 1.0, 1.2]
         lons: [ 0, 0, 0, 0]
         dateTimes: [ 0, 3600,
                      7200, 10800 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -444,7 +461,7 @@ Ship track error middle segment prev speed < half next speed category 8:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [1]
   expected error category: [8]
 Ship track error middle segment next speed < half prev speed category 8:
@@ -452,15 +469,16 @@ Ship track error middle segment next speed < half prev speed category 8:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]  
-    generate:
-      list:
+    simulated variables: [airTemperature]  
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0.2, 1.2, 1.2]
         lons: [ 0, 0, 0, 0]
         dateTimes: [ 0, 3600,
                      7200, 10800 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -470,7 +488,7 @@ Ship track error middle segment next speed < half prev speed category 8:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [2]
   expected error category: [8]
 Ship track error middle segment category 100:
@@ -478,15 +496,16 @@ Ship track error middle segment category 100:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]    
-    generate:
-      list:
+    simulated variables: [airTemperature]    
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0.1, 1.1, 1.2 ]
         lons: [ 0, 0, 0, 0 ]
         dateTimes: [ 0, 3600,
                      7200, 10800 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -496,7 +515,7 @@ Ship track error middle segment category 100:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected first rejection index: [ 1, 2 ]
   expected error category: [100]
   expected distance sum: [133.2] #111 for 1 unit of lat

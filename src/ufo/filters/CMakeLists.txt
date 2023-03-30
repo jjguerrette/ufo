@@ -15,6 +15,8 @@ set ( filters_files
       ConventionalProfileProcessing.cc
       ConventionalProfileProcessing.h
       ConventionalProfileProcessingParameters.h
+      CopyFlagsFromExtendedToOriginalSpace.cc
+      CopyFlagsFromExtendedToOriginalSpace.h
       CreateDiagnosticFlags.cc
       CreateDiagnosticFlags.h
       DiagnosticFlag.h
@@ -52,6 +54,8 @@ set ( filters_files
       MetOfficeBuddyPair.h
       MetOfficeBuddyPairFinder.cc
       MetOfficeBuddyPairFinder.h
+      MetOfficeDuplicateCheck.cc
+      MetOfficeDuplicateCheck.h
       ModelBestFitPressure.cc
       ModelBestFitPressure.h
       ModelObThreshold.cc
@@ -79,10 +83,14 @@ set ( filters_files
       QCmanager.h
       PerformAction.cc
       PerformAction.h
+      ProfileAverageObsToModLevels.cc
+      ProfileAverageObsToModLevels.h
       ProfileBackgroundCheck.cc
       ProfileBackgroundCheck.h
       ProfileFewObsCheck.cc
       ProfileFewObsCheck.h
+      ProfileUnFlagObsCheck.cc
+      ProfileUnFlagObsCheck.h
       SatName.h
       SatName.cc
       SatwindInversionCorrection.cc
@@ -155,6 +163,8 @@ set ( filters_files
       actions/RejectObs.h
       actions/SetFlag.cc
       actions/SetFlag.h
+      obsfunctions/AverageTemperatureBelow.cc
+      obsfunctions/AverageTemperatureBelow.h
       obsfunctions/BennartzScatIndex.cc
       obsfunctions/BennartzScatIndex.h
       obsfunctions/ChannelUseflagCheckRad.cc
@@ -183,6 +193,8 @@ set ( filters_files
       obsfunctions/SIRetMW.h
       obsfunctions/SIRetSymmetricMW.cc
       obsfunctions/SIRetSymmetricMW.h
+      obsfunctions/Emissivity_Diff_GMI.cc
+      obsfunctions/Emissivity_Diff_GMI.h
       obsfunctions/HydrometeorCheckAMSUA.cc
       obsfunctions/HydrometeorCheckAMSUA.h
       obsfunctions/HydrometeorCheckATMS.cc
@@ -207,6 +219,8 @@ set ( filters_files
       obsfunctions/ObsErrorModelQuad.h
       obsfunctions/ObsFunction.cc
       obsfunctions/ObsFunction.h
+      obsfunctions/ObsFunctionArithmetic.cc
+      obsfunctions/ObsFunctionArithmetic.h
       obsfunctions/ObsFunctionBase.cc
       obsfunctions/ObsFunctionBase.h
       obsfunctions/CloudCostFunction.cc
@@ -231,6 +245,10 @@ set ( filters_files
       obsfunctions/ObsErrorBoundIR.h
       obsfunctions/ObsErrorBoundMW.cc
       obsfunctions/ObsErrorBoundMW.h
+      obsfunctions/ObsErrorFactorDuplicateCheck.cc
+      obsfunctions/ObsErrorFactorDuplicateCheck.h
+      obsfunctions/ObsErrorFactorPressureCheck.cc
+      obsfunctions/ObsErrorFactorPressureCheck.h
       obsfunctions/ObsErrorFactorSituDependMW.cc
       obsfunctions/ObsErrorFactorSituDependMW.h
       obsfunctions/ObsErrorFactorSurfJacobianRad.cc
@@ -253,12 +271,12 @@ set ( filters_files
       obsfunctions/NearSSTRetCheckIR.h
       obsfunctions/ObsFunctionExponential.cc
       obsfunctions/ObsFunctionExponential.h
-      obsfunctions/ObsFunctionLinearCombination.cc
-      obsfunctions/ObsFunctionLinearCombination.h
       obsfunctions/ObsFunctionScattering.cc
       obsfunctions/ObsFunctionScattering.h
       obsfunctions/ObsFunctionSelectStatistic.cc
       obsfunctions/ObsFunctionSelectStatistic.h
+      obsfunctions/ObsFunctionStringManipulation.cc
+      obsfunctions/ObsFunctionStringManipulation.h
       obsfunctions/ObsFunctionVelocity.cc
       obsfunctions/ObsFunctionVelocity.h
       obsfunctions/OceanPressureToDepth.cc
@@ -271,6 +289,8 @@ set ( filters_files
       obsfunctions/SatWindsLNVDCheck.h
       obsfunctions/SatWindsSPDBCheck.cc
       obsfunctions/SatWindsSPDBCheck.h
+      obsfunctions/ScatWindsAmbiguityCheck.cc
+      obsfunctions/ScatWindsAmbiguityCheck.h
       obsfunctions/SCATRetMW.cc
       obsfunctions/SCATRetMW.h
       obsfunctions/SymmCldImpactIR.cc
@@ -279,6 +299,8 @@ set ( filters_files
       obsfunctions/SolarZenith.h
       obsfunctions/SunGlintAngle.cc
       obsfunctions/SunGlintAngle.h
+      obsfunctions/SurfTypeCheckRad.cc
+      obsfunctions/SurfTypeCheckRad.h
       obsfunctions/TropopauseEstimate.cc
       obsfunctions/TropopauseEstimate.h
       obsfunctions/WindDirAngleDiff.cc
@@ -299,6 +321,11 @@ set ( filters_files
       obsfunctions/MetOfficeRelativeHumidityCorrection.cc
       obsfunctions/MetOfficeRelativeHumidityCorrection.h
 )
+
+if( ${gsw_FOUND} )
+  list( APPEND filters_files OceanVerticalStabilityCheck.cc
+                             OceanVerticalStabilityCheck.h )
+endif( ${gsw_FOUND} )
 
 if( ${rttov_FOUND} )
   add_subdirectory( rttovonedvarcheck )

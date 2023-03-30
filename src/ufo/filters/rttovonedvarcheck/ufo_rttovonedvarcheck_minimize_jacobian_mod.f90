@@ -75,9 +75,7 @@ end  subroutine ufo_rttovonedvarcheck_get_jacobian
 !! \date 21/01/2021: Created
 !!
 subroutine ufo_rttovonedvarcheck_get_bts(config, geovals, ob, channels, &
-                                         profindex, &
-                                         prof_x, rttov_simobs, &
-                                         hofx)
+                                         rttov_simobs, hofx)
 
 implicit none
 
@@ -86,8 +84,6 @@ type(ufo_rttovonedvarcheck), intent(in)           :: config        !< configurat
 type(ufo_geovals), intent(in)                     :: geovals       !< model data at obs location
 type(ufo_rttovonedvarcheck_ob), intent(inout)     :: ob            !< satellite metadata
 integer, intent(in)                               :: channels(:)   !< channels used for this calculation
-type(ufo_rttovonedvarcheck_profindex), intent(in) :: profindex     !< index array for x vector
-real(kind_real), intent(in)                       :: prof_x(:)     !< x vector
 type(ufo_radiancerttov), intent(inout)            :: rttov_simobs  !< rttov simulate obs object
 real(kind_real), intent(out)                      :: hofx(:)       !< BTs
 
@@ -99,6 +95,7 @@ real(c_double)    :: BT(size(ob % channels_all)) !< BTs produced for all channel
 select case (trim(ob % forward_mod_name))
   case ("RTTOV")
     call rttov_simobs % simobs(geovals, config % obsdb, size(ob % channels_all), 1, BT, empty_hofxdiags, ob_info=ob)
+    if (ob % rterror) return
     call ufo_rttovonedvarcheck_all_to_subset_by_channels(ob % channels_all, BT, channels, hofx)
   case default
     call abor1_ftn("rttovonedvarcheck get jacobian: no suitable forward model => exiting")
@@ -153,14 +150,17 @@ real(kind_real), allocatable :: dBT_dqi(:)
 real(kind_real), allocatable :: emissivity_k(:)
 real(kind_real), allocatable :: emissivity(:)
 character(len=max_string)    :: varname
-real(c_double)               :: BT(size(ob % channels_all))
+real(c_double), allocatable  :: BT(:)
 real(kind_real)              :: u, v, dBT_du, dBT_dv, windsp
 
 ! Setup varibales
 nchans = size(channels)
 H_matrix(:,:) = zero
+allocate(BT(size(ob % channels_all)))
 
+! Run rttov and check it works any failures return here
 call rttov_data % simobs(geovals, config % obsdb, size(ob % channels_all), 1, BT, hofxdiags, ob_info=ob)
+if (ob % rterror) return
 
 ! -------------------------------
 !Get hofx for just channels used

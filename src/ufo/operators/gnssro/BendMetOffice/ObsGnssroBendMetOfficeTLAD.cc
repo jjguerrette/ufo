@@ -5,7 +5,9 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+#include <algorithm>
 #include <ostream>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -14,6 +16,7 @@
 #include "ioda/ObsVector.h"
 
 #include "oops/base/Variables.h"
+#include "oops/util/IntSetParser.h"
 #include "oops/util/Logger.h"
 
 #include "ufo/GeoVaLs.h"
@@ -30,15 +33,20 @@ ObsGnssroBendMetOfficeTLAD::ObsGnssroBendMetOfficeTLAD(const ioda::ObsSpace & od
                                                const Parameters_ & parameters)
   : LinearObsOperatorBase(odb), keyOperGnssroBendMetOffice_(0), varin_()
 {
-  const std::vector<std::string> vv{"air_pressure_levels", "specific_humidity",
-                                    "geopotential_height", "geopotential_height_levels"};
+  const std::vector<std::string> vv{"air_pressure_levels", "specific_humidity"};
   varin_.reset(new oops::Variables(vv));
   oops::Log::info() << "ObsGnssroBendMetOfficeTLAD vars: " << *varin_ << std::endl;
+
+  std::set<int> channelset = oops::parseIntSet(parameters.channelList);
+  std::vector<int> channels;
+  std::copy(channelset.begin(), channelset.end(), std::back_inserter(channels));
 
   ufo_gnssro_bendmetoffice_tlad_setup_f90(keyOperGnssroBendMetOffice_,
                                           parameters.vertInterpOPS,
                                           parameters.pseudoLevels,
-                                          parameters.minTempGrad);
+                                          parameters.minTempGrad,
+                                          channels.size(),
+                                          channels[0]);
 
   oops::Log::trace() << "ObsGnssroBendMetOfficeTLAD created" << std::endl;
 }

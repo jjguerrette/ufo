@@ -5,17 +5,21 @@ observations:
 - obs space:
     name: test_sfcp_inflation
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/2020100106_metars_small.nc
-    simulated variables: [surface_pressure]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/2020100106_metars_small.nc
+    simulated variables: [stationPressure]
 #   obsdataout:
-#     obsfile: Data/2020100106_metars_small_SfcPCorrected_out.nc
+#     engine:
+#       type: H5File
+#       obsfile: Data/2020100106_metars_small_SfcPCorrected_out.nc
   geovals:
     filename: Data/ufo/testinput_tier_1/sfcobs_geovals_gfsC48_2020100106_small.nc
   obs operator:
     name: SfcPCorrected
     da_psfc_scheme: UKMO
   obs function:
-    name: ObsErrorFactorSfcPressure@ObsFunction
+    name: ObsFunction/ObsErrorFactorSfcPressure
     options:
       original_obserr: ObsError
       error_min: 100         # 1 mb

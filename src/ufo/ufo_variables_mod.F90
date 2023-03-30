@@ -1,4 +1,4 @@
-!
+
 !  (C) Copyright 2021.
 !
 !  This software is licensed under the terms of the Apache Licence Version 2.0
@@ -18,7 +18,6 @@ integer, parameter, public :: n_aerosols_gocart_default=14,&
 integer, parameter, public :: MAXVARLEN=100
 character(len=MAXVARLEN), public, parameter :: var_tv   = "virtual_temperature"
 character(len=MAXVARLEN), public, parameter :: var_ts   = "air_temperature"
-character(len=MAXVARLEN), public, parameter :: var_t    = "temperature"
 character(len=MAXVARLEN), public, parameter :: var_mixr = "humidity_mixing_ratio" ! g/kg
 character(len=MAXVARLEN), public, parameter :: var_q    = "specific_humidity"     ! kg/kg
 character(len=MAXVARLEN), public, parameter :: var_u    = "eastward_wind"
@@ -28,7 +27,7 @@ character(len=MAXVARLEN), public, parameter :: var_prsi = "air_pressure_levels"
 character(len=MAXVARLEN), public, parameter :: var_prsimo = "air_pressure_levels_minus_one"
 character(len=MAXVARLEN), public, parameter :: var_delp   = "air_pressure_thickness"
 character(len=MAXVARLEN), public, parameter :: var_ps     = "surface_pressure"
-character(len=MAXVARLEN), public, parameter :: var_pmsl   = "surface_pressure_at_mean_sea_level"
+character(len=MAXVARLEN), public, parameter :: var_pmsl   = "surface_pressure_at_mean_sea_level" ! used by MetOffice opsinputs
 character(len=MAXVARLEN), public, parameter :: var_z      = "geopotential_height"
 character(len=MAXVARLEN), public, parameter :: var_zm     = "geometric_height"
 character(len=MAXVARLEN), public, parameter :: var_zi     = "geopotential_height_levels"
@@ -101,10 +100,6 @@ character(len=MAXVARLEN), public, parameter :: var_refl        = "equivalent_ref
 character(len=MAXVARLEN), public, parameter :: var_w           = "upward_air_velocity"
 
 character(len=MAXVARLEN), public, parameter :: var_rh          = "relative_humidity" ! dimensionless (0 <= RH <= 1)
-character(len=maxvarlen), public, parameter :: var_cloud_layer = "cloud_area_fraction_in_atmosphere_layer"
-character(len=MAXVARLEN), public, parameter :: var_qcl  = "mass_content_of_cloud_liquid_water_in_atmosphere_layer"
-character(len=MAXVARLEN), public, parameter :: var_qci  = "mass_content_of_cloud_ice_in_atmosphere_layer"
-character(len=MAXVARLEN), public, parameter :: var_surf_type_rttov = "surface_type"  ! 0 (land), 1 (water), 2 (sea-ice)
 character(len=MAXVARLEN), public, parameter :: var_surf_tau = "transmission_at_surface" 
 character(len=MAXVARLEN), public, parameter :: var_sfc_landmask   = "landmask"       ! 0 (sea), 1 (land)
 character(len=MAXVARLEN), public, parameter :: var_sfc_seaicefrac = "seaice_fraction"
@@ -127,6 +122,23 @@ character(len=MAXVARLEN), public :: var_sw_rad          = "net_downwelling_short
 character(len=MAXVARLEN), public :: var_latent_heat     = "upward_latent_heat_flux_in_air"
 character(len=MAXVARLEN), public :: var_sens_heat       = "upward_sensible_heat_flux_in_air"
 character(len=MAXVARLEN), public :: var_lw_rad          = "net_downwelling_longwave_radiation"
+
+character(len=MAXVARLEN), public :: var_oz_thick        = "ozone_thickness"
+character(len=MAXVARLEN), public :: var_water_vapor     = "water_vapor"
+character(len=MAXVARLEN), public :: var_cld_tau         = "cloud_optical_thickness"
+character(len=MAXVARLEN), public :: var_cld_lwp         = "cloud_liquid_water_path"
+character(len=MAXVARLEN), public :: var_aerosol_tau     = "aerosol_optical_thickness"
+character(len=MAXVARLEN), public :: var_scat_albedo     = "single_scattering_albedo"
+character(len=MAXVARLEN), public :: var_asym_par        = "asymmetry_parameter"
+character(len=MAXVARLEN), public :: var_carb_det        = "Carbon_nitrogen_detritus_concentration"
+character(len=MAXVARLEN), public :: var_inorg_carb      = "Particulate_inorganic_carbon"
+character(len=MAXVARLEN), public :: var_dis_carb        = "colored_dissolved_organic_carbon"
+character(len=MAXVARLEN), public :: var_diatom_conc     = "diatom_concentration"
+character(len=MAXVARLEN), public :: var_chloro_conc     = "chlorophyte_concentration"
+character(len=MAXVARLEN), public :: var_cyano_conc      = "cyano-bacteria_concentration"
+character(len=MAXVARLEN), public :: var_cocco_conc      = "coccolithophore_concentration"
+character(len=MAXVARLEN), public :: var_dino_conc       = "dinoflagellate_concentration"
+character(len=MAXVARLEN), public :: var_phaeo_conc      = "phaeocystis_concentration"
 
 character(len=MAXVARLEN), public, parameter :: var_du001 = "mass_fraction_of_dust001_in_air"
 character(len=MAXVARLEN), public, parameter :: var_du002 = "mass_fraction_of_dust002_in_air"

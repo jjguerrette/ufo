@@ -25,9 +25,11 @@ module ufo_sfcpcorrected_mod
  private
    type(oops_variables), public :: obsvars ! Variables to be simulated
    integer, allocatable, public :: obsvarindices(:) ! Indices of obsvars in the list of all
-                                                    ! simulated variables in the ObsSpace
+                                                    ! simulated variables in the ObsSpace.
+                                                    ! allocated/deallocated at interface layer
    type(oops_variables), public :: geovars
    character(len=MAXVARLEN)     :: da_psfc_scheme
+   character(len=MAXVARLEN)     :: station_altitude
  contains
    procedure :: setup  => ufo_sfcpcorrected_setup
    procedure :: simobs => ufo_sfcpcorrected_simobs
@@ -45,6 +47,7 @@ implicit none
 class(ufo_sfcpcorrected), intent(inout)     :: self
 type(fckit_configuration), intent(in) :: f_conf
 character(len=:), allocatable         :: str_psfc_scheme, str_var_sfc_geomz, str_var_geomz
+character(len=:), allocatable         :: str_obs_height
 character(max_string)             :: debug_msg
 
 !> In the case where a user wants to specify the geoVaLs variable name of model
@@ -65,6 +68,9 @@ call self%geovars%push_back(geovars_list)
 
 call f_conf%get_or_die("da_psfc_scheme",str_psfc_scheme)
 self%da_psfc_scheme = str_psfc_scheme
+
+call f_conf%get_or_die("station_altitude", str_obs_height)
+self%station_altitude = str_obs_height
 
 end subroutine ufo_sfcpcorrected_setup
 
@@ -114,8 +120,8 @@ cor_psfc = missing
 ! get obs variables
 allocate(obs_height(nobs))
 allocate(obs_psfc(nobs))
-call obsspace_get_db(obss, "MetaData",  "station_elevation",obs_height)
-call obsspace_get_db(obss, "ObsValue",  "surface_pressure", obs_psfc)
+call obsspace_get_db(obss, "MetaData",  trim(self%station_altitude),obs_height)
+call obsspace_get_db(obss, "ObsValue",  "stationPressure", obs_psfc)
 
 ! get model variables; geovars_list = (/ var_ps, var_geomz, var_sfc_geomz, var_tv, var_prs /)
 write(err_msg,'(a)') '  ufo_sfcpcorrected:'//new_line('a')//                    &
@@ -226,18 +232,18 @@ case ("WRFDA")
    ! get extra obs values
    variable_present_t = .false.
    variable_present_q = .false.
-   if (obsspace_has(obss, "ObsValue", "virtual_temperature")) then
+   if (obsspace_has(obss, "ObsValue", "virtualTemperature")) then
       variable_present_t = .true.
       allocate(obs_t(nobs))
-      call obsspace_get_db(obss, "ObsValue", "virtual_temperature", obs_t)
-   else if (obsspace_has(obss, "ObsValue", "air_temperature")) then
+      call obsspace_get_db(obss, "ObsValue", "virtualTemperature", obs_t)
+   else if (obsspace_has(obss, "ObsValue", "airTemperature")) then
       variable_present_t = .true.
       allocate(obs_t(nobs))
-      call obsspace_get_db(obss, "ObsValue", "air_temperature", obs_t)
-      variable_present_q = obsspace_has(obss, "ObsValue", "specific_humidity")
+      call obsspace_get_db(obss, "ObsValue", "airTemperature", obs_t)
+      variable_present_q = obsspace_has(obss, "ObsValue", "specificHumidity")
       if (variable_present_q) then
          allocate(obs_q(nobs))
-         call obsspace_get_db(obss, "ObsValue", "specific_humidity", obs_q)
+         call obsspace_get_db(obss, "ObsValue", "specificHumidity", obs_q)
       end if
    end if
 
@@ -289,12 +295,12 @@ case ("GSI")
    ! get observed surface temperature (if exist) OR model temperature at obs_height
    allocate(obs_tv(nobs))
    obs_tv = missing
-   if (obsspace_has(obss, "ObsValue", "virtual_temperature")) then
-      call obsspace_get_db(obss, "ObsValue", "virtual_temperature", obs_tv)
+   if (obsspace_has(obss, "ObsValue", "virtualTemperature")) then
+      call obsspace_get_db(obss, "ObsValue", "virtualTemperature", obs_tv)
    end if
-   if (obsspace_has(obss, "ObsValue", "air_temperature")) then
+   if (obsspace_has(obss, "ObsValue", "airTemperature")) then
       allocate(obs_t(nobs))
-      call obsspace_get_db(obss, "ObsValue", "air_temperature", obs_t)
+      call obsspace_get_db(obss, "ObsValue", "airTemperature", obs_t)
       where (obs_tv == missing .and. obs_t /= missing)
          obs_tv = obs_t
       end where

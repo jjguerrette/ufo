@@ -170,7 +170,7 @@ integer :: ilayer, iloc
 
  if(self%v_coord .eq. "height_asl") then  
  ! Obs station elevation and model heights (asl) at obs loc
- call obsspace_get_db(obss, "MetaData", "station_elevation", obss_metadata)
+ call obsspace_get_db(obss, "MetaData", "stationElevation", obss_metadata)
 
  call ufo_geovals_get_var(geovals, var_geomz, hgt_profile)
  allocate(hgt(self%nlayers,self%nlocs))
@@ -193,7 +193,7 @@ integer :: ilayer, iloc
 
  else if(self%v_coord .eq. "log_pressure") then   !log scale
  ! Obs air pressure at obs loc
- call obsspace_get_db(obss, "MetaData", "air_pressure", obss_metadata)
+ call obsspace_get_db(obss, "MetaData", "pressure", obss_metadata)
 
  ! Calculate the vertical interpolation weights
  do iloc = 1, self%nlocs
@@ -348,6 +348,8 @@ subroutine  destructor(self)
   type(ufo_insitupm_tlad), intent(inout)  :: self
 
   call self%cleanup()
+
+  if (allocated(self%tracer_modes_cmaq)) deallocate(self%tracer_modes_cmaq)
 
 end subroutine destructor
 

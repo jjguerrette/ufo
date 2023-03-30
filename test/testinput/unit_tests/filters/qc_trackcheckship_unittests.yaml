@@ -3,15 +3,16 @@ Normal ship track:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ -2, -1, 0, 1, 2 ]
         lons: [ 178, 179, 180, 181, 182 ]
         dateTimes: [ 0, 3600, 7200,
                      10800, 14400 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -21,7 +22,7 @@ Normal ship track:
     rejection threshold: 1.0
     early break check: false
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected distance: [0, 157, 157, 157, 157]
   expected speed: [0.0, 43.5, 43.5, 43.5, 43.5]
   expected distance averaged: [0, 314, 314, 314, 0]
@@ -38,15 +39,16 @@ Bending ship track:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 1, 1, 1, 0 ]
         lons: [ 0, 0, 1, 0, -1 ]
         dateTimes: [ 0, 3600, 7200,
                      10800, 14400 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -56,7 +58,7 @@ Bending ship track:
     rejection threshold: 1.0
     early break check: false
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected distance: [0, 111, 111, 111, 157]
   expected speed: [0.0, 30.8, 30.8, 30.8, 43.5]
   expected distance averaged: [0, 157, 0, 248, 0]
@@ -73,15 +75,16 @@ Fast ship track:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 1, 2]
         lons: [ 0, 0, 0]
         dateTimes: [ 0, 3600,
                      7200]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -91,7 +94,7 @@ Fast ship track:
     rejection threshold: 1.0
     early break check: false
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected distance: [0, 111, 111]
   expected speed: [0.0, 30.8, 30.8]
   expected distance averaged: [0, 222, 0]
@@ -108,15 +111,16 @@ Short ship track:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 1, 2]
         lons: [ 0, 0, 0]
         dateTimes: [ 0, 1800,
                      3600]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1 ]
   Ship Track Check:
     input category: 'SHPSYN'
@@ -127,7 +131,7 @@ Short ship track:
     rejection threshold: 1.0
     early break check: false
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected distance: [0, 111, 111]
   expected speed: [0.0, 61.7, 61.7]
   expected distance averaged: [0, 222, 0]
@@ -144,15 +148,16 @@ Short buoy track:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 1, 2]
         lons: [ 0, 0, 0]
         dateTimes: [ 0, 1800,
                      3600]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1 ]
   Ship Track Check:
     input category: 'BUOYPROF'
@@ -163,7 +168,7 @@ Short buoy track:
     rejection threshold: 1.0
     early break check: false
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected distance: [0, 111, 111]
   expected speed: [0.0, 61.7, 61.7]
   expected distance averaged: [0, 222, 0]
@@ -180,15 +185,16 @@ Fast/short ship track:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 1, 2]
         lons: [ 0, 0, 0]
         dateTimes: [ 0,
                      600, 1200 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1 ]
   Ship Track Check:
     unit testing mode: true
@@ -198,7 +204,7 @@ Fast/short ship track:
     rejection threshold: 1.0
     early break check: false
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected distance: [0, 111, 111]
   expected speed: [0.0, 185.0, 185.0]
   expected distance averaged: [0, 222, 0]
@@ -215,14 +221,15 @@ Ship Track Dist0:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0, 0]
         lons: [ 0, 0, 0]
         dateTimes: [ 0, 3600, 7200]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1 ]
   Ship Track Check:
     unit testing mode: true
@@ -232,7 +239,7 @@ Ship Track Dist0:
     rejection threshold: 1.0
     early break check: false
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected distance: [0, 0, 0]
   expected speed: [0.0, 0.0, 0.0]
   expected distance averaged: [0, 0, 0]
@@ -249,14 +256,15 @@ Ship Track Simultaneous Same Location:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0, 0]
         lons: [ 0, 0, 0]
         dateTimes: [ 0, 0, 0]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -266,7 +274,7 @@ Ship Track Simultaneous Same Location:
     rejection threshold: 1.0
     early break check: false
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected distance: [0, 0, 0]
   expected speed: [0.0, 0.0, 0.0]
   expected distance averaged: [0, 0, 0]
@@ -283,14 +291,15 @@ Ship Track Simultaneous Different Location:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 1, 2]
         lons: [ 0, 0, 0]
         dateTimes: [ 0, 0, 0]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1]
   Ship Track Check:
     unit testing mode: true
@@ -300,7 +309,7 @@ Ship Track Simultaneous Different Location:
     rejection threshold: 1.0
     early break check: false
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected distance: [0, 111, 111]
   expected speed: [0.0, 185.0, 185.0] #because assumes a time difference of 10 mins btwn each obs
   expected distance averaged: [0, 222, 0]
@@ -317,16 +326,17 @@ Ship Tracks Different Station IDs:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 1, 1, 1, 0, 0, 1, 2 ]
         lons: [ 0, 0, 1, 0, -1, 0, 0, 0 ]
         dateTimes: [ 0, 3600, 7200,
                      10800, 14400, 0,
                      1800, 3600]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1, 1, 2, 2, 2]
   Ship Track Check:
     unit testing mode: true
@@ -336,7 +346,7 @@ Ship Tracks Different Station IDs:
     rejection threshold: 1.0
     early break check: false
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected distance: [0, 111, 111, 111, 157, 0, 111, 111]
   expected speed: [0.0, 30.8, 30.8, 30.8, 43.5, 0, 61.7, 61.7]
   expected distance averaged: [0, 157, 0, 248, 0, 0, 222, 0]
@@ -353,16 +363,17 @@ Ship Tracks Different Station IDs Shuffled:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 1, 1, 1, 0, 0, 1, 0, 2 ]
         lons: [ 0, 0, 1, -1, 0, 0, 0, 0 ]
         dateTimes: [ 3600, 10800, 7200,
                      14400, 0,
                      1800, 0, 3600]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1, 2, 2, 1, 2]
   Ship Track Check:
     unit testing mode: true
@@ -372,7 +383,7 @@ Ship Tracks Different Station IDs Shuffled:
     rejection threshold: 1.0
     early break check: false
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected distance: [0, 111, 111, 111, 157, 0, 111, 111]
   expected speed: [0.0, 30.8, 30.8, 30.8, 43.5, 0, 61.7, 61.7]
   expected distance averaged: [0, 157, 0, 248, 0, 0, 222, 0]
@@ -389,15 +400,16 @@ Ship Track Segment from Comparison Test early break false:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ -37.00999832, -37.00999832, -37.02000046, -37.02000046, -37.02000046]
         lons: [ 82.5, 82.51000214, 82.52999878,  82.55999756,  82.56999969]
         dateTimes: [ 0, 3600, 7200,
                      14400, 18000]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1, 1]
   Ship Track Check:
     comparison test: true
@@ -408,22 +420,23 @@ Ship Track Segment from Comparison Test early break false:
     rejection threshold: 0.5
     early break check: false
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected rejected obs indices: [0, 1, 2, 3, 4]
 Ship Track Segment from Comparison Test early break true:
   window begin: 2000-01-01T00:00:00Z
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ -4.94999981, -4.94999981, -4.94999981, -4.96000004, -4.96000004, -4.96000004]
         lons: [ 94.98000336,  94.98000336,  94.98000336,  94.98000336, 94.98000336,  94.98000336 ]
         dateTimes: [ 0, 3600, 7200,
                      10800, 14400, 18000]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1, 1, 1]
   Ship Track Check:
     comparison test: true
@@ -434,21 +447,22 @@ Ship Track Segment from Comparison Test early break true:
     rejection threshold: 0.5
     early break check: false
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected rejected obs indices: [0, 1, 2, 3, 4, 5]
 Ship Track Records as single obs:  # 3rd profile [8-11] is off-track
   window begin: 2000-01-01T00:00:00Z
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ocean Profile
-    simulated variables: [air_temperature]
-    generate:
-      list:
+    simulated variables: [airTemperature]
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0 ]
         lons: [ 0, 0, 0, 0, 0.1, 0.1, 0.1, 0.1, 0.2, 0.2, 0.2, 0.2, 0.3, 0.3, 0.3, 0.3 ]
         dateTimes: [ 0, 0, 0, 0, 3600, 3600, 3600, 3600, 7200, 7200, 7200, 7200, 9800, 9800, 9800, 9800 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
       obsgrouping:
         group variables: [ "dateTime" ]
   air_temperature: [273,273,273,273,273,273,273,273,273,273,273,273,273,273,273,273]
@@ -462,7 +476,7 @@ Ship Track Records as single obs:  # 3rd profile [8-11] is off-track
     rejection threshold: 0.5
     early break check: false
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
     records_are_single_obs: true
   expected rejected obs indices: [8,9,10,11]
 # Test for bugfix PR2158, copied from mainloop test which does not test actual obs flagged
@@ -471,15 +485,16 @@ Ship track error middle segment category 100:
   window end: 2030-01-01T00:00:00Z
   obs space:
     name: Ship
-    simulated variables: [air_temperature]    
-    generate:
-      list:
+    simulated variables: [airTemperature]    
+    obsdatain:
+      engine:
+        type: GenList
         lats: [ 0, 0.1, 1.1, 1.2 ]
         lons: [ 0, 0, 0, 0 ]
         dateTimes: [ 0, 3600,
                      7200, 10800 ]
         epoch: "seconds since 2010-01-01T00:00:00Z"
-      obs errors: [1.0]
+        obs errors: [1.0]
   station_ids: [ 1, 1, 1, 1]
   Ship Track Check:
     comparison test: true
@@ -490,5 +505,5 @@ Ship track error middle segment category 100:
     max speed (m/s): 30.0
     rejection threshold: 1.0
     station_id_variable:
-      name: station_id@MetaData
+      name: MetaData/stationIdentification
   expected rejected obs indices: [ 1, 2 ] # without bugfix expect [0, 1, 2]

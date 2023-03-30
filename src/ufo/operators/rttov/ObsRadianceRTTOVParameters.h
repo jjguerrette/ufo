@@ -19,22 +19,34 @@
 
 namespace ufo {
 
+class RTTOVLinearOperatorParameters : public oops::Parameters {
+  OOPS_CONCRETE_PARAMETERS(RTTOVLinearOperatorParameters, Parameters)
+
+ public:
+  /// This is the list of model variables to use in the linear model.  All should be listed
+  /// including air_temperature.
+  oops::Parameter<std::vector<std::string>> incrementVariables{"increment variables", {}, this};
+};
+
 class RTTOVObsOptionsParameters : public oops::Parameters {
   OOPS_CONCRETE_PARAMETERS(RTTOVObsOptionsParameters, Parameters)
 
  public:
-  /// Platform_Name is the first part of the unique instrument triplet used to create the RTTOV
-  /// coefficient file name. This must correspond to platform name used in rttov_const.F90 but the
-  /// case needn't match as it's converted to lower case in the interface.
-  oops::RequiredParameter<std::string> platformName{"Platform_Name", this};
+  /// WMO_ID contains a list of unique IDs (e.g. '5' is Metop-c) to specify which platforms shall
+  /// be processed.
+  oops::RequiredParameter<std::vector<int>> wmoId{"WMO_ID", this};
 
-  /// Sat_ID is the second part of the instrument triplet used to create the RTTOV coefficient
-  /// file name. This is always required but is not used for reading RTTOV-SCATT hydro/mietables.
-  oops::RequiredParameter<std::string> satID{"Sat_ID", this};
+  /// Sat_ID contains a list of strings corresponding to the underscore-separated platform name and
+  /// sat_id (e.g. metop_1) as required by RTTOV to construct the RTTOV coefficient filename
+  /// (see rttov_const for details).
+  /// If more than one coefficient is being used then profile-by-profile processing is hard-coded to
+  /// true which may give a small performance hit.
+  oops::RequiredParameter<std::vector<std::string>> satID{"Sat_ID", this};
 
   /// Instrument_Name is the third part of the unique instrument triplet used to create the RTTOV
   /// coefficient file name. This must correspond to platform name used in rttov_const.F90 but the
   /// case needn't match as it's converted to lower case in the interface.
+  /// At present, the RTTOV interface can only process one instrument type per call.
   oops::RequiredParameter<std::string> instrumentName{"Instrument_Name", this};
 
   /// The path to the coefficient files.
@@ -43,6 +55,9 @@ class RTTOVObsOptionsParameters : public oops::Parameters {
   /// Should RTTOV convert from mixing ratio to ppmv for rttov processing
   /// RTTOV can handle either but the output BTs obtained can be slightly different
   oops::Parameter<bool> RTTOVGasUnitConv{"RTTOV_GasUnitConv", false, this};
+
+  /// Should RTTOV scale the reference Ozone profile according to the 70 hPa temperature
+  oops::Parameter<bool> RTTOVScaleRefOzone{"RTTOV_ScaleRefOzone", true, this};
 
   /// The default option to setup the code for a particular version of RTTOV
   oops::Parameter<std::string> RTTOVDefaultOpts{"RTTOV_default_opts", "RTTOV", this};
@@ -78,7 +93,7 @@ class RTTOVObsOptionsParameters : public oops::Parameters {
 
   /// Check the rttov profile using the rttov check profile routine and flag if the check is failed.
   /// This check makes sure the values read from the geovals are within certain bounds.
-  oops::Parameter<bool> RTTOVProfileCheckInput{"RTTOV_profile_checkinput", false, this};
+  oops::Parameter<bool> RTTOVProfileCheckInput{"RTTOV_profile_checkinput", true, this};
 
   /// Use RTTOV-Scatt interface to simulate microwave radiances affected by cloud and precipitation.
   oops::Parameter<bool> doMWScatt{"Do_MW_Scatt", false, this};
@@ -88,7 +103,7 @@ class RTTOVObsOptionsParameters : public oops::Parameters {
   /// Note this is numbering from 1 as it is Fortran that will provide output.
   oops::OptionalParameter<std::vector<int>> inspectProfileNumber{"InspectProfileNumber", this};
 
-  /// An optional group which provides the path to reading surface_emissivity@<Group>.  This allows
+  /// An optional group which provides the path to reading <Group>/emissivity.  This allows
   /// RTTOV to use surface emissivity from the ObsSpace
   oops::Parameter<std::string> surfaceEmissivityGroup{"surface emissivity group", "", this};
 
@@ -434,9 +449,15 @@ class ObsRadianceRTTOVParameters : public ObsOperatorParametersBase {
   /// The absorbers needed by RTTOV for this observation type and RTTOV model.
   oops::OptionalParameter<std::vector<std::string>> absorbers{"Absorbers", this};
 
-  /// Options specific to the Linear observation operator
-  oops::OptionalParameter<std::vector<std::string>> linearModelAbsorbers{
-      "linear model absorbers", this};
+  /// Options specific to the linear observation operator
+  oops::OptionalParameter<RTTOVLinearOperatorParameters> linearObsOperator{
+      "linear obs operator", this};
+
+  /// An optional argument to specify variables that need to be read from the obsspace
+  /// rather than the GeoVaLs.  This is specifically to be able to use retrieved variables
+  /// from OneDVar but might have wider uses.
+  oops::OptionalParameter<std::vector<std::string>> variablesFromOneDVar{
+                                              "variables to use from obsspace", this};
 };
 
 }  // namespace ufo

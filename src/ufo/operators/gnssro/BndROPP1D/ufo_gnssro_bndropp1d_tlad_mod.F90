@@ -156,11 +156,11 @@ subroutine ufo_gnssro_bndropp1d_simobs_tl(self, geovals, hofx, obss)
      allocate(obsImpP(nlocs))
      allocate(obsLocR(nlocs))
      allocate(obsGeoid(nlocs))
-     call obsspace_get_db(obss, "MetaData", "longitude",        obsLon)
-     call obsspace_get_db(obss, "MetaData", "latitude",         obsLat)
-     call obsspace_get_db(obss, "MetaData", "impact_parameter", obsImpP)
-     call obsspace_get_db(obss, "MetaData", "earth_radius_of_curvature", obsLocR)
-     call obsspace_get_db(obss, "MetaData", "geoid_height_above_reference_ellipsoid", obsGeoid) 
+     call obsspace_get_db(obss, "MetaData", "longitude",            obsLon)
+     call obsspace_get_db(obss, "MetaData", "latitude",             obsLat)
+     call obsspace_get_db(obss, "MetaData", "impactParameterRO",    obsImpP)
+     call obsspace_get_db(obss, "MetaData", "earthRadiusCurvature", obsLocR)
+     call obsspace_get_db(obss, "MetaData", "geoidUndulation",      obsGeoid)
 
      nvprof = 1  ! no. of bending angles in profile 
 
@@ -217,6 +217,8 @@ subroutine ufo_gnssro_bndropp1d_simobs_tl(self, geovals, hofx, obss)
      deallocate(obsImpP)
      deallocate(obsLocR)
      deallocate(obsGeoid)
+     deallocate(gph_d_zero)
+
   end if ! nlocs > 0
 
   write(err_msg,*) "TRACE: ufo_gnssro_bndropp1d_simobs_tl: complete"
@@ -287,11 +289,11 @@ subroutine ufo_gnssro_bndropp1d_simobs_ad(self, geovals, hofx, obss)
      allocate(obsLocR(nlocs))
      allocate(obsGeoid(nlocs))
 
-     call obsspace_get_db(obss, "MetaData", "longitude", obsLon)
-     call obsspace_get_db(obss, "MetaData", "latitude", obsLat) 
-     call obsspace_get_db(obss, "MetaData", "impact_parameter", obsImpP)
-     call obsspace_get_db(obss, "MetaData", "earth_radius_of_curvature", obsLocR)
-     call obsspace_get_db(obss, "MetaData", "geoid_height_above_reference_ellipsoid", obsGeoid)
+     call obsspace_get_db(obss, "MetaData", "longitude",            obsLon)
+     call obsspace_get_db(obss, "MetaData", "latitude",             obsLat) 
+     call obsspace_get_db(obss, "MetaData", "impactParameterRO",    obsImpP)
+     call obsspace_get_db(obss, "MetaData", "earthRadiusCurvature", obsLocR)
+     call obsspace_get_db(obss, "MetaData", "geoidUndulation",      obsGeoid)
 
      missing = missing_value(missing)
 
@@ -383,6 +385,7 @@ subroutine ufo_gnssro_bndropp1d_tlad_delete(self)
   character(len=*), parameter :: myname_="ufo_gnssro_bndropp_tlad_delete"
       
   self%nval = 0
+  self%nlocs = 0
   if (allocated(self%prs)) deallocate(self%prs)
   if (allocated(self%t))   deallocate(self%t)
   if (allocated(self%q))   deallocate(self%q)

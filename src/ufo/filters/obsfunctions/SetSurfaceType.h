@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "oops/util/missingValues.h"
 #include "oops/util/parameters/Parameter.h"
 #include "oops/util/parameters/Parameters.h"
 
@@ -44,10 +45,11 @@ class SetSurfaceTypeParameters : public oops::Parameters {
   oops::Parameter<bool> UseReportSurface{"UseReportSurface", false, this};
 
   /// Change name of variable storing the reported surface type
-  /// Default is 'land_sea@MetaData'
-  /// Example: to set to SSMIS report type (which is surface_flag@MetaData) set
-  ///          SurfaceReport Name: surface_flag@MetaData
-  oops::Parameter<std::string> SurfaceMetaDataName{"SurfaceReport Name", "land_sea@MetaData", this};
+  /// Default is 'MetaData/land_sea'
+  /// Example: to set to SSMIS report type (which is MetaData/surfaceQualifier) set
+  ///          SurfaceReport Name: MetaData/surfaceQualifier
+  oops::Parameter<std::string> SurfaceMetaDataName{"SurfaceReport Name",
+                               "MetaData/landOrSeaQualifier", this};
 
   /// Use reported Surface Elevation (default false)
   /// Example: To use the AAPPreported elevation set
@@ -60,7 +62,7 @@ class SetSurfaceTypeParameters : public oops::Parameters {
   oops::Parameter<bool> UseAAPPSurfaceClass{"UseAAPPSurfaceClass", false, this};
 
   /// Use reported Surface Water Fraction (default false)
-  /// Example: To use reported Surface Water Fraction (which is water_fraction@MetaData) set
+  /// Example: To use reported Surface Water Fraction (which is MetaData/waterAreaFraction) set
   ///          UseSurfaceWaterFraction: true
   oops::Parameter<bool> UseSurfaceWaterFraction{"UseSurfaceWaterFraction", false, this};
 
@@ -76,6 +78,7 @@ class SetSurfaceTypeParameters : public oops::Parameters {
   /// Default Obs Operator surface types to map to (RTTOV is the default here)
   /// Example: To use the RTTOV sea surface type (1) as the ObsOperator sea surface type set
   ///          SurfaceTypeSea: 1
+  oops::Parameter<int> SurfaceTypeDefault{"SurfaceTypeDefault", util::missingValue(-1) , this};
   oops::Parameter<int> SurfaceTypeLand{"SurfaceTypeLand", 0, this};
   oops::Parameter<int> SurfaceTypeSea{"SurfaceTypeSea", 1, this};
   oops::Parameter<int> SurfaceTypeSeaIce{"SurfaceTypeSeaIce", 2, this};

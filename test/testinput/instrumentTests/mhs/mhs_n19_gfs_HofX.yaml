@@ -12,8 +12,10 @@ observations:
   obs space:
     name: mhs_n19
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/instruments/radiance/mhs_n19_obs_2020110112_m.nc4
-    simulated variables: [brightness_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/instruments/radiance/mhs_n19_obs_2020110112_m.nc4
+    simulated variables: [brightnessTemperature]
     channels: 1-5
   geovals:
     filename: Data/ufo/testinput_tier_1/instruments/radiance/mhs_n19_geoval_2020110112_m.nc4

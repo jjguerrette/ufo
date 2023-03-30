@@ -51,6 +51,8 @@ set ( utils_files
       RecursiveSplitter.h
       RefractivityCalculator.F90
       RoundingEquispacedBinSelector.h
+      NearestNeighborInterpolation.cc
+      NearestNeighborInterpolation.h
       SpatialBinSelector.h
       SpatialBinSelector.cc
       StringUtils.cc
@@ -68,9 +70,19 @@ set ( utils_files
       thermo_utils.F90
 )
 
+if( ${gsw_FOUND} )
+      set ( utils_oceanfiles
+            OceanConversions/OceanConversions.interface.F90
+            OceanConversions/OceanConversions.interface.h
+      )
+
+      PREPEND( _p_utils_oceanfiles       "utils"       ${utils_oceanfiles} )
+endif( ${gsw_FOUND} )
+
 PREPEND( _p_utils_files       "utils"       ${utils_files} )
 
 set ( utils_src_files
       ${_p_utils_files}
+      ${_p_utils_oceanfiles}
       PARENT_SCOPE
 )

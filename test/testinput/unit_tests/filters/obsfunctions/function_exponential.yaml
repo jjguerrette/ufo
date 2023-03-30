@@ -5,17 +5,21 @@ observations:
 - obs space: 
     name: Exponential ObsFunction, single-channel, missing value specified.
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/obsfunction_exponential_testdata.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/obsfunction_exponential_testdata.nc4
 #    obsdataout:
-#      obsfile: Data/function_exp_testout_1channel.nc4
+#      engine:
+#        type: H5File
+#        obsfile: Data/function_exp_testout_1channel.nc4
     simulated variables: [fake_y1_data]
     derived variables: [fake_y1_data]
     observed variables: []
   obs function:
-    name: Exponential@ObsFunction
+    name: ObsFunction/Exponential
     options:
       variables:
-      - name: fake_x_data@MetaData
+      - name: MetaData/fake_x_data
         channels: 1
       coeffB: 0.1
       coeffC: -1.0
@@ -26,18 +30,22 @@ observations:
 - obs space: 
     name: Exponential ObsFunction, multi-channel, no missing value specified.
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/obsfunction_exponential_testdata.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/obsfunction_exponential_testdata.nc4
 #    obsdataout:
-#      obsfile: Data/function_exp_testout_multichannel.nc4
+#      engine:
+#        type: H5File
+#        obsfile: Data/function_exp_testout_multichannel.nc4
     simulated variables: [fake_y_data]
     derived variables: [fake_y_data]
     observed variables: []
     channels: 1-3
   obs function:
-    name: Exponential@ObsFunction
+    name: ObsFunction/Exponential
     options:
       variables:
-      - name: fake_x_data@MetaData
+      - name: MetaData/fake_x_data
         channels: 1-3
       coeffA: -1.0
       coeffB: -0.1

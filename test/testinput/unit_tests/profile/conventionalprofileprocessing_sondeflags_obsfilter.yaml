@@ -9,18 +9,22 @@ observations:
 - obs space:
     name: Radiosonde
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_sondeflags.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/met_office_conventional_profile_processing_sondeflags.nc4
       obsgrouping:
-        group variables: [ "station_id" ]
-        sort variable: "air_pressure"
+        group variables: [ "stationIdentification" ]
+        sort variable: "pressure"
         sort order: "descending"
-    simulated variables: [eastward_wind]
+    simulated variables: [windEastward]
 #   obsdataout:
-#     obsfile: Data/met_office_conventional_profile_processing_sondeflags_out.nc4
+#     engine:
+#       type: H5File
+#       obsfile: Data/met_office_conventional_profile_processing_sondeflags_out.nc4
   obs filters:
   - filter: Conventional Profile Processing
     filter variables:
-    - name: eastward_wind
+    - name: windEastward
     Checks: ["Basic", "SondeFlags"]
     compareWithOPS: false
     flagBasicChecksFail: true

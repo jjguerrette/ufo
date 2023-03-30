@@ -36,7 +36,9 @@ BayesianBackgroundCheck::BayesianBackgroundCheck(
         const Parameters_ & parameters,
         std::shared_ptr<ioda::ObsDataVector<int> > flags,
         std::shared_ptr<ioda::ObsDataVector<float> > obserr)
-  : FilterBase(obsdb, parameters, flags, obserr), parameters_(parameters)
+  : FilterBase(obsdb, parameters, flags, obserr, VariableNameMap(parameters.AliasFile.value())),
+    parameters_(parameters)
+
 {
   oops::Log::trace() << "BayesianBackgroundCheck constructor" << std::endl;
   allvars_ += Variables(filtervars_, "HofX");
@@ -57,7 +59,9 @@ BayesianBackgroundCheck::~BayesianBackgroundCheck() {
 /// specified filter variable.
 
 Variable BayesianBackgroundCheck::backgrErrVariable(const Variable &filterVariable) const {
-  return Variable(filterVariable.variable() + "_background_error@ObsDiag");
+  return Variable(parameters_.BkgErrGroup.value() + "/" +
+                  nameMap_.convertName(filterVariable.variable()) +
+                  parameters_.BkgErrSuffix.value());
 }
 
 // -----------------------------------------------------------------------------
@@ -161,8 +165,7 @@ void BayesianBackgroundCheck::applyFilter(const std::vector<bool> & apply,
         // PGE:
         obsdb_.get_db("GrossErrorProbability", varname1, PGE1);
         for (size_t jobs=0; jobs < obsdb_.nlocs(); ++jobs) {
-          if (apply[jobs] && (*flags_)[iv1][jobs] == QCflags::pass
-                          && (*flags_)[iv2][jobs] == QCflags::pass) {
+          if (apply[jobs]) {
             applycondition[jobs] = true;
             j_reduced.push_back(jobs);
           }
@@ -182,7 +185,7 @@ void BayesianBackgroundCheck::applyFilter(const std::vector<bool> & apply,
         // PGE:
         obsdb_.get_db("GrossErrorProbability", varname1, PGE1);
         for (size_t jobs=0; jobs < obsdb_.nlocs(); ++jobs) {
-          if (apply[jobs] && (*flags_)[iv1][jobs] == QCflags::pass) {
+          if (apply[jobs]) {
             applycondition[jobs] = true;
             j_reduced.push_back(jobs);
           }

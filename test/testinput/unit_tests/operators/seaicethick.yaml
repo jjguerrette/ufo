@@ -5,11 +5,15 @@ observations:
 - obs space:
     name: SeaIceThickness
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/cryosat2-2018-04-15.nc
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/cryosat2-2018-04-15.nc
 #   obsdataout:
-#     obsfile: Data/cryosat2-2018-04-15_seaicethickness_opr_out1.nc4
-    simulated variables: [sea_ice_thickness]
-    observed variables: [sea_ice_thickness]
+#     engine:
+#       type: H5File
+#       obsfile: Data/cryosat2-2018-04-15_seaicethickness_opr_out1.nc4
+    simulated variables: [iceThickness]
+    observed variables: [iceThickness]
   obs operator:
     name: SeaIceThickness
   linear obs operator:
@@ -25,11 +29,15 @@ observations:
 - obs space:
     name: SeaIceThickness
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/cryosat2-2018-04-15.nc
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/cryosat2-2018-04-15.nc
 #   obsdataout:
-#     obsfile: Data/cryosat2-2018-04-15_seaicethickness_opr_out2.nc4
-    simulated variables: [sea_ice_freeboard]
-    observed variables: [sea_ice_freeboard]
+#     engine:
+#       type: H5File
+#       obsfile: Data/cryosat2-2018-04-15_seaicethickness_opr_out2.nc4
+    simulated variables: [seaIceFreeboard]
+    observed variables: [seaIceFreeboard]
   obs operator:
     name: SeaIceThickness
   linear obs operator:

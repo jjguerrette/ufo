@@ -1,0 +1,60 @@
+window begin: 2017-12-31T21:00:00Z
+window end: 2030-01-01T03:00:00Z
+
+observations:
+- obs space:
+    name: Ocean practical salinity to absolute salinity conversion
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/oceanprofile_theta_pressure_testdata.nc4
+    simulated variables: [salinity, absoluteSalinity]
+    observed variables: [salinity]
+    derived variables: [absoluteSalinity]
+  obs filters:
+  - filter: Variable Transforms
+    where:
+    - variable:
+        name: ObsValue/salinity
+      is_defined:
+    Transform: OceanPracticalSalinityToAbsoluteSalinity
+    ocean pressure group: TestReference
+  # Make the ObsErrorData a normal variable for the purposes of
+  # the test comparison
+  - filter: Variable Assignment
+    assignments:
+    - name: TestObsError/absoluteSalinity
+      type: float
+      source variable: ObsErrorData/absoluteSalinity
+  compareVariables:
+    - reference:
+        name: TestReference/absoluteSalinity
+      test:
+        name: DerivedObsValue/absoluteSalinity
+      relTol: 2.0e-4
+    - reference:
+        name: ObsError/salinity
+      test:
+        name: TestObsError/absoluteSalinity
+  passedBenchmark: 438  # 219 + Non-missing salinity
+                        # 219 + Non-missing absoluteSalinity (non-missing salinity)
+                        # = 438
+
+- obs space:
+    name: Ocean practical salinity to absolute salinity conversion
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/oceanprofile_theta_pressure_testdata.nc4
+    simulated variables: [salinity]
+    observed variables: [salinity]
+    derived variables: []
+  obs filters:
+  - filter: Variable Transforms
+    where:
+    - variable:
+        name: ObsValue/salinity
+      is_defined:
+    Transform: OceanPracticalSalinityToAbsoluteSalinity
+    ocean pressure group: TestReference
+  expectExceptionWithMessage: "Both `absoluteSalinity` and `salinity` must be observed or derived variables for the `OceanPracticalSalinityToAbsoluteSalinity` variable transform."

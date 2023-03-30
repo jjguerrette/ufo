@@ -5,27 +5,31 @@ observations:
 - obs space:
     name: Satwind
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/satwind_obs_1d_2020100106_noinv.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/satwind_obs_1d_2020100106_noinv.nc4
 #   obsdataout:
-#     obsfile: Data/satwind_obs_1d_2020100106_noinv_bestfitpressure_out1.nc4
-    simulated variables: [eastward_wind, northward_wind]
+#     engine:
+#       type: H5File
+#       obsfile: Data/satwind_obs_1d_2020100106_noinv_bestfitpressure_out1.nc4
+    simulated variables: [windEastward, windNorthward]
   geovals:
     filename: Data/ufo/testinput_tier_1/satwind_geoval_20201001T0600Z.nc4
   obs filters:
   - filter: Variable Assignment
     assignments:
-    - name: eastward_wind@QCFlags
+    - name: QCFlags/windEastward
       type: int
       value: 0
-    - name: northward_wind@QCFlags
+    - name: QCFlags/windNorthward
       type: int
       value: 0
-    - name: matching_bestfit_pressure@DerivedValue
+    - name: DerivedValue/pressureBestFit
       type: float
       value: -99999.0
   - filter: Model Best Fit Pressure
     observation pressure:
-      name: air_pressure@MetaData
+      name: MetaData/pressure
     model pressure:
       name: air_pressure_levels_minus_one@GeoVaLs
     top pressure: 10000
@@ -37,36 +41,40 @@ observations:
     calculate bestfit winds: true
   compareVariables:
     - reference:
-        name: matching_bestfit_pressure@TestReference
+        name: TestReference/pressureBestFit
       test:
-        name: model_bestfit_pressure@DerivedValue
+        name: DerivedValue/pressureBestFit
       absTol: 0.5
   passedBenchmark: 182102
 #---------------------------------------------------
 - obs space:
     name: GeoVaLs are in the wrong order, throwing an exception
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/satwind_obs_1d_small_2020100106_noinv.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/satwind_obs_1d_small_2020100106_noinv.nc4
 #   obsdataout:
-#     obsfile: Data/satwind_obs_1d_small_2020100106_noinv_bestfitpressure_out2.nc4
-    simulated variables: [eastward_wind, northward_wind]
+#     engine:
+#       type: H5File
+#       obsfile: Data/satwind_obs_1d_small_2020100106_noinv_bestfitpressure_out2.nc4
+    simulated variables: [windEastward, windNorthward]
   geovals:
     filename: Data/ufo/testinput_tier_1/satwind_geoval_small_reversed_20201001T0600Z.nc4
   obs filters:
   - filter: Variable Assignment
     assignments:
-    - name: eastward_wind@QCFlags
+    - name: QCFlags/windEastward
       type: int
       value: 0
-    - name: northward_wind@QCFlags
+    - name: QCFlags/windNorthward
       type: int
       value: 0
-    - name: matching_bestfit_pressure@DerivedValue
+    - name: DerivedValue/pressureBestFit
       type: float
       value: -99999.0
   - filter: Model Best Fit Pressure
     observation pressure:
-      name: air_pressure@MetaData
+      name: MetaData/pressure
     model pressure:
       name: air_pressure_levels_minus_one@GeoVaLs
     top pressure: 10000
@@ -80,16 +88,20 @@ observations:
 - obs space:
     name: Fail to initialise QCFlags
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/satwind_obs_1d_small_2020100106_noinv.nc4
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/satwind_obs_1d_small_2020100106_noinv.nc4
 #   obsdataout:
-#     obsfile: Data/testinput_tier_1/satwind_obs_1d_small_2020100106_noinv_bestfitpressure_out3.nc4
-    simulated variables: [eastward_wind, northward_wind]
+#     engine:
+#       type: H5File
+#       obsfile: Data/testinput_tier_1/satwind_obs_1d_small_2020100106_noinv_bestfitpressure_out3.nc4
+    simulated variables: [windEastward, windNorthward]
   geovals:
     filename: Data/ufo/testinput_tier_1/satwind_geoval_small_20201001T0600Z.nc4
   obs filters:
   - filter: Model Best Fit Pressure
     observation pressure:
-      name: air_pressure@MetaData
+      name: MetaData/pressure
     model pressure:
       name: air_pressure_levels_minus_one@GeoVaLs
     top pressure: 10000
@@ -99,4 +111,4 @@ observations:
     tolerance vector diff: 1.0e-8
     tolerance pressure: 0.01
     calculate bestfit winds: false
-  expectExceptionWithMessage: eastward_wind@QCFlags or northward_wind@QCFlags not initialised
+  expectExceptionWithMessage: QCFlags/windEastward or QCFlags/windNorthward not initialised

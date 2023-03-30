@@ -56,23 +56,20 @@ void Cal_PStar::runTransform(const std::vector<bool> &apply) {
 
   // MetaData
   if (data_.has(Variable("MetaData/correctedStationAltitude"))) {
-    getObservation("MetaData", "correctedStationAltitude",
+    getObservation("MetaData", "correctedStationElevation",
                      ZStn);
   } else {
-    getObservation("MetaData", "stationAltitude",
+    getObservation("MetaData", "stationElevation",
                      ZStn);
   }
-  getObservation("MetaData", "standardAltitude",
+  getObservation("MetaData", "standardElevation",
                  ZStd, true);
 
   // Errors
   std::vector<float> PStn_error, PStd_error, Pmsl_error;
-  getObservation("ObsError", "stationPressure",
-                 PStn_error, true);
-  getObservation("ObsError", "standardPressure",
-                 PStd_error, true);
-  getObservation("ObsError", "pressureReducedToMeanSeaLevel",
-                 Pmsl_error, true);
+  data_.get(Variable("ObsErrorData/stationPressure"), PStn_error);
+  data_.get(Variable("ObsErrorData/standardPressure"), PStd_error);
+  data_.get(Variable("ObsErrorData/pressureReducedToMeanSeaLevel"), Pmsl_error);
 
   // PGEs
   std::vector<float> PStn_PGE, PStd_PGE, Pmsl_PGE;
@@ -173,12 +170,12 @@ void Cal_PStar::runTransform(const std::vector<bool> &apply) {
     }
   }
 
-  putObservation("surface_pressure", PStar);
-  obsdb_.put_db("DerivedObsError", "surface_pressure", PStar_error);
-  obsdb_.put_db("GrossErrorProbability", "surface_pressure", PStar_PGE);
-  obsdb_.put_db("DiagnosticFlags/PmslUsed", "surface_pressure", PmslUsed_flag);
-  obsdb_.put_db("DiagnosticFlags/PstdUsed", "surface_pressure", PstdUsed_flag);
-  obsdb_.put_db("DiagnosticFlags/PstnUsed", "surface_pressure", PstnUsed_flag);
+  putObservation("surfacePressure", PStar);
+  obsdb_.put_db("DerivedObsError", "surfacePressure", PStar_error);
+  obsdb_.put_db("GrossErrorProbability", "surfacePressure", PStar_PGE);
+  obsdb_.put_db("DiagnosticFlags/PmslUsed", "surfacePressure", PmslUsed_flag);
+  obsdb_.put_db("DiagnosticFlags/PstdUsed", "surfacePressure", PstdUsed_flag);
+  obsdb_.put_db("DiagnosticFlags/PstnUsed", "surfacePressure", PstnUsed_flag);
 }
 }  // namespace ufo
 

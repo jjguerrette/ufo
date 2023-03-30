@@ -5,26 +5,30 @@ observations:
 # Test Newton minimizer
 - obs operator: &ObsOperator
     name: RTTOV
+    Debug: true
     Absorbers: &rttov_absorbers [CLW, CIW]
-    linear model absorbers: []
     obs options:
       RTTOV_default_opts: UKMO_PS44
       SatRad_compatibility: true
       RTTOV_GasUnitConv: true
       UseRHwaterForQC: &UseRHwaterForQC true # default
       UseColdSurfaceCheck: &UseColdSurfaceCheck true # not default
-      Platform_Name: &platform_name GCOM-W
-      Sat_ID: &sat_id 1
+      WMO_ID: &wmo_id [122]
+      Sat_ID: &sat_id [gcom-w_1]
       Instrument_Name: &inst_name AMSR2
       CoefficientPath: Data/
   obs space: &ObsSpace
     name: Test RTTOVOneDVarCheck for AMSR-2
     obsdatain:
-      obsfile: Data/ufo/testinput_tier_1/amsr2_obs_20191230T0000Z_100subset.nc4
-    simulated variables: [brightness_temperature]
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/amsr2_obs_20191230T0000Z_100subset.nc4
+    simulated variables: [brightnessTemperature]
     channels: &ops_channels 7-12
 #   obsdataout:
-#     obsfile: Data/amsr2_obs_20191230T0000Z_100subset_rttov_onedvarcheck_out.nc
+#     engine:
+#       type: H5File
+#       obsfile: Data/amsr2_obs_20191230T0000Z_100subset_rttov_onedvarcheck_out.nc
   geovals: &GeoVaLs
     filename: Data/ufo/testinput_tier_1/amsr2_geovals_20191230T0000Z_100subset.nc4
   obs bias: &ObsBias
@@ -46,14 +50,14 @@ observations:
         RTTOV_GasUnitConv: true
         UseRHwaterForQC: *UseRHwaterForQC
         UseColdSurfaceCheck: *UseColdSurfaceCheck
-        Platform_Name: *platform_name 
+        WMO_ID: *wmo_id
         Sat_ID: *sat_id 
         Instrument_Name: *inst_name
         CoefficientPath: Data/
     BMatrix: ../resources/bmatrix/rttov/amsr_bmatrix_70_test.dat
     RMatrix: ../resources/rmatrix/rttov/amsr_gcomw1_rmatrix_test.nc4
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: *ops_channels
     retrieval variables from geovals: # Variables needed in the geovals
     - air_temperature # 1
@@ -83,17 +87,18 @@ observations:
   # Reject channels when highretlwp
   - filter: BlackList
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: 7-12
     where:
     - variable:
-        name: LWP@OneDVar
+        name: OneDVar/liquidWaterPath
       maxvalue: 1.0e-1
     defer to post: true
   passedBenchmark: 300      # number of passed obs
 
 - obs operator:
     <<: *ObsOperator
+    Debug: false
   obs space:
     <<: *ObsSpace
     name: Test the RTTOVOneDVarCheck throwns an error if SatRad compatibility is true
@@ -112,14 +117,14 @@ observations:
         RTTOV_GasUnitConv: true
         UseRHwaterForQC: *UseRHwaterForQC
         UseColdSurfaceCheck: *UseColdSurfaceCheck
-        Platform_Name: *platform_name
+        WMO_ID: *wmo_id
         Sat_ID: *sat_id 
         Instrument_Name: *inst_name
         CoefficientPath: Data/
     BMatrix: ../resources/bmatrix/rttov/amsr_bmatrix_70_test.dat
     RMatrix: ../resources/rmatrix/rttov/amsr_gcomw1_rmatrix_test.nc4
     filter variables:
-    - name: brightness_temperature
+    - name: brightnessTemperature
       channels: *ops_channels
     retrieval variables from geovals: # Variables needed in the geovals
     - air_temperature # 1
