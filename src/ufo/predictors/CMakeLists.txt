@@ -34,6 +34,8 @@ set ( predictor_files
   Thickness.cc
   ObsMetaDataPredictor.h
   ObsMetaDataPredictor.cc
+  TerminatorTimeDelta.h
+  TerminatorTimeDelta.cc
 )
 
 PREPEND( _p_predictor_files     "predictors"            ${predictor_files} )
