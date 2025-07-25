@@ -13,12 +13,12 @@ observations:
 #   obsdataout:
 #     engine:
 #       type: H5File
-#       obsfile: Data/2020100106_metars_small_SfcPCorrected_out.nc
+#       obsfile: Data/2020100106_metars_small_SfcCorrected_out.nc
   geovals:
     filename: Data/ufo/testinput_tier_1/sfcobs_geovals_gfsC48_2020100106_small.nc
   obs operator:
-    name: SfcPCorrected
-    da_psfc_scheme: UKMO
+    name: SfcCorrected
+    correction scheme to use: UKMO
   obs function:
     name: ObsFunction/ObsErrorFactorSfcPressure
     options:

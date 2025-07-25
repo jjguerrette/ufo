@@ -254,7 +254,7 @@ void stationPressure_UKMO::simobs(const ufo::GeoVaLs & gv,
 
   // Create arrays needed
   std::vector<float> obs_lats(nobs), obs_height(nobs), obs_pressure(nobs);
-  std::vector<float> adjusted_model_surface_height_pressure(nobs);
+  std::vector<float> adjusted_model_surface_height_pressure(nobs, missing);
   std::vector<double> adjusted_model_pressure_2000m(nobs), adjusted_model_virtual_T_2000m(nobs);
   std::vector<float> model_height_surface(nobs), model_pressure_surface(nobs);
 
@@ -288,7 +288,7 @@ void stationPressure_UKMO::simobs(const ufo::GeoVaLs & gv,
       // Convert geopotential to geometric height if needed
       if (convertLevel1GeopotentialHeight) {
         for (size_t i = 0; i < model_nlevs; ++i) {
-          if (obs_pressure[iloc] != util::missingValue<float>()) {
+          if (obs_pressure[iloc] != missing) {
             model_height_level1[i] = formulas::Geopotential_to_Geometric_Height(obs_lats[iloc],
                         model_height_level1[i]);
           }
@@ -322,13 +322,12 @@ void stationPressure_UKMO::simobs(const ufo::GeoVaLs & gv,
       } else {
         adjusted_model_surface_height_pressure[iloc] = obs_pressure[iloc];
       }
-
-      if (adjusted_model_surface_height_pressure[iloc] != missing) {
-        hofx[iloc] = obs_pressure[iloc] - adjusted_model_surface_height_pressure[iloc] +
+    }
+    if (adjusted_model_surface_height_pressure[iloc] != missing) {
+      hofx[iloc] = obs_pressure[iloc] - adjusted_model_surface_height_pressure[iloc] +
                       model_pressure_surface[iloc];
-      } else {
-        hofx[iloc] = model_pressure_surface[iloc];
-      }
+    } else {
+      hofx[iloc] = model_pressure_surface[iloc];
     }
   }
   oops::Log::trace() << "stationPressure_UKMO::simobs complete" << std::endl;
@@ -423,10 +422,10 @@ void stationPressure_GSL::simobs(const ufo::GeoVaLs & gv,
   const float missing = util::missingValue<float>();
 
   // Create arrays needed
-  std::vector<double> model_pressure_surface(nobs), model_height_surface(nobs),
-                      model_virtual_T(model_nlevs);
+  std::vector<double> model_pressure_surface(nobs), model_virtual_T(model_nlevs);
   std::vector<float> obs_pressure(nobs), obs_T(nobs), obs_virtual_T(nobs),
-                     obs_lats(nobs), obs_height(nobs), model_virtual_T_surface(nobs);
+                     obs_lats(nobs), obs_height(nobs), model_virtual_T_surface(nobs),
+                     model_height_surface(nobs);
 
   this->getDataValues(gv, obsdb, params_, obs_lats, obs_height, obs_pressure, obs_virtual_T,
               obs_T, model_height_surface, model_pressure_surface, model_virtual_T_surface);
@@ -463,7 +462,7 @@ void stationPressure_GSL::simobs(const ufo::GeoVaLs & gv,
 
         if (obs_height[iloc] < model_height_surface[iloc]) {
           // Extrapolate to surface if observation is below lowest model layer
-          avg_virtual_T[iloc] = model_T_interpolated[iloc] - ( (ufo::Constants::Lclr/2.0) *
+          avg_virtual_T[iloc] = avg_virtual_T[iloc] - ( (ufo::Constants::Lclr/2.0) *
                (obs_height[iloc] - model_height_surface[iloc]));
         }
       }
@@ -511,7 +510,7 @@ void stationPressure_GSL::getDataValues(const ufo::GeoVaLs & gv,
                                         std::vector<float> & obsPressure,
                                         std::vector<float> & obsVirtualTemp,
                                         std::vector<float> & obsTemp,
-                                        std::vector<double> & modelHeightSurface,
+                                        std::vector<float> & modelHeightSurface,
                                         std::vector<double> & modelPressureSurface,
                                         std::vector<float> & modelVirtualTempSurface) const {
   const size_t nobs = obsdb.nlocs();
@@ -521,7 +520,11 @@ void stationPressure_GSL::getDataValues(const ufo::GeoVaLs & gv,
   obsdb.get_db("MetaData", "stationElevation", obsHeight);
   obsdb.get_db("MetaData", "latitude", obsLats);
   obsdb.get_db("ObsValue", "stationPressure", obsPressure);
-  obsdb.get_db("ObsValue", "virtualTemperature", obsVirtualTemp);
+
+  obsVirtualTemp = std::vector<float>(nobs, util::missingValue<float>());
+  if (obsdb.has("ObsValue", "virtualTemperature")) {
+    obsdb.get_db("ObsValue", "virtualTemperature", obsVirtualTemp);
+  }
   obsdb.get_db("ObsValue", "airTemperature", obsTemp);
 
   // Get surface height.  If geopotential then convert to geometric height.

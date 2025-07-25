@@ -1211,21 +1211,21 @@ ufo_add_test( NAME    test_ufo_opr_sfcpcorrected
               LABELS  operators
               WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
 #
-ufo_add_test( NAME    test_ufo_opr_sfc_pressure_corrected
+ufo_add_test( NAME    test_ufo_opr_sfccorrected_pressure
               TIER    1
               ECBUILD
               COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsOperator.x
-              ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/sfc_pressure_corrected.yaml"
+              ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/sfccorrected_pressure.yaml"
               MPI     1
               LIBS    ufo
               LABELS  operators
               WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
 #
-ufo_add_test( NAME    test_ufo_opr_sfccorrected
+ufo_add_test( NAME    test_ufo_opr_sfccorrected_temperature
               TIER    1
               ECBUILD
               COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsOperator.x
-              ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/sfccorrected.yaml"
+              ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/sfccorrected_temperature.yaml"
               MPI     1
               LIBS    ufo
               LABELS  operators

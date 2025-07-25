@@ -4,17 +4,17 @@ time window:
 
 observations:
 
-# Composite operator (mix SfcPCorrected with GsiSfcModel for all other variables.)
+# Composite operator (mix SfcCorrected with GsiSfcModel for all other variables.)
 - obs space:
     name: SurfaceComposite
     obsdatain:
       engine:
         type: H5File
         obsfile: Data/ufo/testinput_tier_1/instruments/conventional/sfc_obs_2020121500_m.nc
-#    obsdataout:
-#      engine:
-#        type: H5File
-#        obsfile: Data/sfc_obs_2020121500_out.nc
+    # obsdataout:
+    #   engine:
+    #     type: H5File
+    #     obsfile: Data/sfc_obs_2020121500_out.nc
     simulated variables: [windEastward, windNorthward, virtualTemperature, airTemperature, specificHumidity, stationPressure]
   geovals:
     filename: Data/ufo/testinput_tier_1/instruments/conventional/sfc_geoval_2020121500_m.nc
@@ -30,14 +30,14 @@ observations:
        - name: specificHumidity
        - name: windEastward
        - name: windNorthward
-     - name: SfcPCorrected
+     - name: SfcCorrected
        variables:
        - name: stationPressure
-       da_psfc_scheme: UKMO
+       correction scheme to use: UKMO
        geovar_geomz: geopotential_height
        geovar_sfc_geomz: geopotential_height_at_surface
   # The reference value is calculated as
   #     sqrt( (rms(airTemperature)^2 + rms(specificHumidity)^2 + rms(windEastward)^2
   #            rms(windNorthward)^2 + rms(stationPressure)^2) / 5)
-  rms ref: 670118.5626
+  rms ref: 39827.437251
   tolerance: 1.0e-06

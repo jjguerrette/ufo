@@ -3,7 +3,7 @@ time window:
   end: 2020-12-15T03:30:00Z
 
 observations:
-# Composite operator (mix SfcPCorrected with GsiSfcModel for all other variables.)
+# Composite operator (mix SfcCorrected with GsiSfcModel for all other variables.)
 - obs space:
     name: SurfaceComposite
     obsdatain:
@@ -29,13 +29,13 @@ observations:
        - name: specificHumidity
        - name: windEastward
        - name: windNorthward
-     - name: SfcPCorrected
+     - name: SfcCorrected
        variables:
        - name: stationPressure
-       da_psfc_scheme: UKMO
+       correction scheme to use: UKMO
        # Remove the next two lines when using geoval from JEDI, not GSI.
        geovar_geomz: geopotential_height
        geovar_sfc_geomz: geopotential_height_at_surface
-  rms ref: 670118.56258
+  rms ref: 39827.437251
   tolerance: 1.e-05
 

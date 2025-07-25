@@ -71,9 +71,10 @@ void ObsSfcCorrected::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
   oops::Log::trace() << "ObsSfcCorrected::simulateObs started." << std::endl;
   // Look over variables to calculate hofx
   std::vector<float> hofx(ovec.nlocs());
-  for (int jvar : operatorVarIndices_) {
+  for (size_t i = 0; i < operatorVars_.size(); ++i) {
+     int jvar = operatorVarIndices_[i];
     // Calculate hofx
-    operators_[jvar]->simobs(gv, odb_, hofx);
+    operators_[i]->simobs(gv, odb_, hofx);
 
     // Populate the observation vector
     for (size_t jloc = 0; jloc < ovec.nlocs(); ++jloc) {

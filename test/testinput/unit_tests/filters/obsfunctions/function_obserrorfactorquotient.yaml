@@ -8,17 +8,17 @@ observations:
     obsdatain:
       engine:
         type: H5File
-        obsfile: Data/ufo/testinput_tier_1/2020100106_metars_small.nc
+        obsfile: Data/ufo/testinput_tier_1/2020100106_metars_small_new.nc
 #    obsdataout:
 #      engine:
 #        type: H5File
 #        obsfile: Data/2020100106_metars_small_out.nc
-    simulated variables: [stationPressure, airTemperature]
+    simulated variables: [stationPressure, airTemperatureAt2M]
   geovals:
     filename: Data/ufo/testinput_tier_1/sfcobs_geovals_gfsC48_2020100106_small.nc
   obs operator:
-    name: SfcPCorrected
-    da_psfc_scheme: UKMO
+    name: SfcCorrected
+    correction scheme to use: UKMO
 #
   obs filters:
   - filter: BlackList

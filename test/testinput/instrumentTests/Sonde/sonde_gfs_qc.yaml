@@ -13,10 +13,10 @@ observations:
         group variables: ["stationIdentification", "releaseTime"]
         sort variable: "pressure"
         sort order: "descending"
-#   obsdataout: 
-#     engine:
-#       type: H5File
-#       obsfile: Data/sondes_obs_2020121500_m_out.nc
+    # obsdataout: 
+    #   engine:
+    #     type: H5File
+    #     obsfile: Data/sondes_obs_20250430_cpp_first_m_out.nc
     simulated variables: [windEastward, windNorthward, airTemperature, virtualTemperature, specificHumidity, stationPressure]
   geovals:
     filename: Data/ufo/testinput_tier_1/instruments/conventional/sondes_geoval_2020121500_m.nc
@@ -34,10 +34,10 @@ observations:
        vertical coordinate: air_pressure
        observation vertical coordinate: pressure
        interpolation method: log-linear
-     - name: SfcPCorrected
+     - name: SfcCorrected
        variables:
        - name: stationPressure
-       da_psfc_scheme: UKMO
+       correction scheme to use: UKMO
        # Remove the next two lines when using geoval from JEDI, not GSI.
        geovar_geomz: geopotential_height
        geovar_sfc_geomz: geopotential_height_at_surface

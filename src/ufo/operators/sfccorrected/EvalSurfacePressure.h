@@ -102,7 +102,7 @@ class stationPressure_GSL : public SurfaceOperatorBase {
                      std::vector<float> &,
                      std::vector<float> &,
                      std::vector<float> &,
-                     std::vector<double> &,
+                     std::vector<float> &,
                      std::vector<double> &,
                      std::vector<float> &) const;
 };
