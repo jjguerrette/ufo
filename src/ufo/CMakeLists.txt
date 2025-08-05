@@ -27,6 +27,7 @@ add_subdirectory( operators/compositeoper )
 if( crtm_FOUND )
     add_subdirectory( operators/crtm )
 endif()
+add_subdirectory( operators/densityreduction )
 add_subdirectory( operators/gnssro )
 add_subdirectory( operators/groundgnss )
 add_subdirectory( operators/identity )
@@ -154,6 +155,7 @@ list( APPEND ufo_src_files
     ${lightning_src_files}
     ${superob_src_files}
     ${windspeed_src_files}
+    ${densityreduction_src_files}
 )
 
 ## Create Library target
