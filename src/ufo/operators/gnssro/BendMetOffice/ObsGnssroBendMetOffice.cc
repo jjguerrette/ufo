@@ -31,18 +31,18 @@ ObsGnssroBendMetOffice::ObsGnssroBendMetOffice(const ioda::ObsSpace & odb,
                                        const Parameters_ & parameters)
   : ObsOperatorBase(odb), keyOperGnssroBendMetOffice_(0), odb_(odb), varin_()
 {
-  oops::Log::trace() << "Constructing obs operator" << std::endl;
-  oops::Log::debug() << "Number of channels " << odb.assimvariables().channels() << std::endl;
+  oops::Log::trace() << "ObsGnssroBendMetOffice constructor start" << std::endl;
+  // oops::Log::debug() << "Number of channels " << odb.assimvariables().channels() << std::endl;
 
   const std::vector<std::string> vv{"air_pressure_levels",
                                     "water_vapor_mixing_ratio_wrt_moist_air",
                                     "geopotential_height", "geopotential_height_levels"};
   varin_.reset(new oops::Variables(vv));
 
-  oops::Log::debug() << "nlocs " << odb.nlocs() << std::endl;
-  oops::Log::debug() << "nchans " << odb.nchans() << std::endl;
-  oops::Log::debug() << "nrecs " << odb.nrecs() << std::endl;
-  oops::Log::debug() << "nvars " << odb.nvars() << std::endl;
+  // oops::Log::debug() << "nlocs " << odb.nlocs() << std::endl;
+  // oops::Log::debug() << "nchans " << odb.nchans() << std::endl;
+  // oops::Log::debug() << "nrecs " << odb.nrecs() << std::endl;
+  // oops::Log::debug() << "nvars " << odb.nvars() << std::endl;
 
   std::set<int> channelset = oops::parseIntSet(parameters.channelList);
   std::vector<int> channels;
@@ -56,27 +56,27 @@ ObsGnssroBendMetOffice::ObsGnssroBendMetOffice(const ioda::ObsSpace & odb,
                                      channels[0],
                                      parameters.noSuperCheck);
 
-  oops::Log::trace() << "ObsGnssroBendMetOffice created." << std::endl;
+  oops::Log::trace() << "ObsGnssroBendMetOffice constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsGnssroBendMetOffice::~ObsGnssroBendMetOffice() {
   ufo_gnssro_bendmetoffice_delete_f90(keyOperGnssroBendMetOffice_);
-  oops::Log::trace() << "ObsGnssroBendMetOffice destructed" << std::endl;
+  oops::Log::trace() << "ObsGnssroBendMetOffice destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsGnssroBendMetOffice::simulateObs(const GeoVaLs & gom, ioda::ObsVector & ovec,
                                        ObsDiagnostics & ydiags, const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "Starting simulateObs" << std::endl;
-  oops::Log::debug() << "ObsVector: nvars = " << ovec.nvars() << "  nlocs = "
-                     << ovec.nlocs() << "  size = " << ovec.size() << std::endl;
+  oops::Log::trace() << "ObsGnssroBendMetOffice::simulateObs start" << std::endl;
+  // oops::Log::debug() << "ObsVector: nvars = " << ovec.nvars() << "  nlocs = "
+  //                    << ovec.nlocs() << "  size = " << ovec.size() << std::endl;
 
   ufo_gnssro_bendmetoffice_simobs_f90(keyOperGnssroBendMetOffice_, gom.toFortran(), odb_,
                                   ovec.nvars(), ovec.nlocs(), ovec.toFortran(), ydiags.toFortran());
-  oops::Log::trace() << "Finishing simulateObs" << std::endl;
+  oops::Log::trace() << "ObsGnssroBendMetOffice::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

@@ -25,7 +25,7 @@ SurfaceOperatorFactory::SurfaceOperatorFactory(const std::string & name) {
 std::unique_ptr<SurfaceOperatorBase>
 SurfaceOperatorFactory::create(const std::string & name,
                                const Parameters_ & params) {
-  oops::Log::trace() << "SurfaceOperatorBase::create starting" << std::endl;
+  oops::Log::trace() << "SurfaceOperatorBase::create start" << std::endl;
   typename std::map<std::string, SurfaceOperatorFactory*>::iterator jloc = getMakers().find(name);
   if (jloc == getMakers().end()) {
     std::string makerNameList;

@@ -37,14 +37,14 @@ ObsGnssroBndROPP1DTLAD::ObsGnssroBndROPP1DTLAD(const ioda::ObsSpace & odb,
 
   varin_.reset(new oops::Variables(vv));
   oops::Log::info() << "ObsGnssroBndROPP1DTLAD vars: " << *varin_ << std::endl;
-  oops::Log::trace() << "ObsGnssroBndROPP1DTLAD created" << std::endl;
+  oops::Log::trace() << "ObsGnssroBndROPP1DTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsGnssroBndROPP1DTLAD::~ObsGnssroBndROPP1DTLAD() {
   ufo_gnssro_bndropp1d_tlad_delete_f90(keyOperGnssroBndROPP1D_);
-  oops::Log::trace() << "ObsGnssroBndROPP1DTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsGnssroBndROPP1DTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -52,6 +52,7 @@ ObsGnssroBndROPP1DTLAD::~ObsGnssroBndROPP1DTLAD() {
 void ObsGnssroBndROPP1DTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics &,
                                            const QCFlags_t & qc_flags) {
   ufo_gnssro_bndropp1d_tlad_settraj_f90(keyOperGnssroBndROPP1D_, geovals.toFortran(), obsspace());
+  oops::Log::trace() << "ObsGnssroBndROPP1DTLAD::setTrajectory done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -60,6 +61,7 @@ void ObsGnssroBndROPP1DTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVec
                                            const QCFlags_t & qc_flags) const {
   ufo_gnssro_bndropp1d_simobs_tl_f90(keyOperGnssroBndROPP1D_, geovals.toFortran(), obsspace(),
                                ovec.size(), ovec.toFortran());
+  oops::Log::trace() << "ObsGnssroBndROPP1DTLAD::simulateObsTL done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -68,6 +70,7 @@ void ObsGnssroBndROPP1DTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVec
                                            const QCFlags_t & qc_flags) const {
   ufo_gnssro_bndropp1d_simobs_ad_f90(keyOperGnssroBndROPP1D_, geovals.toFortran(), obsspace(),
                                ovec.size(), ovec.toFortran());
+  oops::Log::trace() << "ObsGnssroBndROPP1DTLAD::simulateObsAD done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------

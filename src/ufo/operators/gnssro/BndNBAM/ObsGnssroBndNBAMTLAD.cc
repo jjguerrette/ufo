@@ -44,14 +44,14 @@ ObsGnssroBndNBAMTLAD::ObsGnssroBndNBAMTLAD(const ioda::ObsSpace & odb,
                                     params.options.value().toConfiguration());
 
   oops::Log::info() << "ObsGnssroBndNBAMTLAD vars: " << *varin_ << std::endl;
-  oops::Log::trace() << "ObsGnssroBndNBAMTLAD created" << std::endl;
+  oops::Log::trace() << "ObsGnssroBndNBAMTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsGnssroBndNBAMTLAD::~ObsGnssroBndNBAMTLAD() {
   ufo_gnssro_bndnbam_tlad_delete_f90(keyOperGnssroBndNBAM_);
-  oops::Log::trace() << "ObsGnssroBndNBAMTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsGnssroBndNBAMTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -59,6 +59,7 @@ ObsGnssroBndNBAMTLAD::~ObsGnssroBndNBAMTLAD() {
 void ObsGnssroBndNBAMTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics &,
                                          const QCFlags_t & qc_flags) {
   ufo_gnssro_bndnbam_tlad_settraj_f90(keyOperGnssroBndNBAM_, geovals.toFortran(), obsspace());
+  oops::Log::trace() << "ObsGnssroBndNBAMTLAD::setTrajectory done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -67,6 +68,7 @@ void ObsGnssroBndNBAMTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVecto
                                          const QCFlags_t & qc_flags) const {
   ufo_gnssro_bndnbam_simobs_tl_f90(keyOperGnssroBndNBAM_, geovals.toFortran(), obsspace(),
                                ovec.size(), ovec.toFortran());
+  oops::Log::trace() << "ObsGnssroBndNBAMTLAD::simulateObsTL done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -75,6 +77,7 @@ void ObsGnssroBndNBAMTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVecto
                                          const QCFlags_t & qc_flags) const {
   ufo_gnssro_bndnbam_simobs_ad_f90(keyOperGnssroBndNBAM_, geovals.toFortran(), obsspace(),
                                ovec.size(), ovec.toFortran());
+  oops::Log::trace() << "ObsGnssroBndNBAMTLAD::simulateObsAD done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------

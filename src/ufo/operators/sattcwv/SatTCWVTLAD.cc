@@ -37,20 +37,21 @@ SatTCWVTLAD::SatTCWVTLAD(const ioda::ObsSpace & odb,
                                     "air_pressure_at_surface"};
   varin_.reset(new oops::Variables(vv));
 
-  oops::Log::trace() << "SatTCWVTLAD created" << std::endl;
+  oops::Log::trace() << "SatTCWVTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 SatTCWVTLAD::~SatTCWVTLAD() {
   traj_init = false;
-  oops::Log::trace() << "SatTCWVTLAD destructed" << std::endl;
+  oops::Log::trace() << "SatTCWVTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void SatTCWVTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics &,
                                 const QCFlags_t & qc_flags) {
+  oops::Log::trace() << "SatTCWVTLAD::setTrajectory start" << std::endl;
   // Get number of obs locations & number of model pressure levels
   nprofiles = geovals.nlocs();
   nlevels   = geovals.nlevs(oops::Variable{"air_pressure_levels"});  // number of full (rho) levels
@@ -97,12 +98,14 @@ void SatTCWVTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics &,
     }
   }
   traj_init = true;
+  oops::Log::trace() << "SatTCWVTLAD::setTrajectory done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void SatTCWVTLAD::simulateObsTL(
         const GeoVaLs & geovals, ioda::ObsVector & hofx, const QCFlags_t & qc_flags) const {
+  oops::Log::trace() << "SatTCWVTLAD::simulateObsTL start" << std::endl;
   // Ensure trajectory has already been calculated
   ASSERT(traj_init);
 
@@ -127,12 +130,14 @@ void SatTCWVTLAD::simulateObsTL(
       hofx[prof] += k_matrix[lev][prof] * q_d[lev][prof];
     }
   }
+  oops::Log::trace() << "SatTCWVTLAD::simulateObsTL done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void SatTCWVTLAD::simulateObsAD(
         GeoVaLs & geovals, const ioda::ObsVector & hofx, const QCFlags_t & qc_flags) const {
+  oops::Log::trace() << "SatTCWVTLAD::simulateObsAD start" << std::endl;
   // Ensure trajectory has already been calculated
   ASSERT(traj_init);
 
@@ -167,6 +172,7 @@ void SatTCWVTLAD::simulateObsAD(
     geovals.putAtLevel(q_d[lev], oops::Variable{
         "water_vapor_mixing_ratio_wrt_moist_air"}, lev);
   }
+  oops::Log::trace() << "SatTCWVTLAD::simulateObsAD done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

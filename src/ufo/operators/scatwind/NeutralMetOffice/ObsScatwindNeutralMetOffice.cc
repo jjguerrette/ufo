@@ -40,14 +40,14 @@ ObsScatwindNeutralMetOffice::ObsScatwindNeutralMetOffice(const ioda::ObsSpace & 
                                           channels_list[0],
                                           parameters_.toConfiguration());
 
-  oops::Log::trace() << "ObsScatwindNeutralMetOffice created." << std::endl;
+  oops::Log::trace() << "ObsScatwindNeutralMetOffice constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsScatwindNeutralMetOffice::~ObsScatwindNeutralMetOffice() {
   ufo_scatwind_neutralmetoffice_delete_f90(keyOperScatwindNeutralMetOffice_);
-  oops::Log::trace() << "ObsScatwindNeutralMetOffice destructed" << std::endl;
+  oops::Log::trace() << "ObsScatwindNeutralMetOffice destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -55,13 +55,13 @@ ObsScatwindNeutralMetOffice::~ObsScatwindNeutralMetOffice() {
 void ObsScatwindNeutralMetOffice::simulateObs(const GeoVaLs & gom, ioda::ObsVector & ovec,
                                               ObsDiagnostics & d,
                                               const QCFlags_t & qc_flags) const {
-    oops::Log::trace() << "ObsScatwindNeutralMetOffice::simulateObs entered" << std::endl;
+    oops::Log::trace() << "ObsScatwindNeutralMetOffice::simulateObs start" << std::endl;
 
     ufo_scatwind_neutralmetoffice_simobs_f90(keyOperScatwindNeutralMetOffice_,
                                              gom.toFortran(), odb_,
                                              ovec.nvars(), ovec.nlocs(), ovec.toFortran());
 
-    oops::Log::trace() << "ObsScatwindNeutralMetOffice::simulateObs exit" << std::endl;
+    oops::Log::trace() << "ObsScatwindNeutralMetOffice::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

@@ -39,14 +39,14 @@ ObsAtmSfcInterp::ObsAtmSfcInterp(const ioda::ObsSpace & odb, const Parameters_ &
                              operatorVars_, operatorVarIndices.data(), operatorVarIndices.size(),
                              varin_);
 
-  oops::Log::trace() << "ObsAtmSfcInterp created." << std::endl;
+  oops::Log::trace() << "ObsAtmSfcInterp constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsAtmSfcInterp::~ObsAtmSfcInterp() {
   ufo_atmsfcinterp_delete_f90(keyOperAtmSfcInterp_);
-  oops::Log::trace() << "ObsAtmSfcInterp destructed" << std::endl;
+  oops::Log::trace() << "ObsAtmSfcInterp destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -55,7 +55,7 @@ void ObsAtmSfcInterp::simulateObs(const GeoVaLs & gom, ioda::ObsVector & ovec,
                                   ObsDiagnostics & d, const QCFlags_t & qc_flags) const {
   ufo_atmsfcinterp_simobs_f90(keyOperAtmSfcInterp_, gom.toFortran(), odb_,
                             ovec.nvars(), ovec.nlocs(), ovec.toFortran());
-  oops::Log::trace() << "ObsAtmSfcInterp: observation operator executed" << std::endl;
+  oops::Log::trace() << "ObsAtmSfcInterp::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

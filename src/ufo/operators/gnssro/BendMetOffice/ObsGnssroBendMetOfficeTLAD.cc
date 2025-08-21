@@ -50,14 +50,14 @@ ObsGnssroBendMetOfficeTLAD::ObsGnssroBendMetOfficeTLAD(const ioda::ObsSpace & od
                                           channels[0],
                                           parameters.noSuperCheck);
 
-  oops::Log::trace() << "ObsGnssroBendMetOfficeTLAD created" << std::endl;
+  oops::Log::trace() << "ObsGnssroBendMetOfficeTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsGnssroBendMetOfficeTLAD::~ObsGnssroBendMetOfficeTLAD() {
   ufo_gnssro_bendmetoffice_tlad_delete_f90(keyOperGnssroBendMetOffice_);
-  oops::Log::trace() << "ObsGnssroBendMetOfficeTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsGnssroBendMetOfficeTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -66,6 +66,7 @@ void ObsGnssroBendMetOfficeTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagn
                                                const QCFlags_t & qc_flags) {
   ufo_gnssro_bendmetoffice_tlad_settraj_f90(keyOperGnssroBendMetOffice_, geovals.toFortran(),
                                             obsspace());
+  oops::Log::trace() << "ObsGnssroBendMetOfficeTLAD::setTrajectory done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -74,6 +75,7 @@ void ObsGnssroBendMetOfficeTLAD::simulateObsTL(
         const GeoVaLs & geovals, ioda::ObsVector & ovec, const QCFlags_t & qc_flags) const {
   ufo_gnssro_bendmetoffice_simobs_tl_f90(keyOperGnssroBendMetOffice_, geovals.toFortran(),
                                          obsspace(), ovec.size(), ovec.toFortran());
+  oops::Log::trace() << "ObsGnssroBendMetOfficeTLAD::simulateObsTL done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -82,6 +84,7 @@ void ObsGnssroBendMetOfficeTLAD::simulateObsAD(
         GeoVaLs & geovals, const ioda::ObsVector & ovec, const QCFlags_t & qc_flags) const {
   ufo_gnssro_bendmetoffice_simobs_ad_f90(keyOperGnssroBendMetOffice_, geovals.toFortran(),
                                          obsspace(), ovec.size(), ovec.toFortran());
+  oops::Log::trace() << "ObsGnssroBendMetOfficeTLAD::simulateObsAD done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------

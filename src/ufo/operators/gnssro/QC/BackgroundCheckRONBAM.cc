@@ -34,15 +34,16 @@ BackgroundCheckRONBAM::BackgroundCheckRONBAM(ioda::ObsSpace & obsdb,
                                            std::shared_ptr<ioda::ObsDataVector<float> > obserr)
   : FilterBase(obsdb, config, flags, obserr)
 {
-  oops::Log::trace() << "BackgroundCheckRONBAM contructor: "
+  oops::Log::trace() << "BackgroundCheckRONBAM contructor start "
                      << "using NBAM style BackgroundCheck for GnssroBndNBAM" << std::endl;
   allvars_ += Variables(filtervars_, "HofX");
+  oops::Log::trace() << "BackgroundCheckRONBAM contructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 BackgroundCheckRONBAM::~BackgroundCheckRONBAM() {
-  oops::Log::trace() << "BackgroundCheckRONBAM destructed" << std::endl;
+  oops::Log::trace() << "BackgroundCheckRONBAM destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -50,7 +51,7 @@ BackgroundCheckRONBAM::~BackgroundCheckRONBAM() {
 void BackgroundCheckRONBAM::applyFilter(const std::vector<bool> & apply,
                                         const Variables & filtervars,
                                         std::vector<std::vector<bool>> & flagged) const {
-  oops::Log::trace() << "BackgroundCheckRONBAM postFilter" << std::endl;
+  oops::Log::trace() << "BackgroundCheckRONBAM::applyFilter using postFilter start" << std::endl;
 
   const oops::ObsVariables observed = obsdb_.obsvariables();
   const float missing = util::missingValue<float>();
@@ -138,6 +139,8 @@ void BackgroundCheckRONBAM::applyFilter(const std::vector<bool> & apply,
       }
     }
   }
+  oops::Log::trace() << "BackgroundCheckRONBAM::applyFilter "
+       << "using postFilter done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

@@ -43,7 +43,7 @@ airTemperatureAt2M_WRFDA::airTemperatureAt2M_WRFDA(const std::string & name,
 void airTemperatureAt2M_WRFDA::simobs(const ufo::GeoVaLs & gv,
                                       const ioda::ObsSpace & obsdb,
                                       std::vector<float> & hofx) const {
-  oops::Log::trace() << "airTemperatureAt2M_WRFDA::simobs starting" << std::endl;
+  oops::Log::trace() << "airTemperatureAt2M_WRFDA::simobs start" << std::endl;
 
   // Setup parameters used throughout
   const size_t nobs = obsdb.nlocs();
@@ -99,7 +99,7 @@ void airTemperatureAt2M_WRFDA::simobs(const ufo::GeoVaLs & gv,
     }
   }
 
-  oops::Log::trace() << "airTemperatureAt2M_WRFDA::simobs complete" << std::endl;
+  oops::Log::trace() << "airTemperatureAt2M_WRFDA::simobs done" << std::endl;
 }
 
 void airTemperatureAt2M_WRFDA::settraj() const {
@@ -134,7 +134,7 @@ airTemperatureAt2M_UKMO::airTemperatureAt2M_UKMO(const std::string & name,
 void airTemperatureAt2M_UKMO::simobs(const ufo::GeoVaLs & gv,
                                      const ioda::ObsSpace & obsdb,
                                      std::vector<float> & hofx) const {
-  oops::Log::trace() << "airTemperatureAt2M_UKMO::simobs starting" << std::endl;
+  oops::Log::trace() << "airTemperatureAt2M_UKMO::simobs start" << std::endl;
 
   // Create oops::Variable needed
   const oops::Variable model_height_var = oops::Variable(params_.geovarGeomZ.value());
@@ -215,7 +215,7 @@ void airTemperatureAt2M_UKMO::simobs(const ufo::GeoVaLs & gv,
         ufo::Constants::Lclr * (model_height_surface[iloc] - obs_height[iloc]);
     }
   }
-  oops::Log::trace() << "airTemperatureAt2M_UKMO::simobs complete" << std::endl;
+  oops::Log::trace() << "airTemperatureAt2M_UKMO::simobs done" << std::endl;
 }
 
 void airTemperatureAt2M_UKMO::settraj() const {

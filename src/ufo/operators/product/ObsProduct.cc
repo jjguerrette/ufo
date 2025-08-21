@@ -30,7 +30,7 @@ ObsProduct::ObsProduct(const ioda::ObsSpace & odb,
                          const Parameters_ & parameters)
   : ObsOperatorBase(odb, VariableNameMap(parameters.AliasFile.value())), odb_(odb)
 {
-  oops::Log::trace() << "ObsProduct constructor starting" << std::endl;
+  oops::Log::trace() << "ObsProduct constructor start" << std::endl;
 
   getOperatorVariables(parameters.variables.value(), odb.assimvariables(),
                        operatorVars_, operatorVarIndices_);
@@ -65,13 +65,13 @@ ObsProduct::ObsProduct(const ioda::ObsSpace & odb,
       scalingVariableExponent_ = parameters.scalingVariableExponent.value().value();
   }
 
-  oops::Log::trace() << "ObsProduct constructor finished" << std::endl;
+  oops::Log::trace() << "ObsProduct constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsProduct::~ObsProduct() {
-  oops::Log::trace() << "ObsProduct destructed" << std::endl;
+  oops::Log::trace() << "ObsProduct destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -79,7 +79,7 @@ ObsProduct::~ObsProduct() {
 void ObsProduct::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
                               ObsDiagnostics & odiags,
                               const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsProduct: simulateObs starting" << std::endl;
+  oops::Log::trace() << "ObsProduct::simulateObs start" << std::endl;
 
   // Get variable that will scale h(x)
   std::vector<double> scalingVariable(ovec.nlocs());
@@ -135,7 +135,7 @@ void ObsProduct::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
     }
   }
 
-  oops::Log::trace() << "ObsProduct: simulateObs finished" << std::endl;
+  oops::Log::trace() << "ObsProduct::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

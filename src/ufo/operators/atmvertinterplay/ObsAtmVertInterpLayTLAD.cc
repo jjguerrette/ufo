@@ -29,25 +29,25 @@ ObsAtmVertInterpLayTLAD::ObsAtmVertInterpLayTLAD(const ioda::ObsSpace & odb,
   ufo_atmvertinterplay_tlad_setup_f90(keyOperAtmVertInterpLay_, params.toConfiguration(),
                                       odb.assimvariables(), varin_);
 
-  oops::Log::trace() << "ObsAtmVertInterpLayTLAD created" << std::endl;
+  oops::Log::trace() << "ObsAtmVertInterpLayTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsAtmVertInterpLayTLAD::~ObsAtmVertInterpLayTLAD() {
   ufo_atmvertinterplay_tlad_delete_f90(keyOperAtmVertInterpLay_);
-  oops::Log::trace() << "ObsAtmVertInterpLayTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsAtmVertInterpLayTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsAtmVertInterpLayTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics &,
                                             const QCFlags_t & qc_flags) {
-  oops::Log::trace() << "ObsAtmVertInterpLayTLAD::setTrajectory entering" << std::endl;
+  oops::Log::trace() << "ObsAtmVertInterpLayTLAD::setTrajectory start" << std::endl;
 
   ufo_atmvertinterplay_tlad_settraj_f90(keyOperAtmVertInterpLay_, geovals.toFortran(), obsspace());
 
-  oops::Log::trace() << "ObsAtmVertInterpLayTLAD::setTrajectory exiting" << std::endl;
+  oops::Log::trace() << "ObsAtmVertInterpLayTLAD::setTrajectory done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -57,7 +57,7 @@ void ObsAtmVertInterpLayTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVe
   ufo_atmvertinterplay_simobs_tl_f90(keyOperAtmVertInterpLay_, geovals.toFortran(), obsspace(),
                                   ovec.nvars(), ovec.nlocs(), ovec.toFortran());
 
-  oops::Log::trace() << "ObsAtmVertInterpLayTLAD::simulateObsTL exiting" << std::endl;
+  oops::Log::trace() << "ObsAtmVertInterpLayTLAD::simulateObsTL done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -67,7 +67,7 @@ void ObsAtmVertInterpLayTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVe
   ufo_atmvertinterplay_simobs_ad_f90(keyOperAtmVertInterpLay_, geovals.toFortran(), obsspace(),
                                   ovec.nvars(), ovec.nlocs(), ovec.toFortran());
 
-  oops::Log::trace() << "ObsAtmVertInterpLayTLAD::simulateObsAD exiting" << std::endl;
+  oops::Log::trace() << "ObsAtmVertInterpLayTLAD::simulateObsAD done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

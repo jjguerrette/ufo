@@ -36,14 +36,14 @@ ObsCoolSkin::ObsCoolSkin(const ioda::ObsSpace & odb, const Parameters_ & params)
   varin_.reset(new oops::Variables(vvin));
 
   ufo_CoolSkin_setup_f90(keyOper_, params.toConfiguration());
-  oops::Log::trace() << "ObsCoolSkin created." << std::endl;
+  oops::Log::trace() << "ObsCoolSkin constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsCoolSkin::~ObsCoolSkin() {
   ufo_CoolSkin_delete_f90(keyOper_);
-  oops::Log::trace() << "ObsCoolSkin destructed" << std::endl;
+  oops::Log::trace() << "ObsCoolSkin destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -51,7 +51,7 @@ ObsCoolSkin::~ObsCoolSkin() {
 void ObsCoolSkin::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
                               ObsDiagnostics &, const QCFlags_t & qc_flags) const {
   ufo_CoolSkin_simobs_f90(keyOper_, gv.toFortran(), odb_, ovec.size(), ovec.toFortran());
-  oops::Log::trace() << "ObsCoolSkin: observation operator run" << std::endl;
+  oops::Log::trace() << "ObsCoolSkin::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

@@ -37,14 +37,14 @@ ObsGnssroRefNCEPTLAD::ObsGnssroRefNCEPTLAD(const ioda::ObsSpace & odb,
 
   varin_.reset(new oops::Variables(vv));
   oops::Log::info() << "ObsGnssroRefNCEPTLAD vars: " << *varin_ << std::endl;
-  oops::Log::trace() << "ObsGnssroRefNCEPTLAD created" << std::endl;
+  oops::Log::trace() << "ObsGnssroRefNCEPTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsGnssroRefNCEPTLAD::~ObsGnssroRefNCEPTLAD() {
   ufo_gnssro_refncep_tlad_delete_f90(keyOperGnssroRefNCEP_);
-  oops::Log::trace() << "ObsGnssroRefNCEPTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsGnssroRefNCEPTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -52,6 +52,7 @@ ObsGnssroRefNCEPTLAD::~ObsGnssroRefNCEPTLAD() {
 void ObsGnssroRefNCEPTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics &,
                                          const QCFlags_t & qc_flags) {
   ufo_gnssro_refncep_tlad_settraj_f90(keyOperGnssroRefNCEP_, geovals.toFortran(), obsspace());
+  oops::Log::trace() << "ObsGnssroRefNCEPTLAD::setTrajectory done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -60,6 +61,7 @@ void ObsGnssroRefNCEPTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVecto
                                          const QCFlags_t & qc_flags) const {
   ufo_gnssro_refncep_simobs_tl_f90(keyOperGnssroRefNCEP_, geovals.toFortran(), obsspace(),
                                ovec.size(), ovec.toFortran());
+  oops::Log::trace() << "ObsGnssroRefNCEPTLAD::simulateObsTL done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -68,6 +70,7 @@ void ObsGnssroRefNCEPTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVecto
                                          const QCFlags_t & qc_flags) const {
   ufo_gnssro_refncep_simobs_ad_f90(keyOperGnssroRefNCEP_, geovals.toFortran(), obsspace(),
                                ovec.size(), ovec.toFortran());
+  oops::Log::trace() << "ObsGnssroRefNCEPTLAD::simulateObsAD done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------

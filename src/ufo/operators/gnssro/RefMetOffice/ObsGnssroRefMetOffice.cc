@@ -39,14 +39,14 @@ ObsGnssroRefMetOffice::ObsGnssroRefMetOffice(const ioda::ObsSpace & odb,
                                     parameters.pseudoLevels,
                                     parameters.minTempGrad);
 
-  oops::Log::trace() << "ObsGnssroRefMetOffice created." << std::endl;
+  oops::Log::trace() << "ObsGnssroRefMetOffice constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsGnssroRefMetOffice::~ObsGnssroRefMetOffice() {
   ufo_gnssro_refmetoffice_delete_f90(keyOperGnssroRefMetOffice_);
-  oops::Log::trace() << "ObsGnssroRefMetOffice destructed" << std::endl;
+  oops::Log::trace() << "ObsGnssroRefMetOffice destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -55,6 +55,7 @@ void ObsGnssroRefMetOffice::simulateObs(const GeoVaLs & gom, ioda::ObsVector & o
                                      ObsDiagnostics & ydiags, const QCFlags_t & qc_flags) const {
   ufo_gnssro_refmetoffice_simobs_f90(keyOperGnssroRefMetOffice_, gom.toFortran(), odb_,
                                   ovec.size(), ovec.toFortran(), ydiags.toFortran());
+  oops::Log::trace() << "ObsGnssroRefMetOffice::simulateObs done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------

@@ -31,14 +31,14 @@ ObsRadarRadialVelocityTLAD::ObsRadarRadialVelocityTLAD(const ioda::ObsSpace & od
   ufo_radarradialvelocity_tlad_setup_f90(keyOperRadarRadialVelocity_,
                                          params.toConfiguration(), odb.assimvariables(), varin_);
 
-  oops::Log::trace() << "ObsRadarRadialVelocityTLAD created" << std::endl;
+  oops::Log::trace() << "ObsRadarRadialVelocityTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsRadarRadialVelocityTLAD::~ObsRadarRadialVelocityTLAD() {
   ufo_radarradialvelocity_tlad_delete_f90(keyOperRadarRadialVelocity_);
-  oops::Log::trace() << "ObsRadarRadialVelocityTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsRadarRadialVelocityTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -46,12 +46,12 @@ ObsRadarRadialVelocityTLAD::~ObsRadarRadialVelocityTLAD() {
 void ObsRadarRadialVelocityTLAD::setTrajectory(const GeoVaLs & geovals,
                                                ObsDiagnostics &,
                                                const QCFlags_t & qc_flags) {
-  oops::Log::trace() << "ObsRadarRadialVelocityTLAD::setTrajectory entering" << std::endl;
+  oops::Log::trace() << "ObsRadarRadialVelocityTLAD::setTrajectory start" << std::endl;
 
   ufo_radarradialvelocity_tlad_settraj_f90(keyOperRadarRadialVelocity_, geovals.toFortran(),
                                            obsspace());
 
-  oops::Log::trace() << "ObsRadarRadialVelocityTLAD::setTrajectory exiting" << std::endl;
+  oops::Log::trace() << "ObsRadarRadialVelocityTLAD::setTrajectory done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -61,7 +61,7 @@ void ObsRadarRadialVelocityTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::Ob
   ufo_radarradialvelocity_simobs_tl_f90(keyOperRadarRadialVelocity_, geovals.toFortran(),
                                         obsspace(), ovec.nvars(), ovec.nlocs(), ovec.toFortran());
 
-  oops::Log::trace() << "ObsRadarRadialVelocityTLAD::simulateObsTL exiting" << std::endl;
+  oops::Log::trace() << "ObsRadarRadialVelocityTLAD::simulateObsTL done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -71,7 +71,7 @@ void ObsRadarRadialVelocityTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::Ob
   ufo_radarradialvelocity_simobs_ad_f90(keyOperRadarRadialVelocity_, geovals.toFortran(),
                                         obsspace(), ovec.nvars(), ovec.nlocs(), ovec.toFortran());
 
-  oops::Log::trace() << "ObsRadarRadialVelocityTLAD::simulateObsAD exiting" << std::endl;
+  oops::Log::trace() << "ObsRadarRadialVelocityTLAD::simulateObsAD done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

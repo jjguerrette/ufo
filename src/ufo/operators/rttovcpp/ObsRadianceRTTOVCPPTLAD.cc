@@ -33,6 +33,7 @@ ObsRadianceRTTOVCPPTLAD::ObsRadianceRTTOVCPPTLAD(const ioda::ObsSpace & odb,
                                            const Parameters_ & parameters)
   : LinearObsOperatorBase(odb), varin_()
 {
+  oops::Log::trace() << "ObsRadianceRTTOVCPPTLAD constructor start." << std::endl;
   // Increment fields to be requested from getvalues and stored in geovals
   const std::vector<std::string> vv{
      "air_temperature",
@@ -52,13 +53,13 @@ ObsRadianceRTTOVCPPTLAD::ObsRadianceRTTOVCPPTLAD(const ioda::ObsSpace & odb,
   const std::string SensorID = parameters.SensorID;
   CoefFileName = CoefPath + "rtcoef_" + SensorID + ".dat";
 
-  oops::Log::trace() << "ObsRadianceRTTOVCPPTLAD created." << std::endl;
+  oops::Log::trace() << "ObsRadianceRTTOVCPPTLAD constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsRadianceRTTOVCPPTLAD::~ObsRadianceRTTOVCPPTLAD() {
-  oops::Log::trace() << "ObsRadianceRTTOVCPPTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsRadianceRTTOVCPPTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -76,7 +77,7 @@ void ObsRadianceRTTOVCPPTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnost
 
 void ObsRadianceRTTOVCPPTLAD::simulateObsTL(const GeoVaLs & dx, ioda::ObsVector & dy,
                                             const QCFlags_t & qc_flags) const {
-//
+  oops::Log::trace() << "ObsRadianceRTTOVCPPTLAD::simulateObsTL start" << std::endl;
   std::size_t nprofiles = dy.nlocs();
   std::size_t nchannels = aRttov_.getNchannels();
 
@@ -124,6 +125,7 @@ void ObsRadianceRTTOVCPPTLAD::simulateObsTL(const GeoVaLs & dx, ioda::ObsVector 
 
 void ObsRadianceRTTOVCPPTLAD::simulateObsAD(GeoVaLs & dx, const ioda::ObsVector & dy,
                                             const QCFlags_t & qc_flags) const {
+  oops::Log::trace() << "ObsRadianceRTTOVCPPTLAD::simulateObsAD start" << std::endl;
   std::size_t nprofiles = dy.nlocs();
   std::size_t nchannels = aRttov_.getNchannels();
 

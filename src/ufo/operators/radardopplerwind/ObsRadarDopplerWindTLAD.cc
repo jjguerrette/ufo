@@ -41,13 +41,13 @@ ObsRadarDopplerWindTLAD::ObsRadarDopplerWindTLAD(const ioda::ObsSpace & odb,
       "upward_air_velocity"};
   requiredVars_ += oops::Variables(GeoVaLnames);
 
-  oops::Log::trace() << "ObsRadarDopplerWindTLAD created" << std::endl;
+  oops::Log::trace() << "ObsRadarDopplerWindTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsRadarDopplerWindTLAD::~ObsRadarDopplerWindTLAD() {
-  oops::Log::trace() << "ObsRadarDopplerWindTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsRadarDopplerWindTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -58,7 +58,7 @@ void ObsRadarDopplerWindTLAD::setTrajectory(const GeoVaLs & gv,
   // This routine does the following:
   // - Retrieves and stores GeoVaLs of z for use in the TL/AD routines.
 
-  oops::Log::trace() << "ObsRadarDopplerWindTLAD: setTrajectory entered" << std::endl;
+  oops::Log::trace() << "ObsRadarDopplerWindTLAD::setTrajectory start" << std::endl;
 
   const std::size_t nlocs = odb_.nlocs();
 
@@ -77,7 +77,7 @@ void ObsRadarDopplerWindTLAD::setTrajectory(const GeoVaLs & gv,
     vec_z_w_[jloc] = vec_z_w;
   }
 
-  oops::Log::trace() << "ObsRadarDopplerWindTLAD: setTrajectory finished" <<  std::endl;
+  oops::Log::trace() << "ObsRadarDopplerWindTLAD::setTrajectory done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -91,7 +91,7 @@ void ObsRadarDopplerWindTLAD::simulateObsTL(const GeoVaLs & dx,
   // - Interpolates u, v and w increments to observation z.
   // - Computes tangent linear H(x) (linearized about z).
 
-  oops::Log::trace() << "ObsRadarDopplerWindTLAD: simulateObsTL entered" << std::endl;
+  oops::Log::trace() << "ObsRadarDopplerWindTLAD::simulateObsTL start" << std::endl;
 
   const float missingFloat = util::missingValue<float>();
   const double missingDouble = util::missingValue<double>();
@@ -150,7 +150,7 @@ void ObsRadarDopplerWindTLAD::simulateObsTL(const GeoVaLs & dx,
     }
   }
 
-  oops::Log::trace() << "ObsRadarDopplerWindTLAD: simulateObsTL finished" <<  std::endl;
+  oops::Log::trace() << "ObsRadarDopplerWindTLAD::simulateObsTL done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -163,7 +163,7 @@ void ObsRadarDopplerWindTLAD::simulateObsAD(GeoVaLs & dx, const ioda::ObsVector 
   // - Determines interpolation indices and weights.
   // - Computes adjoint H(x) (linearized about z) and updates the increment GeoVaLs.
 
-  oops::Log::trace() << "ObsRadarDopplerWindTLAD: simulateObsAD entered" << std::endl;
+  oops::Log::trace() << "ObsRadarDopplerWindTLAD::simulateObsAD start" << std::endl;
 
   const float missingFloat = util::missingValue<float>();
   const double missingDouble = util::missingValue<double>();
@@ -228,7 +228,7 @@ void ObsRadarDopplerWindTLAD::simulateObsAD(GeoVaLs & dx, const ioda::ObsVector 
     dx.putAtLocation(inc_w, oops::Variable{"upward_air_velocity"}, jloc);
   }
 
-  oops::Log::trace() << "ObsRadarDopplerWindTLAD: simulateObsAD finished" <<  std::endl;
+  oops::Log::trace() << "ObsRadarDopplerWindTLAD::simulateObsAD done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------

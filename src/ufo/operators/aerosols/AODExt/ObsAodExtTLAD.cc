@@ -33,23 +33,22 @@ ObsAodExtTLAD::ObsAodExtTLAD(const ioda::ObsSpace & odb,
                             channels_list.size(), channels_list[0],
                             odb.assimvariables(), varin_);
 
-  oops::Log::trace() << "ObsAodExtTLAD created" << std::endl;
+  oops::Log::trace() << "ObsAodExtTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsAodExtTLAD::~ObsAodExtTLAD() {
   ufo_aodext_tlad_delete_f90(keyOper_);
-  oops::Log::trace() << "ObsAodExtTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsAodExtTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsAodExtTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics &,
                                   const QCFlags_t & qc_flags) {
-  oops::Log::trace() << "ObsAodExtTLAD:trajectory entering" <<std::endl;
   ufo_aodext_tlad_settraj_f90(keyOper_, geovals.toFortran(), obsspace());
-  oops::Log::trace() << "ObsAodExtTLAD: set trajectory exiting" << std::endl;
+  oops::Log::trace() << "ObsAodExtTLAD::setTrajectory done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -58,7 +57,7 @@ void ObsAodExtTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVector & ove
                                   const QCFlags_t & qc_flags) const {
   ufo_aodext_simobs_tl_f90(keyOper_, geovals.toFortran(), obsspace(),
                             ovec.nvars(), ovec.nlocs(), ovec.toFortran());
-  oops::Log::trace() << "ObsAodExtTLAD: TL observation operator run" << std::endl;
+  oops::Log::trace() << "ObsAodExtTLAD::simulateObsTL done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -67,7 +66,7 @@ void ObsAodExtTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVector & ove
                                   const QCFlags_t & qc_flags) const {
   ufo_aodext_simobs_ad_f90(keyOper_, geovals.toFortran(), obsspace(),
                             ovec.nvars(), ovec.nlocs(), ovec.toFortran());
-  oops::Log::trace() << "ObsAodExtTLAD: adjoint observation operator run" << std::endl;
+  oops::Log::trace() << "ObsAodExtTLAD::simulateObsAD done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

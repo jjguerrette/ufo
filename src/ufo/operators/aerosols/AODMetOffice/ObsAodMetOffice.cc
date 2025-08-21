@@ -57,13 +57,13 @@ ObsAodMetOffice::ObsAodMetOffice(const ioda::ObsSpace & odb, const Parameters_ &
       varin_.push_back(dust_var_name);
   }
 
-  oops::Log::trace() << "ObsAodMetOffice created." << std::endl;
+  oops::Log::trace() << "ObsAodMetOffice constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsAodMetOffice::~ObsAodMetOffice() {
-  oops::Log::trace() << "ObsAodMetOffice destructed" << std::endl;
+  oops::Log::trace() << "ObsAodMetOffice destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -71,7 +71,7 @@ ObsAodMetOffice::~ObsAodMetOffice() {
 void ObsAodMetOffice::simulateObs(const GeoVaLs & geovals, ioda::ObsVector & hofx,
                                   ObsDiagnostics &, const QCFlags_t & qc_flags) const {
   // Calculate dust AOD at one wavelength (e.g. 550nm) from dust mass concentration.
-
+  oops::Log::trace() << "ObsAodMetOffice::simulateObs start" << std::endl;
   // Check hofx size and initialise hofx to zero:
   ASSERT(geovals.nlocs() == hofx.nlocs());
   hofx.zero();
@@ -118,7 +118,7 @@ void ObsAodMetOffice::simulateObs(const GeoVaLs & geovals, ioda::ObsVector & hof
     }
   }
 
-  oops::Log::trace() << "ObsAodMetOffice: observation operator run" << std::endl;
+  oops::Log::trace() << "ObsAodMetOffice::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

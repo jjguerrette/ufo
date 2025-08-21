@@ -36,14 +36,14 @@ ObsSfcPCorrected::ObsSfcPCorrected(const ioda::ObsSpace & odb,
   ufo_sfcpcorrected_setup_f90(keyOper_, params.toConfiguration(),
                               operatorVars_, operatorVarIndices.data(), operatorVarIndices.size(),
                               varin_);
-  oops::Log::trace() << "ObsSfcPCorrected created." << std::endl;
+  oops::Log::trace() << "ObsSfcPCorrected constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsSfcPCorrected::~ObsSfcPCorrected() {
   ufo_sfcpcorrected_delete_f90(keyOper_);
-  oops::Log::trace() << "ObsSfcPCorrected destructed" << std::endl;
+  oops::Log::trace() << "ObsSfcPCorrected destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -52,7 +52,7 @@ void ObsSfcPCorrected::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
                              ObsDiagnostics & d, const QCFlags_t & qc_flags) const {
   ufo_sfcpcorrected_simobs_f90(keyOper_, gv.toFortran(), odb_, ovec.nvars(), ovec.nlocs(),
                          ovec.toFortran());
-  oops::Log::trace() << "ObsSfcPCorrected: observation operator run" << std::endl;
+  oops::Log::trace() << "ObsSfcPCorrected::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

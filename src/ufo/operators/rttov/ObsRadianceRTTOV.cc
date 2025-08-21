@@ -31,6 +31,7 @@ ObsRadianceRTTOV::ObsRadianceRTTOV(const ioda::ObsSpace & odb,
                                    const Parameters_ & parameters)
   : ObsOperatorBase(odb), keyOperRadianceRTTOV_(0), odb_(odb), varin_()
 {
+  oops::Log::trace() << "ObsRadianceRTTOV constructor start." << std::endl;
   // parse channels from the config and create variable names
   const oops::ObsVariables & observed = odb.assimvariables();
   std::vector<int> channels_list = observed.channels();
@@ -58,14 +59,14 @@ ObsRadianceRTTOV::ObsRadianceRTTOV(const ioda::ObsSpace & odb,
   }
 
   oops::Log::info() << "ObsRadianceRTTOV channels: " << channels_list << std::endl;
-  oops::Log::trace() << "ObsRadianceRTTOV created." << std::endl;
+  oops::Log::trace() << "ObsRadianceRTTOV constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsRadianceRTTOV::~ObsRadianceRTTOV() {
   ufo_radiancerttov_delete_f90(keyOperRadianceRTTOV_);
-  oops::Log::trace() << "ObsRadianceRTTOV destructed" << std::endl;
+  oops::Log::trace() << "ObsRadianceRTTOV destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -75,7 +76,7 @@ void ObsRadianceRTTOV::simulateObs(const GeoVaLs & gom, ioda::ObsVector & ovec,
   ufo_radiancerttov_simobs_f90(keyOperRadianceRTTOV_, gom.toFortran(), odb_,
                           ovec.nvars(), ovec.nlocs(), ovec.toFortran(),
                           dvec.toFortran(), reinterpret_cast<const void*>(&qc_flags));
-  oops::Log::trace() << "ObsRadianceRTTOV simulateObs done." << std::endl;
+  oops::Log::trace() << "ObsRadianceRTTOV::simulateObs done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------

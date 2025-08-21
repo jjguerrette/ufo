@@ -35,14 +35,14 @@ ObsAodLUTsTLAD::ObsAodLUTsTLAD(const ioda::ObsSpace & odb,
                              channels_list.size(), channels_list[0], varin_);
   oops::Log::info() << "ObsAodLUTsTLAD variables: " << varin_ << std::endl;
   oops::Log::info() << "ObsAodLUTsTLAD channels: " << channels_list << std::endl;
-  oops::Log::trace() << "ObsAodLUTsTLAD created" << std::endl;
+  oops::Log::trace() << "ObsAodLUTsTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsAodLUTsTLAD::~ObsAodLUTsTLAD() {
   ufo_aodluts_tlad_delete_f90(keyOperAodLUTs_);
-  oops::Log::trace() << "ObsAodLUTsTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsAodLUTsTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -50,6 +50,7 @@ ObsAodLUTsTLAD::~ObsAodLUTsTLAD() {
 void ObsAodLUTsTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics &,
   const QCFlags_t & qc_flags) {
   ufo_aodluts_tlad_settraj_f90(keyOperAodLUTs_, geovals.toFortran(), obsspace());
+  oops::Log::trace() << "ObsAodLUTsTLAD::setTrajectory done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -58,6 +59,7 @@ void ObsAodLUTsTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVector & ov
   const QCFlags_t& qc_flags) const {
   ufo_aodluts_simobs_tl_f90(keyOperAodLUTs_, geovals.toFortran(), obsspace(),
                              ovec.nvars(), ovec.nlocs(), ovec.toFortran());
+  oops::Log::trace() << "ObsAodLUTsTLAD::simulateObsTL done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -66,6 +68,7 @@ void ObsAodLUTsTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVector & ov
   const QCFlags_t& qc_flags) const {
   ufo_aodluts_simobs_ad_f90(keyOperAodLUTs_, geovals.toFortran(), obsspace(),
                              ovec.nvars(), ovec.nlocs(), ovec.toFortran());
+  oops::Log::trace() << "ObsAodLUTsTLAD::simulateObsAD done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

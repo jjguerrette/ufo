@@ -33,13 +33,13 @@ ObsChlEuzIntegr::ObsChlEuzIntegr(const ioda::ObsSpace & odb,
   const std::vector<std::string> vvin{"mass_concentration_of_chlorophyll_in_sea_water",
                                       "sea_water_cell_thickness"};
   varin_.reset(new oops::Variables(vvin));
-  oops::Log::trace() << "ObsChlEuzIntegr created." << std::endl;
+  oops::Log::trace() << "ObsChlEuzIntegr constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsChlEuzIntegr::~ObsChlEuzIntegr() {
-  oops::Log::trace() << "ObsChlEuzIntegr destructed" << std::endl;
+  oops::Log::trace() << "ObsChlEuzIntegr destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -85,7 +85,7 @@ void ObsChlEuzIntegr::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
       ovec[i] += chl[k][i] * h[k][i] / euz_mod;
     }
   }
-  oops::Log::trace() << "ObsChlEuzIntegr: observation operator run" << std::endl;
+  oops::Log::trace() << "ObsChlEuzIntegr::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

@@ -31,7 +31,7 @@ ObsADT::ObsADT(const ioda::ObsSpace & odb, const ObsADTParameters & params)
   : ObsOperatorBase(odb, VariableNameMap(params.AliasFile.value())),
     odb_(odb)
 {
-  oops::Log::trace() << "ObsADT constructor starting" << std::endl;
+  oops::Log::trace() << "ObsADT constructor start" << std::endl;
 
   std::vector<int> operatorVarIndices;
   getOperatorVariables(params.variables.value(), odb.assimvariables(),
@@ -45,19 +45,20 @@ ObsADT::ObsADT(const ioda::ObsSpace & odb, const ObsADTParameters & params)
   ASSERT(operatorVarIndices.size() == 1);
   operatorVarIndex_ = operatorVarIndices[0];
 
-  oops::Log::trace() << "ObsADT constructor finished" << std::endl;
+  oops::Log::trace() << "ObsADT constructor start" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsADT::~ObsADT() {
+  oops::Log::trace() << "ObsADT destructor start" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsADT::simulateObs(const GeoVaLs & geovals, ioda::ObsVector & ovec,
                          ObsDiagnostics & d, const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsADT: simulateObs starting" << std::endl;
+  oops::Log::trace() << "ObsADT::simulateObs start" << std::endl;
 
   const double missing = util::missingValue<double>();
 
@@ -85,7 +86,7 @@ void ObsADT::simulateObs(const GeoVaLs & geovals, ioda::ObsVector & ovec,
   if (count > 0) {
     offset = accumVal->computeResult() / count;
   }
-  oops::Log::debug() << "ObsADT: simulateObs offset: " << offset << std::endl;
+  // oops::Log::debug() << "ObsADT::simulateObs offset: " << offset << std::endl;
 
   // subtract offset from geoval
   for (size_t jloc = 0; jloc < ovec.nlocs(); ++jloc) {
@@ -94,7 +95,7 @@ void ObsADT::simulateObs(const GeoVaLs & geovals, ioda::ObsVector & ovec,
     if (ovec[idx] != missing) ovec[idx] -= offset;
   }
 
-  oops::Log::trace() << "ObsADT: simulateObs finished" << std::endl;
+  oops::Log::trace() << "ObsADT::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

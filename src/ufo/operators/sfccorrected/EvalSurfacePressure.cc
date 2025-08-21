@@ -66,7 +66,7 @@ stationPressure_WRFDA::stationPressure_WRFDA(const std::string & name,
 void stationPressure_WRFDA::simobs(const ufo::GeoVaLs & gv,
                                    const ioda::ObsSpace & obsdb,
                                    std::vector<float> & hofx) const {
-  oops::Log::trace() << "stationPressure_WRFDA::simobs starting" << std::endl;
+  oops::Log::trace() << "stationPressure_WRFDA::simobs start" << std::endl;
 
   // Setup parameters used throughout
   const size_t nobs = obsdb.nlocs();
@@ -115,7 +115,7 @@ void stationPressure_WRFDA::simobs(const ufo::GeoVaLs & gv,
       }
     }
   }
-  oops::Log::trace() << "stationPressure_WRFDA::simobs complete" << std::endl;
+  oops::Log::trace() << "stationPressure_WRFDA::simobs done" << std::endl;
 }
 
 // --------------------------------------------------------------------------------
@@ -239,7 +239,7 @@ stationPressure_UKMO::stationPressure_UKMO(const std::string & name,
 void stationPressure_UKMO::simobs(const ufo::GeoVaLs & gv,
                                   const ioda::ObsSpace & obsdb,
                                   std::vector<float> & hofx) const {
-  oops::Log::trace() << "stationPressure_UKMO::simobs starting" << std::endl;
+  oops::Log::trace() << "stationPressure_UKMO::simobs start" << std::endl;
 
   // Setup parameters used throughout
   const size_t nobs = obsdb.nlocs();
@@ -330,7 +330,7 @@ void stationPressure_UKMO::simobs(const ufo::GeoVaLs & gv,
       hofx[iloc] = model_pressure_surface[iloc];
     }
   }
-  oops::Log::trace() << "stationPressure_UKMO::simobs complete" << std::endl;
+  oops::Log::trace() << "stationPressure_UKMO::simobs done" << std::endl;
 }
 
 // --------------------------------------------------------------------------------
@@ -413,7 +413,7 @@ stationPressure_GSL::stationPressure_GSL(const std::string & name,
 void stationPressure_GSL::simobs(const ufo::GeoVaLs & gv,
                                  const ioda::ObsSpace & obsdb,
                                  std::vector<float> & hofx) const {
-  oops::Log::trace() << "stationPressure_GSL::simobs starting" << std::endl;
+  oops::Log::trace() << "stationPressure_GSL::simobs start" << std::endl;
 
   // Setup parameters used throughout
   const size_t nobs = obsdb.nlocs();
@@ -483,7 +483,7 @@ void stationPressure_GSL::simobs(const ufo::GeoVaLs & gv,
     }
     hofx[iloc] = adjusted_model_surface_height_pressure[iloc];
   }
-  oops::Log::trace() << "stationPressure_GSL::simobs complete" << std::endl;
+  oops::Log::trace() << "stationPressure_GSL::simobs done" << std::endl;
 }
 
 // --------------------------------------------------------------------------------

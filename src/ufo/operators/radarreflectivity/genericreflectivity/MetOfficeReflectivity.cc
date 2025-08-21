@@ -42,6 +42,7 @@ MetOfficeReflectivity::MetOfficeReflectivity(const Parameters_ & params,
   std::vector<std::string> rvTL{"cloud_ice_mixing_ratio_wrt_moist_air_and_condensed_water",
       "qrain"};
   reqvarsTL += oops::Variables(rvTL);
+  oops::Log::trace() << "MetOfficeReflectivity constructor done" << std::endl;
 }
 
 void MetOfficeReflectivity::simulateObsImpl(const GeoVaLs & gv,
@@ -53,7 +54,7 @@ void MetOfficeReflectivity::simulateObsImpl(const GeoVaLs & gv,
   // - Interpolates p, T, qrain and qice to observation z.
   // - Computes H(x).
 
-  oops::Log::trace() << "MetOfficeReflectivity::simulateObsImpl starting" << std::endl;
+  oops::Log::trace() << "MetOfficeReflectivity::simulateObsImpl start" << std::endl;
 
   const std::size_t nlocs = obsdb_.nlocs();
   const std::size_t nlevs = gv.nlevs(oops::Variable{"height_above_mean_sea_level"});
@@ -138,7 +139,7 @@ void MetOfficeReflectivity::setTrajectoryImpl(const GeoVaLs & gv,
   // - Stores GeoVaLs of z.
   // - Stores values of p, T, qrain and qice interpolated to observation z.
 
-  oops::Log::trace() << "MetOfficeReflectivity::setTrajectoryImpl starting" << std::endl;
+  oops::Log::trace() << "MetOfficeReflectivity::setTrajectoryImpl start" << std::endl;
 
   const std::size_t nlocs = obsdb_.nlocs();
   const std::size_t nlevs = gv.nlevs(oops::Variable{"height_above_mean_sea_level"});
@@ -196,7 +197,7 @@ void MetOfficeReflectivity::simulateObsTLImpl(const GeoVaLs & dx,
   // - Uses stored values of p, T, qrain and qice interpolated to observation z.
   // - Computes TL H(x).
 
-  oops::Log::trace() << "MetOfficeReflectivity::simulateObsTLImpl starting" << std::endl;
+  oops::Log::trace() << "MetOfficeReflectivity::simulateObsTLImpl start" << std::endl;
 
   const std::size_t nlocs = obsdb_.nlocs();
   const std::size_t nlevs = dx.nlevs(oops::Variable{"qrain"});
@@ -293,7 +294,7 @@ void MetOfficeReflectivity::simulateObsADImpl(GeoVaLs & dx,
   // - Uses stored values of p, T, qrain and qice interpolated to observation z.
   // - Computes AD H(x) and updates the increment GeoVaLs.
 
-  oops::Log::trace() << "MetOfficeReflectivity::simulateObsADImpl starting" << std::endl;
+  oops::Log::trace() << "MetOfficeReflectivity::simulateObsADImpl start" << std::endl;
 
   const std::size_t nlocs = obsdb_.nlocs();
   const std::size_t nlevs = dx.nlevs(oops::Variable{"qrain"});

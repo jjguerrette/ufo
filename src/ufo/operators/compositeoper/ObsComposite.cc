@@ -30,7 +30,7 @@ static ObsOperatorMaker<ObsComposite> obsCompositeMaker_("Composite");
 ObsComposite::ObsComposite(const ioda::ObsSpace & odb, const Parameters_ & parameters)
   : ObsOperatorBase(odb), odb_(odb)
 {
-  oops::Log::trace() << "ObsComposite constructor starting" << std::endl;
+  oops::Log::trace() << "ObsComposite constructor start" << std::endl;
 
   for (const eckit::LocalConfiguration &operatorConfig : parameters.components.value()) {
     ObsOperatorParametersWrapper operatorParams;
@@ -41,26 +41,26 @@ ObsComposite::ObsComposite(const ioda::ObsSpace & odb, const Parameters_ & param
     components_.push_back(std::move(op));
   }
 
-  oops::Log::trace() << "ObsComposite constructor finished" << std::endl;
+  oops::Log::trace() << "ObsComposite constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsComposite::~ObsComposite() {
-  oops::Log::trace() << "ObsComposite destructed" << std::endl;
+  oops::Log::trace() << "ObsComposite destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsComposite::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
                                ObsDiagnostics & ydiags, const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsComposite: simulateObs entered" << std::endl;
+  oops::Log::trace() << "ObsComposite::simulateObs start" << std::endl;
 
   for (const std::unique_ptr<ObsOperatorBase> &component : components_)
   {
     component->simulateObs(gv, ovec, ydiags, qc_flags);
   }
-  oops::Log::trace() << "ObsComposite: simulateObs exit " <<  std::endl;
+  oops::Log::trace() << "ObsComposite::simulateObs done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -79,6 +79,7 @@ oops::ObsVariables ObsComposite::simulatedVars() const {
       // We don't want multiple components to write to the same row in the H(x) array.
       throw eckit::UserError("Multiple components simulate the same variables", Here());
   }
+  oops::Log::trace() << "ObsComposite::simulatedVars done" <<  std::endl;
   return vars;
 }
 

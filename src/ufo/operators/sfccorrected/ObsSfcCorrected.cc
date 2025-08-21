@@ -31,7 +31,7 @@ ObsSfcCorrected::ObsSfcCorrected(const ioda::ObsSpace & odb,
                                  const Parameters_ & params)
   : ObsOperatorBase(odb), requiredVars_(), odb_(odb), params_(params)
 {
-  oops::Log::trace() << "ObsSfcCorrected constructor started." << std::endl;
+  oops::Log::trace() << "ObsSfcCorrected constructor start." << std::endl;
 
   // Get the variables to simulate hofx for will be a subset of the assimilated variables
   getOperatorVariables(params_.variables.value(), odb.assimvariables(),
@@ -46,29 +46,31 @@ ObsSfcCorrected::ObsSfcCorrected(const ioda::ObsSpace & odb,
     }
   }
 
+  std::string operatorname;
   // Create operators for each variable / surface correction type combination
   for (std::string var : operatorVars_.variables()) {
-    std::string operatorname = var + "_" + methodname;
+    operatorname = var + "_" + methodname;
     std::unique_ptr<SurfaceOperatorBase> oper =
         SurfaceOperatorFactory::create(operatorname, params_);
     requiredVars_ += oper->requiredVars();
     operators_.push_back(std::move(oper));
   }
 
-  oops::Log::trace() << "ObsSfcCorrected constructor finished." << std::endl;
+  oops::Log::trace() << "ObsSfcCorrected operator " << operatorname << " constructed."
+        << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsSfcCorrected::~ObsSfcCorrected() {
-  oops::Log::trace() << "ObsSfcCorrected destructed" << std::endl;
+  oops::Log::trace() << "ObsSfcCorrected destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsSfcCorrected::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
                              ObsDiagnostics & obsdiags, const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsSfcCorrected::simulateObs started." << std::endl;
+  oops::Log::trace() << "ObsSfcCorrected::simulateObs start." << std::endl;
   // Look over variables to calculate hofx
   std::vector<float> hofx(ovec.nlocs());
   for (size_t i = 0; i < operatorVars_.size(); ++i) {
@@ -82,7 +84,7 @@ void ObsSfcCorrected::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
       ovec[idx] = hofx[jloc];
     }
   }
-  oops::Log::trace() << "ObsSfcCorrected::simulateObs finished." << std::endl;
+  oops::Log::trace() << "ObsSfcCorrected::simulateObs done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------

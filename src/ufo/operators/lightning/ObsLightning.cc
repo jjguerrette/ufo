@@ -39,14 +39,14 @@ ObsLightning::ObsLightning(const ioda::ObsSpace & odb, const Parameters_ & param
 
   ufo_lightning_setup_f90(keyOper_, nhoriz_, odb.obsvariables(), varin_);
 
-  oops::Log::trace() << "ObsLightning created." << std::endl;
+  oops::Log::trace() << "ObsLightning constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsLightning::~ObsLightning() {
   ufo_lightning_delete_f90(keyOper_);
-  oops::Log::trace() << "ObsLightning destructed" << std::endl;
+  oops::Log::trace() << "ObsLightning destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -55,7 +55,7 @@ void ObsLightning::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
                                ObsDiagnostics & d, const QCFlags_t & qc_flags) const {
   ufo_lightning_simobs_f90(keyOper_, gv.toFortran(), odb_, ovec.nvars(), ovec.nlocs(),
                            ovec.toFortran());
-  oops::Log::trace() << "ObsLightning: observation operator run" << std::endl;
+  oops::Log::trace() << "ObsLightning::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

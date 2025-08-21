@@ -135,14 +135,14 @@ ObsRadianceCRTM::ObsRadianceCRTM(const ioda::ObsSpace & odb,
                              channels_list.size(), channels_list[0], varin_, odb.comm());
 
   oops::Log::info() << "ObsRadianceCRTM channels: " << channels_list << std::endl;
-  oops::Log::trace() << "ObsRadianceCRTM created" << std::endl;
+  oops::Log::trace() << "ObsRadianceCRTM constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsRadianceCRTM::~ObsRadianceCRTM() {
   ufo_radiancecrtm_delete_f90(keyOperRadianceCRTM_);
-  oops::Log::trace() << "ObsRadianceCRTM destructed" << std::endl;
+  oops::Log::trace() << "ObsRadianceCRTM destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -157,7 +157,7 @@ ObsRadianceCRTM::~ObsRadianceCRTM() {
 //   option "fov sample points per semimajor axis": this generates a latlon grid around the obs,
 //   from which points falling within the ellipse are kept.
 ObsRadianceCRTM::Locations_ ObsRadianceCRTM::locations() const {
-  oops::Log::trace() << "ObsRadianceCRTM locations started" << std::endl;
+  oops::Log::trace() << "ObsRadianceCRTM::locations start" << std::endl;
 
   typedef oops::SampledLocations<ObsTraits> SampledLocations_;
 
@@ -210,7 +210,7 @@ ObsRadianceCRTM::Locations_ ObsRadianceCRTM::locations() const {
             odb_.distribution(), sample_ranges)));
   }
 
-  oops::Log::trace() << "ObsRadianceCRTM locations done" << std::endl;
+  oops::Log::trace() << "ObsRadianceCRTM::locations done" << std::endl;
   return Locations_(std::move(sampledLocations),
                     std::make_unique<detail::FovSelector>(do_fov_average_));
 }
@@ -218,7 +218,7 @@ ObsRadianceCRTM::Locations_ ObsRadianceCRTM::locations() const {
 // -----------------------------------------------------------------------------
 
 void ObsRadianceCRTM::computeReducedVars(const oops::Variables & vars, GeoVaLs & geovals) const {
-  oops::Log::trace() << "ObsRadianceCRTM computeReducedVars started" << std::endl;
+  oops::Log::trace() << "ObsRadianceCRTM::computeReducedVars start" << std::endl;
 
   // Sanity check: GeoVaLs do not yet contain reduced vars
   // (OR: reduced vars match sampled vars; this is not production behavior, but needed for tests
@@ -269,13 +269,13 @@ void ObsRadianceCRTM::computeReducedVars(const oops::Variables & vars, GeoVaLs &
     fillReducedVarsByMaskedCopy(geovals);
   }
 
-  oops::Log::trace() << "ObsRadianceCRTM computeReducedVars done" << std::endl;
+  oops::Log::trace() << "ObsRadianceCRTM::computeReducedVars done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsRadianceCRTM::fillReducedVarsByMaskedAveraging(GeoVaLs & geovals) const {
-  oops::Log::trace() << "ObsRadianceCRTM fillReducedVarsByMaskedAveraging started" << std::endl;
+  oops::Log::trace() << "ObsRadianceCRTM::fillReducedVarsByMaskedAveraging start" << std::endl;
 
   oops::Variables vars_to_reduce = varin_;
   vars_to_reduce.intersection(detail::vars_to_fov_average);
@@ -388,13 +388,13 @@ void ObsRadianceCRTM::fillReducedVarsByMaskedAveraging(GeoVaLs & geovals) const 
 
   // Check every FOV variable was handled
   ASSERT(field_counter == expected_field_counter);
-  oops::Log::trace() << "ObsRadianceCRTM fillReducedVarsByMaskedAveraging done" << std::endl;
+  oops::Log::trace() << "ObsRadianceCRTM::fillReducedVarsByMaskedAveraging done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsRadianceCRTM::fillReducedVarsByMaskedCopy(GeoVaLs & geovals) const {
-  oops::Log::trace() << "ObsRadianceCRTM fillReducedVarsByMaskedCopy started" << std::endl;
+  oops::Log::trace() << "ObsRadianceCRTM::fillReducedVarsByMaskedCopy start" << std::endl;
 
   const size_t nlocs = geovals.nlocs();
   std::vector<double> water_area_fraction(nlocs);
@@ -463,14 +463,14 @@ void ObsRadianceCRTM::fillReducedVarsByMaskedCopy(GeoVaLs & geovals) const {
     ABORT("Inconsistent or unsupported surface types");
   }
 
-  oops::Log::trace() << "ObsRadianceCRTM fillReducedVarsByMaskedCopy done" << std::endl;
+  oops::Log::trace() << "ObsRadianceCRTM::fillReducedVarsByMaskedCopy done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsRadianceCRTM::simulateObs(const GeoVaLs & gom, ioda::ObsVector & ovec,
                                   ObsDiagnostics & dvec, const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsRadianceCRTM simulateObs started" << std::endl;
+  oops::Log::trace() << "ObsRadianceCRTM::simulateObs start" << std::endl;
 
   // Write to geovals file after calling computeReducedVars; this can be useful to check
   // the outputs of the reduction before it passes through the complicated CRTM.
@@ -488,7 +488,7 @@ void ObsRadianceCRTM::simulateObs(const GeoVaLs & gom, ioda::ObsVector & ovec,
                               dvec.toFortran(),
                               reinterpret_cast<const void*>(&qc_flags));
 
-  oops::Log::trace() << "ObsRadianceCRTM simulateObs done" << std::endl;
+  oops::Log::trace() << "ObsRadianceCRTM::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

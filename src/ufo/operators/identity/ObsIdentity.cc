@@ -28,7 +28,7 @@ static ObsOperatorMaker<ObsIdentity> obsIdentityMaker_("Identity");
 
 ObsIdentity::ObsIdentity(const ioda::ObsSpace &odb, const Parameters_ &parameters)
     : ObsOperatorBase(odb, VariableNameMap(parameters.AliasFile.value())) {
-  oops::Log::trace() << "ObsIdentity constructor starting" << std::endl;
+  oops::Log::trace() << "ObsIdentity constructor start" << std::endl;
 
   getOperatorVariables(parameters.variables.value(), odb.assimvariables(),
                        operatorVars_, operatorVarIndices_);
@@ -36,20 +36,20 @@ ObsIdentity::ObsIdentity(const ioda::ObsSpace &odb, const Parameters_ &parameter
   // Check whether level index 0 is closest to the Earth's surface.
   levelIndexZeroAtSurface_ = parameters.levelIndex0IsClosestToSurface.value();
 
-  oops::Log::trace() << "ObsIdentity constructor finished" << std::endl;
+  oops::Log::trace() << "ObsIdentity constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsIdentity::~ObsIdentity() {
-  oops::Log::trace() << "ObsIdentity destructed" << std::endl;
+  oops::Log::trace() << "ObsIdentity destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsIdentity::simulateObs(const GeoVaLs &gv, ioda::ObsVector &ovec,
                               ObsDiagnostics &, const QCFlags_t &) const {
-  oops::Log::trace() << "ObsIdentity: simulateObs starting" << std::endl;
+  oops::Log::trace() << "ObsIdentity::simulateObs start" << std::endl;
 
   std::vector<double> vec(ovec.nlocs());
   for (int jvar : operatorVarIndices_) {
@@ -67,7 +67,7 @@ void ObsIdentity::simulateObs(const GeoVaLs &gv, ioda::ObsVector &ovec,
       ovec[idx] = vec[jloc];
     }
   }
-  oops::Log::trace() << "ObsIdentity: simulateObs finished" << std::endl;
+  oops::Log::trace() << "ObsIdentity::simulateObs done" << std::endl;
 }
 
 void ObsIdentity::print(std::ostream & os) const {

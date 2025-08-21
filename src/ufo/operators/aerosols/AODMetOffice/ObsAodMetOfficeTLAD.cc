@@ -57,20 +57,21 @@ ObsAodMetOfficeTLAD::ObsAodMetOfficeTLAD(const ioda::ObsSpace & odb, const Param
       varin_.push_back(dust_var_name);
   }
 
-  oops::Log::trace() << "ObsAodMetOfficeTLAD created" << std::endl;
+  oops::Log::trace() << "ObsAodMetOfficeTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsAodMetOfficeTLAD::~ObsAodMetOfficeTLAD() {
   trajInit_ = false;
-  oops::Log::trace() << "ObsAodMetOfficeTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsAodMetOfficeTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsAodMetOfficeTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics &,
                                         const QCFlags_t & qc_flags) {
+    oops::Log::trace() << "ObsAodMetOfficeTLAD::setTrajectory start" << std::endl;
     // Get number of obs locations & number of model pressure levels:
     std::size_t nprofiles = geovals.nlocs();
     // number of full (rho) levels
@@ -121,6 +122,7 @@ void ObsAodMetOfficeTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics 
       }
     }
     trajInit_ = true;
+    oops::Log::trace() << "ObsAodMetOfficeTLAD::setTrajectory done" << std::endl;
 }
 
 void ObsAodMetOfficeTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVector & hofx,
@@ -152,7 +154,7 @@ void ObsAodMetOfficeTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVector
       }
     }
 
-  oops::Log::trace() << "ObsAodMetOfficeTLAD: TL observation operator run" << std::endl;
+  oops::Log::trace() << "ObsAodMetOfficeTLAD::simulateObsTL done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -193,7 +195,7 @@ void ObsAodMetOfficeTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVector
     }
   }
 
-  oops::Log::trace() << "ObsAodMetOfficeTLAD: adjoint observation operator run" << std::endl;
+  oops::Log::trace() << "ObsAodMetOfficeTLAD::simulateObsAD complete" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

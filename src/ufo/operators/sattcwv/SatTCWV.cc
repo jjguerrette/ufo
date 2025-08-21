@@ -36,19 +36,20 @@ SatTCWV::SatTCWV(const ioda::ObsSpace & odb,
                                     "air_pressure_at_surface"};
   varin_.reset(new oops::Variables(vv));
 
-  oops::Log::trace() << "SatTCWV created." << std::endl;
+  oops::Log::trace() << "SatTCWV constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 SatTCWV::~SatTCWV() {
-  oops::Log::trace() << "SatTCWV destructed" << std::endl;
+  oops::Log::trace() << "SatTCWV destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void SatTCWV::simulateObs(const GeoVaLs & geovals, ioda::ObsVector & hofx,
                           ObsDiagnostics & d, const QCFlags_t & qc_flags) const {
+  oops::Log::trace() << "SatTCWV::simulateObs start" << std::endl;
   // Check hofx size and initialise hofx to zero
   ASSERT(geovals.nlocs() == hofx.nlocs());
   hofx.zero();
@@ -95,6 +96,7 @@ void SatTCWV::simulateObs(const GeoVaLs & geovals, ioda::ObsVector & hofx,
                     q[lev][prof] / Constants::grav;
     }
   }
+  oops::Log::trace() << "SatTCWV::simulateObs done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------

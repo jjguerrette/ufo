@@ -35,14 +35,14 @@ ObsGnssGBRefROPP1D::ObsGnssGBRefROPP1D(const ioda::ObsSpace & odb,
   varin_.reset(new oops::Variables(vv));
 
   ufo_gnssgb_refropp1d_setup_f90(keyOperGnssGBRefROPP1D_, params.toConfiguration());
-  oops::Log::trace() << "ObsGnssGBRefROPP1D created." << std::endl;
+  oops::Log::trace() << "ObsGnssGBRefROPP1D constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsGnssGBRefROPP1D::~ObsGnssGBRefROPP1D() {
   ufo_gnssgb_refropp1d_delete_f90(keyOperGnssGBRefROPP1D_);
-  oops::Log::trace() << "ObsGnssGBRefROPP1D destructed" << std::endl;
+  oops::Log::trace() << "ObsGnssGBRefROPP1D destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -52,6 +52,7 @@ void ObsGnssGBRefROPP1D::simulateObs(const GeoVaLs & gom, ioda::ObsVector & ovec
 {
   ufo_gnssgb_refropp1d_simobs_f90(keyOperGnssGBRefROPP1D_, gom.toFortran(), odb_,
                                   ovec.size(), ovec.toFortran());
+  oops::Log::trace() << "ObsGnssGBRefROPP1D::simulateObs done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------

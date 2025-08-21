@@ -35,14 +35,14 @@ ObsGroundgnssROPP::ObsGroundgnssROPP(const ioda::ObsSpace & odb,
   varin_.reset(new oops::Variables(vv));
 
   ufo_groundgnss_ropp_setup_f90(keyOperGroundgnssROPP_, params.toConfiguration());
-  oops::Log::trace() << "ObsGroundgnssROPP created." << std::endl;
+  oops::Log::trace() << "ObsGroundgnssROPP constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsGroundgnssROPP::~ObsGroundgnssROPP() {
   ufo_groundgnss_ropp_delete_f90(keyOperGroundgnssROPP_);
-  oops::Log::trace() << "ObsGroundgnssROPP destructed" << std::endl;
+  oops::Log::trace() << "ObsGroundgnssROPP destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -52,6 +52,7 @@ void ObsGroundgnssROPP::simulateObs(const GeoVaLs & gom, ioda::ObsVector & ovec,
                                      const QCFlags_t & qc_flags) const {
   ufo_groundgnss_ropp_simobs_f90(keyOperGroundgnssROPP_, gom.toFortran(), odb_,
                                   ovec.size(), ovec.toFortran());
+  oops::Log::trace() << "ObsGroundgnssROPP::simulateObs done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------

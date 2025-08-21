@@ -31,7 +31,7 @@ void ReflectivityAlgorithmBase::simulateObs(const GeoVaLs & gv,
                                             ioda::ObsVector & ovec,
                                             ObsDiagnostics & diag,
                                             const QCFlags_t & flag) const {
-  oops::Log::trace() << "ReflectivityAlgorithmBase::simulateObs starting" << std::endl;
+  oops::Log::trace() << "ReflectivityAlgorithmBase::simulateObs start" << std::endl;
   this->simulateObsImpl(gv, ovec, diag, flag);
   oops::Log::trace() << "ReflectivityAlgorithmBase::simulateObs done" << std::endl;
 }
@@ -39,7 +39,7 @@ void ReflectivityAlgorithmBase::simulateObs(const GeoVaLs & gv,
 void ReflectivityAlgorithmBase::setTrajectory(const GeoVaLs & gv,
                                               ObsDiagnostics & diag,
                                               const QCFlags_t & flag) {
-  oops::Log::trace() << "ReflectivityAlgorithmBase::setTrajectory starting" << std::endl;
+  oops::Log::trace() << "ReflectivityAlgorithmBase::setTrajectory start" << std::endl;
   this->setTrajectoryImpl(gv, diag, flag);
   oops::Log::trace() << "ReflectivityAlgorithmBase::setTrajectory done" << std::endl;
 }
@@ -47,7 +47,7 @@ void ReflectivityAlgorithmBase::setTrajectory(const GeoVaLs & gv,
 void ReflectivityAlgorithmBase::simulateObsTL(const GeoVaLs & dx,
                                               ioda::ObsVector & dy,
                                               const QCFlags_t & flag) const {
-  oops::Log::trace() << "ReflectivityAlgorithmBase::simulateObsTL starting" << std::endl;
+  oops::Log::trace() << "ReflectivityAlgorithmBase::simulateObsTL start" << std::endl;
   this->simulateObsTLImpl(dx, dy, flag);
   oops::Log::trace() << "ReflectivityAlgorithmBase::simulateObsTL done" << std::endl;
 }
@@ -55,7 +55,7 @@ void ReflectivityAlgorithmBase::simulateObsTL(const GeoVaLs & dx,
 void ReflectivityAlgorithmBase::simulateObsAD(GeoVaLs & dx,
                                               const ioda::ObsVector & dy,
                                               const QCFlags_t & flag) const {
-  oops::Log::trace() << "ReflectivityAlgorithmBase::simulateObsAD starting" << std::endl;
+  oops::Log::trace() << "ReflectivityAlgorithmBase::simulateObsAD start" << std::endl;
   this->simulateObsADImpl(dx, dy, flag);
   oops::Log::trace() << "ReflectivityAlgorithmBase::simulateObsAD done" << std::endl;
 }
@@ -78,7 +78,7 @@ ReflectivityAlgorithmFactory::create
  const int idxRefl,
  oops::Variables & reqvars,
  oops::Variables & reqvarsTL) {
-  oops::Log::trace() << "ReflectivityAlgorithmBase::create starting" << std::endl;
+  oops::Log::trace() << "ReflectivityAlgorithmBase::create start" << std::endl;
   const std::string & name = params.reflectivityAlgorithmName;
   typename std::map<std::string, ReflectivityAlgorithmFactory*>::iterator jloc =
     getMakers().find(name);
@@ -96,7 +96,7 @@ ReflectivityAlgorithmFactory::create
 
 std::unique_ptr<ReflectivityAlgorithmParametersBase>
 ReflectivityAlgorithmFactory::createParameters(const std::string & name) {
-  oops::Log::trace() << "ReflectivityAlgorithmBase::createParameters starting" << std::endl;
+  oops::Log::trace() << "ReflectivityAlgorithmBase::createParameters start" << std::endl;
   typename std::map<std::string, ReflectivityAlgorithmFactory*>::iterator jloc =
     getMakers().find(name);
   if (jloc == getMakers().end()) {

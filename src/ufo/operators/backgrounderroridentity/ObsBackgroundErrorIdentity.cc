@@ -30,25 +30,24 @@ ObsBackgroundErrorIdentity::ObsBackgroundErrorIdentity(const ioda::ObsSpace & od
   : ObsOperatorBase(odb, VariableNameMap(parameters.AliasFile.value())),
     odb_(odb), parameters_(parameters)
 {
-  oops::Log::trace() << "ObsBackgroundErrorIdentity constructor entered" << std::endl;
-
+  oops::Log::trace() << "ObsBackgroundErrorIdentity constructor start" << std::endl;
   // simulateObs() may be asked to interpolate the background errors of any simulated variables.
   // We need to assume the worst, i.e. that we'll need to interpolate all of them.
   const oops::ObsVariables &obsvars = odb.assimvariables();
   for (size_t ivar = 0; ivar < obsvars.size(); ++ivar)
     requiredVars_.push_back(nameMap_.convertName(obsvars[ivar]).name() + "_background_error");
 
-  oops::Log::trace() << "ObsBackgroundErrorIdentity created" << std::endl;
+  oops::Log::trace() << "ObsBackgroundErrorIdentity constructor done" << std::endl;
 }
 
 ObsBackgroundErrorIdentity::~ObsBackgroundErrorIdentity() {
-  oops::Log::trace() << "ObsBackgroundErrorIdentity destructed" << std::endl;
+  oops::Log::trace() << "ObsBackgroundErrorIdentity destructor done" << std::endl;
 }
 
 void ObsBackgroundErrorIdentity::simulateObs(const GeoVaLs & geovals, ioda::ObsVector & hofx,
                                              ObsDiagnostics & ydiags,
                                              const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsBackgroundErrorIdentity: simulateObs entered" << std::endl;
+  oops::Log::trace() << "ObsBackgroundErrorIdentity::simulateObs start" << std::endl;
 
   oops::Variables variables;
   if (parameters_.variables.value() != boost::none)
@@ -60,7 +59,7 @@ void ObsBackgroundErrorIdentity::simulateObs(const GeoVaLs & geovals, ioda::ObsV
   ufo_backgrounderroridentity_fillobsdiags_f90(geovals.toFortran(), hofx.nlocs(), variables,
                                                ydiags.toFortran());
 
-  oops::Log::trace() << "ObsBackgroundErrorIdentity: simulateObs exit" <<  std::endl;
+  oops::Log::trace() << "ObsBackgroundErrorIdentity::simulateObs done" <<  std::endl;
 }
 
 const oops::Variables & ObsBackgroundErrorIdentity::requiredVars() const {

@@ -33,14 +33,14 @@ ObsAodExt::ObsAodExt(const ioda::ObsSpace & odb,
   ufo_aodext_setup_f90(keyOper_, params.toConfiguration(),
                        odb.assimvariables(), varin_,
                        channels_list.size(), channels_list[0]);
-  oops::Log::trace() << "ObsAodExt created." << std::endl;
+  oops::Log::trace() << "ObsAodExt constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsAodExt::~ObsAodExt() {
   ufo_aodext_delete_f90(keyOper_);
-  oops::Log::trace() << "ObsAodExt destructed" << std::endl;
+  oops::Log::trace() << "ObsAodExt destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -49,7 +49,7 @@ void ObsAodExt::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec, ObsDiagn
                             const QCFlags_t & qc_flags) const {
   ufo_aodext_simobs_f90(keyOper_, gv.toFortran(), odb_, ovec.nvars(), ovec.nlocs(),
                          ovec.toFortran());
-  oops::Log::trace() << "ObsAodExt: observation operator run" << std::endl;
+  oops::Log::trace() << "ObsAodExt::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

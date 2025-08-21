@@ -60,14 +60,14 @@ ObsRadianceOASIM::ObsRadianceOASIM(const ioda::ObsSpace & odb, const Parameters_
                               channels_list.size(), channels_list[0]);
 
   oops::Log::info() << "ObsRadianceOASIM channels: " << channels_list << std::endl;
-  oops::Log::trace() << "ObsRadianceOASIM created." << std::endl;
+  oops::Log::trace() << "ObsRadianceOASIM constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsRadianceOASIM::~ObsRadianceOASIM() {
   ufo_radianceoasim_delete_f90(keyOper_);
-  oops::Log::trace() << "ObsRadianceOASIM destructed" << std::endl;
+  oops::Log::trace() << "ObsRadianceOASIM destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -76,7 +76,7 @@ void ObsRadianceOASIM::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
                               ObsDiagnostics &d, const QCFlags_t & qc_flags) const {
   ufo_radianceoasim_simobs_f90(keyOper_, gv.toFortran(), odb_, ovec.nvars(),
                                ovec.nlocs(), ovec.toFortran());
-  oops::Log::trace() << "ObsRadianceOASIM: observation operator run" << std::endl;
+  oops::Log::trace() << "ObsRadianceOASIM::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

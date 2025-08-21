@@ -38,14 +38,14 @@ ObsGroundgnssMetOfficeTLAD::ObsGroundgnssMetOfficeTLAD(const ioda::ObsSpace & od
 
   varin_.reset(new oops::Variables(vv));
   oops::Log::info() << "ObsGroundgnssMetOfficeTLAD vars: " << *varin_ << std::endl;
-  oops::Log::trace() << "ObsGroundgnssMetOfficeTLAD created" << std::endl;
+  oops::Log::trace() << "ObsGroundgnssMetOfficeTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsGroundgnssMetOfficeTLAD::~ObsGroundgnssMetOfficeTLAD() {
   ufo_groundgnss_metoffice_tlad_delete_f90(keyOperGroundgnssMetOffice_);
-  oops::Log::trace() << "ObsGroundgnssMetOfficeTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsGroundgnssMetOfficeTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -54,6 +54,7 @@ void ObsGroundgnssMetOfficeTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagn
                                                const QCFlags_t & qc_flags) {
   ufo_groundgnss_metoffice_tlad_settraj_f90(keyOperGroundgnssMetOffice_, geovals.toFortran(),
                                             obsspace());
+  oops::Log::trace() << "ObsGroundgnssMetOfficeTLAD::setTrajectory done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -62,6 +63,7 @@ void ObsGroundgnssMetOfficeTLAD::simulateObsTL(
         const GeoVaLs & geovals, ioda::ObsVector & ovec, const QCFlags_t & qc_flags) const {
   ufo_groundgnss_metoffice_simobs_tl_f90(keyOperGroundgnssMetOffice_, geovals.toFortran(),
                                          obsspace(), ovec.size(), ovec.toFortran());
+  oops::Log::trace() << "ObsGroundgnssMetOfficeTLAD::simulateObsTL done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -70,6 +72,7 @@ void ObsGroundgnssMetOfficeTLAD::simulateObsAD(
         GeoVaLs & geovals, const ioda::ObsVector & ovec, const QCFlags_t & qc_flags) const {
   ufo_groundgnss_metoffice_simobs_ad_f90(keyOperGroundgnssMetOffice_, geovals.toFortran(),
                                          obsspace(), ovec.size(), ovec.toFortran());
+  oops::Log::trace() << "ObsGroundgnssMetOfficeTLAD::simulateObsAD done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------

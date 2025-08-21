@@ -34,7 +34,7 @@ ObsLogarithmTLAD::ObsLogarithmTLAD(const ioda::ObsSpace& odb,
                                    const Parameters_& parameters)
     : LinearObsOperatorBase(odb, VariableNameMap(parameters.AliasFile.value())),
       odb_(odb) {
-  oops::Log::trace() << "ObsLogarithmTLAD constructor starting" << std::endl;
+  oops::Log::trace() << "ObsLogarithmTLAD constructor start" << std::endl;
 
   getOperatorVariables(parameters.variables.value(), odb.assimvariables(),
                        operatorVars_, operatorVarIndices_);
@@ -51,20 +51,20 @@ ObsLogarithmTLAD::ObsLogarithmTLAD(const ioda::ObsSpace& odb,
     }
   }
 
-  oops::Log::trace() << "ObsLogarithmTLAD constructor finished" << std::endl;
+  oops::Log::trace() << "ObsLogarithmTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsLogarithmTLAD::~ObsLogarithmTLAD() {
-  oops::Log::trace() << "ObsLogarithmTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsLogarithmTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsLogarithmTLAD::setTrajectory(const GeoVaLs& gv, ObsDiagnostics&,
                                      const QCFlags_t&) {
-  oops::Log::trace() << "ObsLogarithmTLAD::setTrajectory starting" << std::endl;
+  oops::Log::trace() << "ObsLogarithmTLAD::setTrajectory start" << std::endl;
 
   assert(logBase_ >= 0.0);
   assert(logBase_ != 1.0);
@@ -100,7 +100,7 @@ void ObsLogarithmTLAD::setTrajectory(const GeoVaLs& gv, ObsDiagnostics&,
 
 void ObsLogarithmTLAD::simulateObsTL(const GeoVaLs& dx, ioda::ObsVector& dy,
                                      const QCFlags_t& qc_flags) const {
-  oops::Log::trace() << "ObsLogarithmTLAD: TL observation operator starting"
+  oops::Log::trace() << "ObsLogarithmTLAD::simulateObsTL start"
                      << std::endl;
 
   assert(dy.nlocs() == odb_.nlocs());
@@ -132,7 +132,7 @@ void ObsLogarithmTLAD::simulateObsTL(const GeoVaLs& dx, ioda::ObsVector& dy,
     }
   }
 
-  oops::Log::trace() << "ObsLogarithmTLAD: TL observation operator finished"
+  oops::Log::trace() << "ObsLogarithmTLAD::simulateObsTL done"
                      << std::endl;
 }
 
@@ -141,7 +141,7 @@ void ObsLogarithmTLAD::simulateObsTL(const GeoVaLs& dx, ioda::ObsVector& dy,
 void ObsLogarithmTLAD::simulateObsAD(GeoVaLs& dx, const ioda::ObsVector& dy,
                                      const QCFlags_t& qc_flags) const {
   oops::Log::trace()
-      << "ObsLogarithmTLAD: adjoint observation operator starting" << std::endl;
+      << "ObsLogarithmTLAD::simulateObsAD start" << std::endl;
 
   assert(dy.nlocs() == odb_.nlocs());
   assert(logBase_ >= 0.0);
@@ -174,7 +174,7 @@ void ObsLogarithmTLAD::simulateObsAD(GeoVaLs& dx, const ioda::ObsVector& dy,
                   dx.nlevs(requiredVars_[jreqvar]) - 1);
   }
   oops::Log::trace()
-      << "ObsLogarithmTLAD: adjoint observation operator finished" << std::endl;
+      << "ObsLogarithmTLAD::simulateObsAD done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

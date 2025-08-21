@@ -27,14 +27,14 @@ ObsAtmVertInterpLay::ObsAtmVertInterpLay(const ioda::ObsSpace & odb,
   ufo_atmvertinterplay_setup_f90(keyOperAtmVertInterpLay_, params.toConfiguration(),
                                  odb.assimvariables(), varin_);
 
-  oops::Log::trace() << "ObsAtmVertInterpLay created." << std::endl;
+  oops::Log::trace() << "ObsAtmVertInterpLay constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsAtmVertInterpLay::~ObsAtmVertInterpLay() {
   ufo_atmvertinterplay_delete_f90(keyOperAtmVertInterpLay_);
-  oops::Log::trace() << "ObsAtmVertInterpLay destructed" << std::endl;
+  oops::Log::trace() << "ObsAtmVertInterpLay destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -43,6 +43,7 @@ void ObsAtmVertInterpLay::simulateObs(const GeoVaLs & gom, ioda::ObsVector & ove
                                       ObsDiagnostics &, const QCFlags_t & qc_flags) const {
   ufo_atmvertinterplay_simobs_f90(keyOperAtmVertInterpLay_, gom.toFortran(), odb_, ovec.nvars(),
                          ovec.nlocs(), ovec.toFortran());
+  oops::Log::trace() << "ObsAtmVertInterpLay::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

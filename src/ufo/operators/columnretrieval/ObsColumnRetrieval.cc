@@ -28,14 +28,14 @@ ObsColumnRetrieval::ObsColumnRetrieval(const ioda::ObsSpace & odb,
 {
   ufo_columnretrieval_setup_f90(keyOper_, parameters.toConfiguration(),
                                 odb.assimvariables(), varin_);
-  oops::Log::trace() << "ObsColumnRetrieval created." << std::endl;
+  oops::Log::trace() << "ObsColumnRetrieval constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsColumnRetrieval::~ObsColumnRetrieval() {
   ufo_columnretrieval_delete_f90(keyOper_);
-  oops::Log::trace() << "ObsColumnRetrieval destructed" << std::endl;
+  oops::Log::trace() << "ObsColumnRetrieval destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -44,7 +44,7 @@ void ObsColumnRetrieval::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
                              ObsDiagnostics & d, const QCFlags_t & qc_flags) const {
   ufo_columnretrieval_simobs_f90(keyOper_, gv.toFortran(), odb_, ovec.nvars(), ovec.nlocs(),
                          ovec.toFortran());
-  oops::Log::trace() << "ObsColumnRetrieval: observation operator run" << std::endl;
+  oops::Log::trace() << "ObsColumnRetrieval::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

@@ -28,7 +28,7 @@ static LinearObsOperatorMaker<ObsCompositeTLAD> makerCompositeTL_("Composite");
 ObsCompositeTLAD::ObsCompositeTLAD(const ioda::ObsSpace & odb, const Parameters_ & parameters)
   : LinearObsOperatorBase(odb)
 {
-  oops::Log::trace() << "ObsCompositeTLAD constructor starting" << std::endl;
+  oops::Log::trace() << "ObsCompositeTLAD constructor start" << std::endl;
 
   for (const eckit::LocalConfiguration &operatorConfig : parameters.components.value()) {
     LinearObsOperatorParametersWrapper operatorParams;
@@ -39,49 +39,49 @@ ObsCompositeTLAD::ObsCompositeTLAD(const ioda::ObsSpace & odb, const Parameters_
     components_.push_back(std::move(op));
   }
 
-  oops::Log::trace() << "ObsCompositeTLAD created." << std::endl;
+  oops::Log::trace() << "ObsCompositeTLAD constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsCompositeTLAD::~ObsCompositeTLAD() {
-  oops::Log::trace() << "ObsCompositeTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsCompositeTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsCompositeTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics & ydiags,
                                      const QCFlags_t & qc_flags) {
-  oops::Log::trace() << "ObsCompositeTLAD: setTrajectory entered" << std::endl;
+  oops::Log::trace() << "ObsCompositeTLAD::setTrajectory start" << std::endl;
 
   for (const std::unique_ptr<LinearObsOperatorBase> &component : components_) {
     component->setTrajectory(geovals, ydiags, qc_flags);
   }
-  oops::Log::trace() << "ObsCompositeTLAD: setTrajectory exit " <<  std::endl;
+  oops::Log::trace() << "ObsCompositeTLAD::setTrajectory done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsCompositeTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVector & ovec,
                                      const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsCompositeTLAD: simulateObsTL entered" << std::endl;
+  oops::Log::trace() << "ObsCompositeTLAD::simulateObsTL start" << std::endl;
 
   for (const std::unique_ptr<LinearObsOperatorBase> &component : components_) {
     component->simulateObsTL(geovals, ovec, qc_flags);
   }
-  oops::Log::trace() << "ObsCompositeTLAD: simulateObsTL exit " <<  std::endl;
+  oops::Log::trace() << "ObsCompositeTLAD::simulateObsTL done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsCompositeTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVector & ovec,
                                      const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsCompositeTLAD: simulateObsAD entered" << std::endl;
+  oops::Log::trace() << "ObsCompositeTLAD::simulateObsAD start" << std::endl;
 
   for (const std::unique_ptr<LinearObsOperatorBase> &component : components_) {
     component->simulateObsAD(geovals, ovec, qc_flags);
   }
-  oops::Log::trace() << "ObsCompositeTLAD: simulateObsAD exit " <<  std::endl;
+  oops::Log::trace() << "ObsCompositeTLAD::simulateObsAD done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -100,6 +100,7 @@ oops::ObsVariables ObsCompositeTLAD::simulatedVars() const {
       // We don't want multiple components to write to the same row in the H(x) array.
       throw eckit::UserError("Multiple components simulate the same variables", Here());
   }
+  oops::Log::trace() << "ObsCompositeTLAD::simulatedVars done" <<  std::endl;
   return vars;
 }
 

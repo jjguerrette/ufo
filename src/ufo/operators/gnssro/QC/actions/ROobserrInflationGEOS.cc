@@ -34,6 +34,7 @@ void ROobserrInflationGEOS::apply(const Variables & vars,
                             int filterQCflag,
                             ioda::ObsDataVector<int> & flags,
                             ioda::ObsDataVector<float> & obserr) const {
+  oops::Log::trace() << "ROobserrInflationGEOS::apply start" << std::endl;
   const float missing = util::missingValue<float>();
   size_t nlocs = data.nlocs();
   const std::vector<size_t> & recordNumbers = data.obsspace().recidx_all_recnums();
@@ -83,6 +84,7 @@ void ROobserrInflationGEOS::apply(const Variables & vars,
       }
       if (obserr[0][jobs] != missing) obserr[0][jobs] *= factor[jobs];
   }
+  oops::Log::trace() << "ROobserrInflationGEOS::apply done" << std::endl;
 }
 // -----------------------------------------------------------------------------
 

@@ -36,14 +36,14 @@ ObsRadianceRTTOVTLAD::ObsRadianceRTTOVTLAD(const ioda::ObsSpace & odb,
   ufo_radiancerttov_tlad_setup_f90(keyOperRadianceRTTOV_, parameters.toConfiguration(),
                                   channels_list.size(), channels_list[0], varin_);
 
-  oops::Log::trace() << "ObsRadianceRTTOVTLAD created" << std::endl;
+  oops::Log::trace() << "ObsRadianceRTTOVTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsRadianceRTTOVTLAD::~ObsRadianceRTTOVTLAD() {
   ufo_radiancerttov_tlad_delete_f90(keyOperRadianceRTTOV_);
-  oops::Log::trace() << "ObsRadianceRTTOVTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsRadianceRTTOVTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

@@ -36,14 +36,14 @@ ObsAodCRTM::ObsAodCRTM(const ioda::ObsSpace & odb,
                         channels_list.size(), channels_list[0], varin_);
   oops::Log::info() << "ObsAodCRTM variables: " << varin_ << std::endl;
   oops::Log::info() << "ObsAodCRTM channels: " << channels_list << std::endl;
-  oops::Log::trace() << "ObsAodCRTM created." << std::endl;
+  oops::Log::trace() << "ObsAodCRTM constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsAodCRTM::~ObsAodCRTM() {
   ufo_aodcrtm_delete_f90(keyOperAodCRTM_);
-  oops::Log::trace() << "ObsAodCRTM destructed" << std::endl;
+  oops::Log::trace() << "ObsAodCRTM destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -52,6 +52,7 @@ void ObsAodCRTM::simulateObs(const GeoVaLs & gom, ioda::ObsVector & ovec,
                              ObsDiagnostics & d, const QCFlags_t & qc_flags) const {
   ufo_aodcrtm_simobs_f90(keyOperAodCRTM_, gom.toFortran(), odb_,
                           ovec.nvars(), ovec.nlocs(), ovec.toFortran());
+  oops::Log::trace() << "ObsAodCRTM::simulateObsAD done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------

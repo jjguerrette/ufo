@@ -28,7 +28,7 @@ static LinearObsOperatorMaker<ObsIdentityTLAD> makerIdentityTL_("Identity");
 
 ObsIdentityTLAD::ObsIdentityTLAD(const ioda::ObsSpace & odb, const Parameters_ & parameters)
     : LinearObsOperatorBase(odb, VariableNameMap(parameters.AliasFile.value())) {
-  oops::Log::trace() << "ObsIdentityTLAD constructor starting" << std::endl;
+  oops::Log::trace() << "ObsIdentityTLAD constructor start" << std::endl;
 
   getOperatorVariables(parameters.variables.value(), odb.assimvariables(),
                        operatorVars_, operatorVarIndices_);
@@ -37,13 +37,13 @@ ObsIdentityTLAD::ObsIdentityTLAD(const ioda::ObsSpace & odb, const Parameters_ &
   // Check whether level index 0 is closest to the Earth's surface.
   levelIndexZeroAtSurface_ = parameters.levelIndex0IsClosestToSurface.value();
 
-  oops::Log::trace() << "ObsIdentityTLAD constructor finished" << std::endl;
+  oops::Log::trace() << "ObsIdentityTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsIdentityTLAD::~ObsIdentityTLAD() {
-  oops::Log::trace() << "ObsIdentityTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsIdentityTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -51,14 +51,14 @@ ObsIdentityTLAD::~ObsIdentityTLAD() {
 void ObsIdentityTLAD::setTrajectory(const GeoVaLs &, ObsDiagnostics &,
                                     const QCFlags_t & qc_flags) {
   // The trajectory is not needed because the observation operator is linear.
-  oops::Log::trace() << "ObsIdentityTLAD: trajectory set" << std::endl;
+  oops::Log::trace() << "ObsIdentityTLAD::setTrajectory done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsIdentityTLAD::simulateObsTL(const GeoVaLs & dx, ioda::ObsVector & dy,
                                     const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsIdentityTLAD: TL observation operator starting" << std::endl;
+  oops::Log::trace() << "ObsIdentityTLAD::simulateObsTL start" << std::endl;
   std::vector<double> vec(dy.nlocs());
   for (int jvar : operatorVarIndices_) {
     const oops::Variable &var = nameMap_.convertName(dy.varnames().variables()[jvar]);
@@ -74,14 +74,14 @@ void ObsIdentityTLAD::simulateObsTL(const GeoVaLs & dx, ioda::ObsVector & dy,
     }
   }
 
-  oops::Log::trace() << "ObsIdentityTLAD: TL observation operator finished" << std::endl;
+  oops::Log::trace() << "ObsIdentityTLAD::simulateObsTL done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsIdentityTLAD::simulateObsAD(GeoVaLs & dx, const ioda::ObsVector & dy,
                                     const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsIdentityTLAD: adjoint observation operator starting" << std::endl;
+  oops::Log::trace() << "ObsIdentityTLAD::simulateObsAD start" << std::endl;
 
   const double missing = util::missingValue<double>();
 
@@ -109,7 +109,7 @@ void ObsIdentityTLAD::simulateObsAD(GeoVaLs & dx, const ioda::ObsVector & dy,
     }
   }
 
-  oops::Log::trace() << "ObsIdentityTLAD: adjoint observation operator finished" << std::endl;
+  oops::Log::trace() << "ObsIdentityTLAD::simulateObsAD done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

@@ -28,14 +28,14 @@ ObsRadarRadialVelocity::ObsRadarRadialVelocity(const ioda::ObsSpace & odb,
   ufo_radarradialvelocity_setup_f90(keyOper_, params.toConfiguration(),
                                     odb.assimvariables(), varin_);
 
-  oops::Log::trace() << "ObsRadarRadialVelocity created." << std::endl;
+  oops::Log::trace() << "ObsRadarRadialVelocity constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsRadarRadialVelocity::~ObsRadarRadialVelocity() {
   ufo_radarradialvelocity_delete_f90(keyOper_);
-  oops::Log::trace() << "ObsRadarRadialVelocity destructed" << std::endl;
+  oops::Log::trace() << "ObsRadarRadialVelocity destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -44,7 +44,7 @@ void ObsRadarRadialVelocity::simulateObs(const GeoVaLs & gv, ioda::ObsVector & o
                                          ObsDiagnostics &, const QCFlags_t & qc_flags) const {
   ufo_radarradialvelocity_simobs_f90(keyOper_, gv.toFortran(), odb_, ovec.nvars(), ovec.nlocs(),
                          ovec.toFortran());
-  oops::Log::trace() << "ObsRadarRadialVelocity: observation operator run" << std::endl;
+  oops::Log::trace() << "ObsRadarRadialVelocity::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

@@ -40,7 +40,7 @@ ObsTimeOper::ObsTimeOper(const ioda::ObsSpace & odb,
                         parameters.obsOperator.value()).operatorParameters)),
     odb_(odb), timeWeights_(timeWeightCreate(odb, parameters))
 {
-  oops::Log::trace() << "ObsTimeOper creating" << std::endl;
+  oops::Log::trace() << "ObsTimeOper constructor start" << std::endl;
 
   util::DateTime windowBegin(odb_.windowStart());
   util::DateTime windowEnd(odb_.windowEnd());
@@ -51,20 +51,20 @@ ObsTimeOper::ObsTimeOper(const ioda::ObsSpace & odb,
   if (window == windowSub) {
     ABORT("Time Interpolation of obs not implemented when assimilation window = subWindow");
   }
-  oops::Log::trace() << "ObsTimeOper created" << std::endl;
+  oops::Log::trace() << "ObsTimeOper constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsTimeOper::~ObsTimeOper() {
-  oops::Log::trace() << "ObsTimeOper destructed" << std::endl;
+  oops::Log::trace() << "ObsTimeOper destructor done" << std::endl;
 }
 
 
 // -----------------------------------------------------------------------------
 
 ObsTimeOper::Locations_ ObsTimeOper::locations() const {
-  oops::Log::trace() << "entered ObsOperatorTime::locations" << std::endl;
+  oops::Log::trace() << "ObsOperatorTime::locations start" << std::endl;
   return actualoperator_->locations();
 }
 
@@ -73,22 +73,22 @@ ObsTimeOper::Locations_ ObsTimeOper::locations() const {
 void ObsTimeOper::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
                               ObsDiagnostics & ydiags,
                               const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsTimeOper: simulateObs entered" << std::endl;
+  oops::Log::trace() << "ObsTimeOper::simulateObs start" << std::endl;
 
-  oops::Log::trace() << gv <<  std::endl;
+  oops::Log::debug() << gv <<  std::endl;
 
   GeoVaLs gv1(gv);
   GeoVaLs gv2(gv);
 
-  oops::Log::trace() << gv1 << std::endl;
-  oops::Log::trace() << gv2 << std::endl;
+  oops::Log::debug() << gv1 << std::endl;
+  oops::Log::debug() << gv2 << std::endl;
 
   gv1 *= timeWeights_[0];
   gv2 *= timeWeights_[1];
   gv1 += gv2;
   actualoperator_->simulateObs(gv1, ovec, ydiags, qc_flags);
 
-  oops::Log::trace() << "ObsTimeOper: simulateObs exit " <<  std::endl;
+  oops::Log::trace() << "ObsTimeOper::simulateObs done " <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------

@@ -35,7 +35,7 @@ ObsDensityReduction::ObsDensityReduction(const ioda::ObsSpace & odb,
                                          const Parameters_ & parameters)
   : ObsOperatorBase(odb), odb_(odb), locationsCalled_(false)
 {
-  oops::Log::trace() << "ObsDensityReduction constructor starting" << std::endl;
+  oops::Log::trace() << "ObsDensityReduction constructor start" << std::endl;
 
   const eckit::LocalConfiguration & operatorConfig = parameters.oper.value();
   ObsOperatorParametersWrapper operatorParams;
@@ -48,13 +48,13 @@ ObsDensityReduction::ObsDensityReduction(const ioda::ObsSpace & odb,
   algorithm_ = std::unique_ptr<DensityReductionBase>
     (DensityReductionFactory::create(algorithmConfig.densityReductionName, odb_));
 
-  oops::Log::trace() << "ObsDensityReduction constructor finished" << std::endl;
+  oops::Log::trace() << "ObsDensityReduction constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsDensityReduction::~ObsDensityReduction() {
-  oops::Log::trace() << "ObsDensityReduction destructed" << std::endl;
+  oops::Log::trace() << "ObsDensityReduction destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -63,13 +63,13 @@ void ObsDensityReduction::simulateObs(const GeoVaLs & gv,
                                       ioda::ObsVector & ovec,
                                       ObsDiagnostics & ydiags,
                                       const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsDensityReduction: simulateObs entered" << std::endl;
+  oops::Log::trace() << "ObsDensityReduction:::simulateObs start" << std::endl;
 
   ScopedDefaultGeoVaLFormatChange change(gv, GeoVaLFormat::REDUCED);
   operator_->simulateObs(gv, ovec, ydiags, qc_flags);
   ScopedDefaultGeoVaLFormatChange changeback(gv, GeoVaLFormat::SAMPLED);
 
-  oops::Log::trace() << "ObsDensityReduction: simulateObs exit " <<  std::endl;
+  oops::Log::trace() << "ObsDensityReduction::simulateObs done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -81,7 +81,7 @@ oops::ObsVariables ObsDensityReduction::simulatedVars() const {
 // -----------------------------------------------------------------------------
 
 ObsDensityReduction::Locations_ ObsDensityReduction::locations() const {
-  oops::Log::trace() << "ObsDensityReduction: locations entered" << std::endl;
+  oops::Log::trace() << "ObsDensityReduction::locations start" << std::endl;
 
   typedef oops::SampledLocations<ObsTraits> SampledLocations_;
 
@@ -98,7 +98,7 @@ ObsDensityReduction::Locations_ ObsDensityReduction::locations() const {
   // Set the internal flag indicating that this method has been called.
   locationsCalled_ = true;
 
-  oops::Log::trace() << "ObsDensityReduction: locations exit " <<  std::endl;
+  oops::Log::trace() << "ObsDensityReduction::locations done" <<  std::endl;
 
   return SampledLocations_
     (std::make_unique<SampledLocations>
@@ -108,7 +108,7 @@ ObsDensityReduction::Locations_ ObsDensityReduction::locations() const {
 
 void ObsDensityReduction::computeReducedVars(const oops::Variables & vars,
                                              GeoVaLs & geovals) const {
-  oops::Log::trace() << "ObsDensityReduction: computeReducedVars entered" << std::endl;
+  oops::Log::trace() << "ObsDensityReduction::computeReducedVars start" << std::endl;
 
   oops::Variables vars_to_reduce = requiredVars_;
   const oops::Variables & gvars = geovals.getVars();
@@ -142,7 +142,7 @@ void ObsDensityReduction::computeReducedVars(const oops::Variables & vars,
   // default. That format has one GeoVaL per observation location.
   geovals.setDefaultFormat(GeoVaLFormat::REDUCED);
 
-  oops::Log::trace() << "ObsDensityReduction: computeReducedVars exit" << std::endl;
+  oops::Log::trace() << "ObsDensityReduction::computeReducedVars done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

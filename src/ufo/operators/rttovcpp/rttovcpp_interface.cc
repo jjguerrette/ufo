@@ -62,6 +62,7 @@ void rttovcpp_interface(const GeoVaLs & geovals, const ioda::ObsSpace & odb_,
                         rttov::RttovSafe & aRttov_, const std::string CoefFileName,
                         const std::vector<int> channels_, std::size_t & nlevels,
                         std::vector<bool> & skip_profile) {
+  oops::Log::trace() << "rttovcpp_interface start" << std::endl;
   // 1. Set options for a RttovSafe instance:
   //-----------------------------------------------
   // 1.1 general setting for all sensors: clear-sky

@@ -41,13 +41,13 @@ ObsRadarDopplerWind::ObsRadarDopplerWind(const ioda::ObsSpace & odb,
       params.verticalCoordinate_uv.value(),
       params.verticalCoordinate_w.value()};
   requiredVars_ += oops::Variables(GeoVaLnames);
-  oops::Log::trace() << "ObsRadarDopplerWind constructed" << std::endl;
+  oops::Log::trace() << "ObsRadarDopplerWind constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsRadarDopplerWind::~ObsRadarDopplerWind() {
-  oops::Log::trace() << "ObsRadarDopplerWind destructed" << std::endl;
+  oops::Log::trace() << "ObsRadarDopplerWind destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -60,7 +60,7 @@ void ObsRadarDopplerWind::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec
   // - Interpolates u, v and w to observation z.
   // - Computes H(x).
 
-  oops::Log::trace() << "ObsRadarDopplerWind: simulateObs entered" << std::endl;
+  oops::Log::trace() << "ObsRadarDopplerWind::simulateObs start" << std::endl;
 
   const float missingFloat = util::missingValue<float>();
   const double missingDouble = util::missingValue<double>();
@@ -119,7 +119,7 @@ void ObsRadarDopplerWind::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec
     }
   }
 
-  oops::Log::trace() << "ObsRadarDopplerWind: simulateObs finished" <<  std::endl;
+  oops::Log::trace() << "ObsRadarDopplerWind::simulateObs done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------

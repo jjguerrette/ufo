@@ -34,14 +34,14 @@ ObsRadianceCRTMTLAD::ObsRadianceCRTMTLAD(const ioda::ObsSpace & odb,
   ufo_radiancecrtm_tlad_setup_f90(keyOperRadianceCRTM_, params.toConfiguration(),
                                   channels_list.size(), channels_list[0], varin_, odb.comm());
 
-  oops::Log::trace() << "ObsRadianceCRTMTLAD created" << std::endl;
+  oops::Log::trace() << "ObsRadianceCRTMTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsRadianceCRTMTLAD::~ObsRadianceCRTMTLAD() {
   ufo_radiancecrtm_tlad_delete_f90(keyOperRadianceCRTM_);
-  oops::Log::trace() << "ObsRadianceCRTMTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsRadianceCRTMTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

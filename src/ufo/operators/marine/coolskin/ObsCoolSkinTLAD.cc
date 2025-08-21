@@ -34,14 +34,14 @@ ObsCoolSkinTLAD::ObsCoolSkinTLAD(const ioda::ObsSpace & odb, const Parameters_ &
                                     "friction_velocity_over_water"};
   varin_.reset(new oops::Variables(vv));
   ufo_CoolSkin_tlad_setup_f90(keyOper_, params.toConfiguration());
-  oops::Log::trace() << "ObsCoolSkinTLAD created" << std::endl;
+  oops::Log::trace() << "ObsCoolSkinTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsCoolSkinTLAD::~ObsCoolSkinTLAD() {
   ufo_CoolSkin_tlad_delete_f90(keyOper_);
-  oops::Log::trace() << "ObsCoolSkinTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsCoolSkinTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -49,7 +49,7 @@ ObsCoolSkinTLAD::~ObsCoolSkinTLAD() {
 void ObsCoolSkinTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics &,
                                     const QCFlags_t & qc_flags) {
   ufo_CoolSkin_tlad_settraj_f90(keyOper_, geovals.toFortran(), obsspace());
-  oops::Log::trace() << "ObsCoolSkinTLAD: trajectory set" << std::endl;
+  oops::Log::trace() << "ObsCoolSkinTLAD::setTrajectory done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -58,7 +58,7 @@ void ObsCoolSkinTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVector & o
  const QCFlags_t& qc_flags) const {
   ufo_CoolSkin_simobs_tl_f90(keyOper_, geovals.toFortran(), obsspace(),
                              ovec.size(), ovec.toFortran());
-  oops::Log::trace() << "ObsCoolSkinTLAD: tangent linear observation operator run" << std::endl;
+  oops::Log::trace() << "ObsCoolSkinTLAD::simulateObsTL done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -67,7 +67,7 @@ void ObsCoolSkinTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVector & o
                                     const QCFlags_t & qc_flags) const {
   ufo_CoolSkin_simobs_ad_f90(keyOper_, geovals.toFortran(), obsspace(),
                              ovec.size(), ovec.toFortran());
-  oops::Log::trace() << "ObsCoolSkinTLAD: adjoint observation operator run" << std::endl;
+  oops::Log::trace() << "ObsCoolSkinTLAD::simulateObsAD done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

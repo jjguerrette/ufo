@@ -27,14 +27,14 @@ ObsInsituPM::ObsInsituPM(const ioda::ObsSpace & odb,
   : ObsOperatorBase(odb), keyOper_(0), odb_(odb), varin_()
 {
   ufo_insitupm_setup_f90(keyOper_, parameters.toConfiguration(), odb.assimvariables(), varin_);
-  oops::Log::trace() << "ObsInsituPM created." << std::endl;
+  oops::Log::trace() << "ObsInsituPM constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsInsituPM::~ObsInsituPM() {
   ufo_insitupm_delete_f90(keyOper_);
-  oops::Log::trace() << "ObsInsituPM destructed" << std::endl;
+  oops::Log::trace() << "ObsInsituPM destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -43,7 +43,7 @@ void ObsInsituPM::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
                               ObsDiagnostics & odiags, const QCFlags_t & qc_flags) const {
   ufo_insitupm_simobs_f90(keyOper_, gv.toFortran(), odb_, ovec.nvars(), ovec.nlocs(),
                          ovec.toFortran());
-  oops::Log::trace() << "ObsInsituPM: observation operator run" << std::endl;
+  oops::Log::trace() << "ObsInsituPM::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

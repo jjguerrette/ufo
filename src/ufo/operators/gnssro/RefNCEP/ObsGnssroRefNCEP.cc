@@ -34,14 +34,14 @@ ObsGnssroRefNCEP::ObsGnssroRefNCEP(const ioda::ObsSpace & odb, const Parameters_
 
   ufo_gnssro_refncep_setup_f90(keyOperGnssroRefNCEP_,
                                params.options.value().toConfiguration());
-  oops::Log::trace() << "ObsGnssroRefNCEP created." << std::endl;
+  oops::Log::trace() << "ObsGnssroRefNCEP constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsGnssroRefNCEP::~ObsGnssroRefNCEP() {
   ufo_gnssro_refncep_delete_f90(keyOperGnssroRefNCEP_);
-  oops::Log::trace() << "ObsGnssroRefNCEP destructed" << std::endl;
+  oops::Log::trace() << "ObsGnssroRefNCEP destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -50,6 +50,7 @@ void ObsGnssroRefNCEP::simulateObs(const GeoVaLs & gom, ioda::ObsVector & ovec,
                                ObsDiagnostics &, const QCFlags_t & qc_flags) const {
   ufo_gnssro_refncep_simobs_f90(keyOperGnssroRefNCEP_, gom.toFortran(), odb_,
                             ovec.size(), ovec.toFortran());
+  oops::Log::trace() << "ObsGnssroRefNCEP::simulateObs done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------

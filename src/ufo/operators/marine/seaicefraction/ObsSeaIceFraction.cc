@@ -30,13 +30,13 @@ ObsSeaIceFraction::ObsSeaIceFraction(const ioda::ObsSpace & odb,
 {
   const std::vector<std::string> vvin{"sea_ice_category_area_fraction"};
   varin_.reset(new oops::Variables(vvin));
-  oops::Log::trace() << "ObsSeaIceFraction created." << std::endl;
+  oops::Log::trace() << "ObsSeaIceFraction constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsSeaIceFraction::~ObsSeaIceFraction() {
-  oops::Log::trace() << "ObsSeaIceFraction destructed" << std::endl;
+  oops::Log::trace() << "ObsSeaIceFraction destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -53,7 +53,7 @@ void ObsSeaIceFraction::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
       ovec[i] += aicen[i];
     }
   }
-  oops::Log::trace() << "ObsSeaIceFraction: observation operator run" << std::endl;
+  oops::Log::trace() << "ObsSeaIceFraction::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

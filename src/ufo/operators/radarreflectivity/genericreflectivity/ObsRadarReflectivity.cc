@@ -27,7 +27,7 @@ ObsRadarReflectivity::ObsRadarReflectivity(const ioda::ObsSpace & odb,
                                            const Parameters_ & params)
   : ObsOperatorBase(odb), odb_(odb)
 {
-  oops::Log::trace() << "ObsRadarReflectivity constructor entered" << std::endl;
+  oops::Log::trace() << "ObsRadarReflectivity constructor start" << std::endl;
 
   // Enable this operator to be used as part of the Composite operator.
   // Indices of operator variables.
@@ -53,13 +53,13 @@ ObsRadarReflectivity::ObsRadarReflectivity(const ioda::ObsSpace & odb,
                                          requiredVars_,
                                          requiredVarsTLPlaceholder_);
 
-  oops::Log::trace() << "ObsRadarReflectivity constructor finished" << std::endl;
+  oops::Log::trace() << "ObsRadarReflectivity constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsRadarReflectivity::~ObsRadarReflectivity() {
-  oops::Log::trace() << "ObsRadarReflectivity destructor" << std::endl;
+  oops::Log::trace() << "ObsRadarReflectivity destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -68,9 +68,9 @@ void ObsRadarReflectivity::simulateObs(const GeoVaLs & gv,
                                        ioda::ObsVector & ovec,
                                        ObsDiagnostics & diag,
                                        const QCFlags_t & flag) const {
-  oops::Log::trace() << "ObsRadarReflectivity: simulateObs entered" << std::endl;
+  oops::Log::trace() << "ObsRadarReflectivity::simulateObs start" << std::endl;
   reflectivityAlgorithm_->simulateObs(gv, ovec, diag, flag);
-  oops::Log::trace() << "ObsRadarReflectivity: simulateObs finished" <<  std::endl;
+  oops::Log::trace() << "ObsRadarReflectivity::simulateObs done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------

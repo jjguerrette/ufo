@@ -42,14 +42,14 @@ ObsGnssroBndROPP2D::ObsGnssroBndROPP2D(const ioda::ObsSpace & odb,
 
   ufo_gnssro_bndropp2d_setup_f90(keyOperGnssroBndROPP2D_,
                                  params.options.value().toConfiguration(), odb_.nlocs());
-  oops::Log::trace() << "ObsGnssroBndROPP2D created." << std::endl;
+  oops::Log::trace() << "ObsGnssroBndROPP2D constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsGnssroBndROPP2D::~ObsGnssroBndROPP2D() {
   ufo_gnssro_bndropp2d_delete_f90(keyOperGnssroBndROPP2D_);
-  oops::Log::trace() << "ObsGnssroBndROPP2D destructed" << std::endl;
+  oops::Log::trace() << "ObsGnssroBndROPP2D destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -58,6 +58,7 @@ void ObsGnssroBndROPP2D::simulateObs(const GeoVaLs & gom, ioda::ObsVector & ovec
                                      ObsDiagnostics & d, const QCFlags_t & qc_flags) const {
   ufo_gnssro_bndropp2d_simobs_f90(keyOperGnssroBndROPP2D_, gom.toFortran(), odb_,
                                   ovec.size(), ovec.toFortran());
+  oops::Log::trace() << "ObsGnssroBndROPP2D::simulateObs done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------

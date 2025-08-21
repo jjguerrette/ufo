@@ -33,7 +33,7 @@ ObsLogarithm::ObsLogarithm(const ioda::ObsSpace& odb,
                            const Parameters_& parameters)
     : ObsOperatorBase(odb, VariableNameMap(parameters.AliasFile.value())),
       odb_(odb) {
-  oops::Log::trace() << "ObsLogarithm constructor starting" << std::endl;
+  oops::Log::trace() << "ObsLogarithm constructor start" << std::endl;
 
   getOperatorVariables(parameters.variables.value(), odb.assimvariables(),
                        operatorVars_, operatorVarIndices_);
@@ -49,13 +49,13 @@ ObsLogarithm::ObsLogarithm(const ioda::ObsSpace& odb,
       throw eckit::BadValue(msg.str(), Here());
     }
   }
-  oops::Log::trace() << "ObsLogarithm constructor finished" << std::endl;
+  oops::Log::trace() << "ObsLogarithm constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsLogarithm::~ObsLogarithm() {
-  oops::Log::trace() << "ObsLogarithm destructed" << std::endl;
+  oops::Log::trace() << "ObsLogarithm destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -63,7 +63,7 @@ ObsLogarithm::~ObsLogarithm() {
 void ObsLogarithm::simulateObs(const GeoVaLs& gv, ioda::ObsVector& ovec,
                                ObsDiagnostics& odiags,
                                const QCFlags_t& qc_flags) const {
-  oops::Log::trace() << "ObsLogarithm: simulateObs starting" << std::endl;
+  oops::Log::trace() << "ObsLogarithm::simulateObs start" << std::endl;
 
   assert(logBase_ >= 0.0);
   assert(logBase_ != 1.0);
@@ -91,7 +91,7 @@ void ObsLogarithm::simulateObs(const GeoVaLs& gv, ioda::ObsVector& ovec,
     }
   }
 
-  oops::Log::trace() << "ObsLogarithm: simulateObs finished" << std::endl;
+  oops::Log::trace() << "ObsLogarithm::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

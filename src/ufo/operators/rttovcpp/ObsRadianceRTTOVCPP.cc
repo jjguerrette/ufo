@@ -32,6 +32,7 @@ ObsRadianceRTTOVCPP::ObsRadianceRTTOVCPP(const ioda::ObsSpace & odb,
                                          const Parameters_ & parameters)
   : ObsOperatorBase(odb), odb_(odb), varin_()
 {
+  oops::Log::trace() << "ObsRadianceRTTOVCPP constructor start." << std::endl;
   // Fields to be requested from getvalues and stored in geovals
   // need to be consistent with those defined in ufo_variables_mod.F90
   //-----------------------------------------------------------------------------
@@ -64,13 +65,13 @@ ObsRadianceRTTOVCPP::ObsRadianceRTTOVCPP(const ioda::ObsSpace & odb,
   CoefFileName = CoefPath + "rtcoef_" + SensorID + ".dat";
   oops::Log::info() << CoefFileName << std::endl;
 
-  oops::Log::trace() << "ObsRadianceRTTOVCPP created." << std::endl;
+  oops::Log::trace() << "ObsRadianceRTTOVCPP constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsRadianceRTTOVCPP::~ObsRadianceRTTOVCPP() {
-  oops::Log::trace() << "ObsRadianceRTTOVCPP destructed" << std::endl;
+  oops::Log::trace() << "ObsRadianceRTTOVCPP destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

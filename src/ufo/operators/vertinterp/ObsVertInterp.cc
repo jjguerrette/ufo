@@ -40,14 +40,14 @@ ObsVertInterp::ObsVertInterp(const ioda::ObsSpace & odb,
                               operatorVars_, operatorVarIndices.data(),
                               operatorVarIndices.size(), varin_);
 
-  oops::Log::trace() << "ObsVertInterp created." << std::endl;
+  oops::Log::trace() << "ObsVertInterp constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsVertInterp::~ObsVertInterp() {
   ufo_vertinterp_delete_f90(keyOperVertInterp_);
-  oops::Log::trace() << "ObsVertInterp destructed" << std::endl;
+  oops::Log::trace() << "ObsVertInterp destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -55,12 +55,12 @@ ObsVertInterp::~ObsVertInterp() {
 void ObsVertInterp::simulateObs(const GeoVaLs & gom, ioda::ObsVector & ovec,
                                    ObsDiagnostics & odiags,
                                    const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsVertInterp::simulateObs entered" << std::endl;
+  oops::Log::trace() << "ObsVertInterp::simulateObs start" << std::endl;
 
   ufo_vertinterp_simobs_f90(keyOperVertInterp_, gom.toFortran(), odb_,
                                ovec.nvars(), ovec.nlocs(), ovec.toFortran());
 
-  oops::Log::trace() << "ObsVertInterp::simulateObs exit" << std::endl;
+  oops::Log::trace() << "ObsVertInterp::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

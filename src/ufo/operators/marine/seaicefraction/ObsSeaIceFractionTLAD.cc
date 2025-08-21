@@ -30,20 +30,20 @@ ObsSeaIceFractionTLAD::ObsSeaIceFractionTLAD(const ioda::ObsSpace & odb,
 {
   const std::vector<std::string> vv{"sea_ice_category_area_fraction"};
   varin_.reset(new oops::Variables(vv));
-  oops::Log::trace() << "ObsSeaIceFractionTLAD created" << std::endl;
+  oops::Log::trace() << "ObsSeaIceFractionTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsSeaIceFractionTLAD::~ObsSeaIceFractionTLAD() {
-  oops::Log::trace() << "ObsSeaIceFractionTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsSeaIceFractionTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsSeaIceFractionTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics &,
                                           const QCFlags_t & qc_flags) {
-  oops::Log::trace() << "ObsSeaIceFractionTLAD: trajectory set" << std::endl;
+  oops::Log::trace() << "ObsSeaIceFractionTLAD::setTrajectory not yet implemented" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -60,7 +60,7 @@ void ObsSeaIceFractionTLAD::simulateObsTL(const GeoVaLs & gv, ioda::ObsVector & 
       ovec[i] += aicen[i];
     }
   }
-  oops::Log::trace() << "ObsSeaIceFractionTLAD: TL observation operator run" << std::endl;
+  oops::Log::trace() << "ObsSeaIceFractionTLAD::simulateObsTL done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -79,7 +79,7 @@ void ObsSeaIceFractionTLAD::simulateObsAD(GeoVaLs & gv, const ioda::ObsVector & 
     }
     gv.putAtLevel(aicen, oops::Variable{"sea_ice_category_area_fraction"}, k);
   }
-  oops::Log::trace() << "ObsSeaIceFractionTLAD: adjoint observation operator run" << std::endl;
+  oops::Log::trace() << "ObsSeaIceFractionTLAD::simulateObsAD done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

@@ -27,14 +27,14 @@ ObsInsituPMTLAD::ObsInsituPMTLAD(const ioda::ObsSpace & odb,
   : LinearObsOperatorBase(odb), keyOper_(0), varin_()
 {
   ufo_insitupm_tlad_setup_f90(keyOper_, parameters.toConfiguration(), odb.assimvariables(), varin_);
-  oops::Log::trace() << "ObsInsituPMTLAD created" << std::endl;
+  oops::Log::trace() << "ObsInsituPMTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsInsituPMTLAD::~ObsInsituPMTLAD() {
   ufo_insitupm_tlad_delete_f90(keyOper_);
-  oops::Log::trace() << "ObsInsituPMTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsInsituPMTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -42,7 +42,7 @@ ObsInsituPMTLAD::~ObsInsituPMTLAD() {
 void ObsInsituPMTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics & d,
                                     const QCFlags_t & qc_flags) {
   ufo_insitupm_tlad_settraj_f90(keyOper_, geovals.toFortran(), obsspace());
-  oops::Log::trace() << "ObsInsituPMTLAD: trajectory set" << std::endl;
+  oops::Log::trace() << "ObsInsituPMTLAD::setTrajectory done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -51,7 +51,7 @@ void ObsInsituPMTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVector & o
                                     const QCFlags_t & qc_flags) const {
   ufo_insitupm_simobs_tl_f90(keyOper_, geovals.toFortran(), obsspace(),
                             ovec.nvars(), ovec.nlocs(), ovec.toFortran());
-  oops::Log::trace() << "ObsInsituPMTLAD: TL observation operator run" << std::endl;
+  oops::Log::trace() << "ObsInsituPMTLAD::simulateObsTL done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -60,7 +60,7 @@ void ObsInsituPMTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVector & o
                                     const QCFlags_t & qc_flags) const {
   ufo_insitupm_simobs_ad_f90(keyOper_, geovals.toFortran(), obsspace(),
                             ovec.nvars(), ovec.nlocs(), ovec.toFortran());
-  oops::Log::trace() << "ObsInsituPMTLAD: adjoint observation operator run" << std::endl;
+  oops::Log::trace() << "ObsInsituPMTLAD::simulateObsAD done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

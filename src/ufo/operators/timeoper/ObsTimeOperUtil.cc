@@ -78,6 +78,7 @@ std::vector<std::vector<float>> timeWeightCreate(const ioda::ObsSpace & odb_,
     oops::Log::debug() << "TimeOperUtil::timeWeights[1] = " << i << std::endl;
   }
 
+  oops::Log::trace() << "TimeOperUtil::timeWeightCreate done" << std::endl;
   return timeWeights;
 }
 // -----------------------------------------------------------------------------

@@ -33,14 +33,14 @@ ObsAodCRTMTLAD::ObsAodCRTMTLAD(const ioda::ObsSpace & odb,
                              channels_list.size(), channels_list[0], varin_);
   oops::Log::info() << "ObsAodCRTMTLAD variables: " << varin_ << std::endl;
   oops::Log::info() << "ObsAodCRTMTLAD channels: " << channels_list << std::endl;
-  oops::Log::trace() << "ObsAodCRTMTLAD created" << std::endl;
+  oops::Log::trace() << "ObsAodCRTMTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsAodCRTMTLAD::~ObsAodCRTMTLAD() {
   ufo_aodcrtm_tlad_delete_f90(keyOperAodCRTM_);
-  oops::Log::trace() << "ObsAodCRTMTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsAodCRTMTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -48,6 +48,7 @@ ObsAodCRTMTLAD::~ObsAodCRTMTLAD() {
 void ObsAodCRTMTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics &,
                                    const QCFlags_t & qc_flags) {
   ufo_aodcrtm_tlad_settraj_f90(keyOperAodCRTM_, geovals.toFortran(), obsspace());
+  oops::Log::trace() << "ObsAodCRTMTLAD::setTrajectory done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -56,6 +57,7 @@ void ObsAodCRTMTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVector & ov
                                    const QCFlags_t & qc_flags) const {
   ufo_aodcrtm_simobs_tl_f90(keyOperAodCRTM_, geovals.toFortran(), obsspace(),
                              ovec.nvars(), ovec.nlocs(), ovec.toFortran());
+  oops::Log::trace() << "ObsAodCRTMTLAD::simulateObsTL done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -64,6 +66,7 @@ void ObsAodCRTMTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVector & ov
                                    const QCFlags_t & qc_flags) const {
   ufo_aodcrtm_simobs_ad_f90(keyOperAodCRTM_, geovals.toFortran(), obsspace(),
                              ovec.nvars(), ovec.nlocs(), ovec.toFortran());
+  oops::Log::trace() << "ObsAodCRTMTLAD::simulateObsAD done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------

@@ -35,14 +35,14 @@ ObsSeaIceThickness::ObsSeaIceThickness(const ioda::ObsSpace & odb,
   }
   varin_.reset(new oops::Variables(vvin));
   ufo_seaicethickness_setup_f90(keyOper_, params.toConfiguration(), odb.assimvariables());
-  oops::Log::trace() << "ObsSeaIceThickness created." << std::endl;
+  oops::Log::trace() << "ObsSeaIceThickness constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsSeaIceThickness::~ObsSeaIceThickness() {
   ufo_seaicethickness_delete_f90(keyOper_);
-  oops::Log::trace() << "ObsSeaIceThickness destructed" << std::endl;
+  oops::Log::trace() << "ObsSeaIceThickness destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -50,7 +50,7 @@ ObsSeaIceThickness::~ObsSeaIceThickness() {
 void ObsSeaIceThickness::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
                                      ObsDiagnostics & d, const QCFlags_t & qc_flags) const {
   ufo_seaicethickness_simobs_f90(keyOper_, gv.toFortran(), odb_, ovec.size(), ovec.toFortran());
-  oops::Log::trace() << "ObsSeaIceThickness: observation operator run" << std::endl;
+  oops::Log::trace() << "ObsSeaIceThickness::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

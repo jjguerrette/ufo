@@ -29,7 +29,7 @@ ObsADTTLAD::ObsADTTLAD(const ioda::ObsSpace & odb, const Parameters_ & params)
   : LinearObsOperatorBase(odb, VariableNameMap(params.AliasFile.value())),
     odb_(odb)
 {
-  oops::Log::trace() << "ObsADTTLAD constructor starting" << std::endl;
+  oops::Log::trace() << "ObsADTTLAD constructor start" << std::endl;
 
   std::vector<int> operatorVarIndices;
   getOperatorVariables(params.variables.value(), odb.assimvariables(),
@@ -43,25 +43,27 @@ ObsADTTLAD::ObsADTTLAD(const ioda::ObsSpace & odb, const Parameters_ & params)
   ASSERT(operatorVarIndices.size() == 1);
   operatorVarIndex_ = operatorVarIndices[0];
 
-  oops::Log::trace() << "ObsADTTLAD constructor finished" << std::endl;
+  oops::Log::trace() << "ObsADTTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsADTTLAD::~ObsADTTLAD() {
+  oops::Log::trace() << "ObsADTTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsADTTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics &,
                                const QCFlags_t & qc_flags) {
+  oops::Log::trace() << "ObsADTTLAD::setTrajectory not yet implemented" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsADTTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVector & ovec,
                                const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsADTTLAD: simulateObsTL starting" << std::endl;
+  oops::Log::trace() << "ObsADTTLAD::simulateObsTL start" << std::endl;
 
   const double missing = util::missingValue<double>();
 
@@ -83,7 +85,7 @@ void ObsADTTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVector & ovec,
   if (count > 0) {
     offset = accumVal->computeResult() / count;
   }
-  oops::Log::debug() << "ObsADT simulateObsTL offset: " << offset << std::endl;
+  // oops::Log::debug() << "ObsADT simulateObsTL offset: " << offset << std::endl;
 
   // subtract offset from geoval
   for (size_t jloc = 0; jloc < ovec.nlocs(); ++jloc) {
@@ -92,14 +94,14 @@ void ObsADTTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVector & ovec,
     if (ovec[idx] != missing) ovec[idx] -= offset;
   }
 
-  oops::Log::trace() << "ObsADTTLAD: simulateObsTL finished" << std::endl;
+  oops::Log::trace() << "ObsADTTLAD::simulateObsTL done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsADTTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVector & ovec,
                                const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsADTTLAD: simulateObsAD starting" << std::endl;
+  oops::Log::trace() << "ObsADTTLAD::simulateObsAD start" << std::endl;
 
   const double missing = util::missingValue<double>();
 
@@ -121,7 +123,7 @@ void ObsADTTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVector & ovec,
   if (count > 0) {
     offset = accumVal->computeResult() / count;
   }
-  oops::Log::debug() << "ObsADT simulateObsAD offset: " << offset << std::endl;
+  // oops::Log::debug() << "ObsADT simulateObsAD offset: " << offset << std::endl;
 
   // subtract offset from geoval
   for (size_t jloc = 0; jloc < ovec.nlocs(); ++jloc) {
@@ -131,7 +133,7 @@ void ObsADTTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVector & ovec,
   }
   geovals.putAtLevel(vec, oops::Variable{"sea_surface_height_above_geoid"}, 0);
 
-  oops::Log::trace() << "ObsADTTLAD: simulateObsAD finished" << std::endl;
+  oops::Log::trace() << "ObsADTTLAD::simulateObsAD done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

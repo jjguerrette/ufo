@@ -32,13 +32,13 @@ ObsWindSpeed::ObsWindSpeed(const ioda::ObsSpace & odb,
     model_surface_northward_wind_{params.model_surface_northward_wind.value()},
     varin_{{model_surface_eastward_wind_, model_surface_northward_wind_}}
 {
-  oops::Log::trace() << "ObsWindSpeed created." << std::endl;
+  oops::Log::trace() << "ObsWindSpeed constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsWindSpeed::~ObsWindSpeed() {
-  oops::Log::trace() << "ObsWindSpeed destructed" << std::endl;
+  oops::Log::trace() << "ObsWindSpeed destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -46,7 +46,7 @@ ObsWindSpeed::~ObsWindSpeed() {
 void ObsWindSpeed::simulateObs(const GeoVaLs & geovals, ioda::ObsVector & hofx,
                              ObsDiagnostics &, const QCFlags_t&) const {
 // Observation operator
-
+  oops::Log::trace() << "ObsWindSpeed::simulateObs start" << std::endl;
   // Check hofx size and initialise hofx to zero:
   ASSERT(geovals.nlocs() == hofx.nlocs());
   hofx.zero();
@@ -65,7 +65,7 @@ void ObsWindSpeed::simulateObs(const GeoVaLs & geovals, ioda::ObsVector & hofx,
     hofx[w] += sqrt(pow(u_wind[w], 2.0) + pow(v_wind[w], 2.0));
   }
 
-  oops::Log::trace() << "ObsWindSpeed: observation operator run" << std::endl;
+  oops::Log::trace() << "ObsWindSpeed::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

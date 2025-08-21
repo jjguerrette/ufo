@@ -44,14 +44,14 @@ ObsInsituTemperature::ObsInsituTemperature(const ioda::ObsSpace & odb,
   ufo_insitutemperature_setup_f90(keyOper_, params.toConfiguration(),
     operatorVars_, operatorVarIndices.data(), operatorVarIndices.size(), varin_);
 
-  oops::Log::trace() << "ObsInsituTemperature created." << std::endl;
+  oops::Log::trace() << "ObsInsituTemperature constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsInsituTemperature::~ObsInsituTemperature() {
   ufo_insitutemperature_delete_f90(keyOper_);
-  oops::Log::trace() << "ObsInsituTemperature destructed" << std::endl;
+  oops::Log::trace() << "ObsInsituTemperature destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -60,7 +60,7 @@ void ObsInsituTemperature::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ove
                                        ObsDiagnostics & d, const QCFlags_t & qc_flags) const {
   ufo_insitutemperature_simobs_f90(keyOper_, gv.toFortran(), odb_, ovec.nvars(),
                                    ovec.nlocs(), ovec.toFortran());
-  oops::Log::trace() << "ObsInsituTemperature: observation operator run" << std::endl;
+  oops::Log::trace() << "ObsInsituTemperature::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

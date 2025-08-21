@@ -29,25 +29,25 @@ ObsColumnRetrievalTLAD::ObsColumnRetrievalTLAD(const ioda::ObsSpace & odb,
 {
   ufo_columnretrieval_tlad_setup_f90(keyOperColumnRetrieval_, parameters.toConfiguration(),
                                odb.assimvariables(), varin_);
-  oops::Log::trace() << "ObsColumnRetrievalTLAD created" << std::endl;
+  oops::Log::trace() << "ObsColumnRetrievalTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsColumnRetrievalTLAD::~ObsColumnRetrievalTLAD() {
   ufo_columnretrieval_tlad_delete_f90(keyOperColumnRetrieval_);
-  oops::Log::trace() << "ObsColumnRetrievalTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsColumnRetrievalTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsColumnRetrievalTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics &,
                                            const QCFlags_t & qc_flags) {
-  oops::Log::trace() << "ObsColumnRetrievalTLAD::setTrajectory entering" << std::endl;
+  oops::Log::trace() << "ObsColumnRetrievalTLAD::setTrajectory start" << std::endl;
 
   ufo_columnretrieval_tlad_settraj_f90(keyOperColumnRetrieval_, geovals.toFortran(), obsspace());
 
-  oops::Log::trace() << "ObsColumnRetrievalTLAD::setTrajectory exiting" << std::endl;
+  oops::Log::trace() << "ObsColumnRetrievalTLAD::setTrajectory done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -56,7 +56,7 @@ void ObsColumnRetrievalTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVec
                                            const QCFlags_t & qc_flags) const {
   ufo_columnretrieval_simobs_tl_f90(keyOperColumnRetrieval_, geovals.toFortran(), obsspace(),
                                   ovec.nvars(), ovec.nlocs(), ovec.toFortran());
-  oops::Log::trace() << "ObsColumnRetrievalTLAD::simulateObsTL exiting" << std::endl;
+  oops::Log::trace() << "ObsColumnRetrievalTLAD::simulateObsTL done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -65,7 +65,7 @@ void ObsColumnRetrievalTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVec
                                            const QCFlags_t & qc_flags) const {
   ufo_columnretrieval_simobs_ad_f90(keyOperColumnRetrieval_, geovals.toFortran(), obsspace(),
                                   ovec.nvars(), ovec.nlocs(), ovec.toFortran());
-  oops::Log::trace() << "ObsColumnRetrievalTLAD::simulateObsAD exiting" << std::endl;
+  oops::Log::trace() << "ObsColumnRetrievalTLAD::simulateObsAD done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

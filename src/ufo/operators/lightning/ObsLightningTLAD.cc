@@ -33,22 +33,22 @@ ObsLightningTLAD::ObsLightningTLAD(const ioda::ObsSpace & odb, const Parameters_
   // ufo_lightning_tlad_setup_f90(keyOper_, l_fed_nonlinear_, nhoriz_,
   ufo_lightning_tlad_setup_f90(keyOper_, nhoriz_,
                                         odb.obsvariables(), varin_);
-  oops::Log::trace() << "ObsLightningTLAD created" << std::endl;
+  oops::Log::trace() << "ObsLightningTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsLightningTLAD::~ObsLightningTLAD() {
   ufo_lightning_tlad_delete_f90(keyOper_);
-  oops::Log::trace() << "ObsLightningTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsLightningTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsLightningTLAD::setTrajectory(const GeoVaLs & geovals, ObsDiagnostics &, const QCFlags_t&) {
-  oops::Log::trace() << "ObsLightningTLAD: setTrajectory entering" << std::endl;
+  oops::Log::trace() << "ObsLightningTLAD::setTrajectory start" << std::endl;
   ufo_lightning_tlad_settraj_f90(keyOper_, geovals.toFortran(), obsspace());
-  oops::Log::trace() << "ObsLightningTLAD: setTrajectory exiting" << std::endl;
+  oops::Log::trace() << "ObsLightningTLAD::setTrajectory done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -57,7 +57,7 @@ void ObsLightningTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVector & 
                                      const QCFlags_t & qc_flags) const {
   ufo_lightning_simobs_tl_f90(keyOper_, geovals.toFortran(), obsspace(),
                             ovec.nvars(), ovec.nlocs(), ovec.toFortran());
-  oops::Log::trace() << "ObsLightningTLAD: simulateObsTL exiting" << std::endl;
+  oops::Log::trace() << "ObsLightningTLAD::simulateObsTL done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -66,7 +66,7 @@ void ObsLightningTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVector & 
                                      const QCFlags_t & qc_flags) const {
   ufo_lightning_simobs_ad_f90(keyOper_, geovals.toFortran(), obsspace(),
                               ovec.nvars(), ovec.nlocs(), ovec.toFortran());
-  oops::Log::trace() << "ObsLightningTLAD: simulateObsAD exiting" << std::endl;
+  oops::Log::trace() << "ObsLightningTLAD::simulateObsAD done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

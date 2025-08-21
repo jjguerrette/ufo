@@ -31,7 +31,7 @@ ObsBackgroundErrorVertInterp::ObsBackgroundErrorVertInterp(const ioda::ObsSpace 
   : ObsOperatorBase(odb, VariableNameMap(parameters.AliasFile.value())),
     odb_(odb), parameters_(parameters)
 {
-  oops::Log::trace() << "ObsBackgroundErrorVertInterp constructor entered" << std::endl;
+  oops::Log::trace() << "ObsBackgroundErrorVertInterp constructor start" << std::endl;
 
   requiredVars_.push_back(parameters_.verticalCoordinate);
 
@@ -48,17 +48,17 @@ ObsBackgroundErrorVertInterp::ObsBackgroundErrorVertInterp(const ioda::ObsSpace 
   for (auto ivar : operatorVarIndices)
     requiredVars_.push_back(nameMap_.convertName(obsVars[ivar]).name() + "_background_error");
 
-  oops::Log::trace() << "ObsBackgroundErrorVertInterp created" << std::endl;
+  oops::Log::trace() << "ObsBackgroundErrorVertInterp constructor done" << std::endl;
 }
 
 ObsBackgroundErrorVertInterp::~ObsBackgroundErrorVertInterp() {
-  oops::Log::trace() << "ObsBackgroundErrorVertInterp destructed" << std::endl;
+  oops::Log::trace() << "ObsBackgroundErrorVertInterp destructor done" << std::endl;
 }
 
 void ObsBackgroundErrorVertInterp::simulateObs(const GeoVaLs & geovals, ioda::ObsVector & hofx,
                                                ObsDiagnostics & ydiags,
                                                const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsBackgroundErrorVertInterp: simulateObs entered" << std::endl;
+  oops::Log::trace() << "ObsBackgroundErrorVertInterp::simulateObs start" << std::endl;
 
   const std::string &obsVerticalCoordinate = parameters_.observationVerticalCoordinate;
   const std::string &obsVerticalGroup = parameters_.observationVerticalGroup;
@@ -81,7 +81,7 @@ void ObsBackgroundErrorVertInterp::simulateObs(const GeoVaLs & geovals, ioda::Ob
                                                  variables,
                                                  ydiags.toFortran());
 
-  oops::Log::trace() << "ObsBackgroundErrorVertInterp: simulateObs exit" <<  std::endl;
+  oops::Log::trace() << "ObsBackgroundErrorVertInterp::simulateObs done" <<  std::endl;
 }
 
 const oops::Variables & ObsBackgroundErrorVertInterp::requiredVars() const {

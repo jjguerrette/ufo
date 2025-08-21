@@ -42,14 +42,14 @@ ObsGnssroBndNBAM::ObsGnssroBndNBAM(const ioda::ObsSpace & odb, const Parameters_
   varin_.reset(new oops::Variables(vv));
 
   ufo_gnssro_bndnbam_setup_f90(keyOperGnssroBndNBAM_, params.options.value().toConfiguration());
-  oops::Log::trace() << "ObsGnssroBndNBAM created." << std::endl;
+  oops::Log::trace() << "ObsGnssroBndNBAM constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsGnssroBndNBAM::~ObsGnssroBndNBAM() {
   ufo_gnssro_bndnbam_delete_f90(keyOperGnssroBndNBAM_);
-  oops::Log::trace() << "ObsGnssroBndNBAM destructed" << std::endl;
+  oops::Log::trace() << "ObsGnssroBndNBAM destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -58,6 +58,7 @@ void ObsGnssroBndNBAM::simulateObs(const GeoVaLs & gom, ioda::ObsVector & ovec,
                                    ObsDiagnostics &, const QCFlags_t & qc_flags) const {
   ufo_gnssro_bndnbam_simobs_f90(keyOperGnssroBndNBAM_, gom.toFortran(), odb_,
                                ovec.size(), ovec.toFortran());
+  oops::Log::trace() << "ObsGnssroBndNBAM::simulateObs done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------

@@ -29,17 +29,15 @@ ObsCategoricalTLAD::ObsCategoricalTLAD(const ioda::ObsSpace & odb,
                                        const Parameters_ & params)
   : LinearObsOperatorBase(odb, VariableNameMap(params.AliasFile.value())), odb_(odb)
 {
-  oops::Log::trace() << "ObsCategoricalTLAD constructor starting" << std::endl;
-
   data_.configure(odb, params);
 
-  oops::Log::trace() << "ObsCategoricalTLAD created." << std::endl;
+  oops::Log::trace() << "ObsCategoricalTLAD constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsCategoricalTLAD::~ObsCategoricalTLAD() {
-  oops::Log::trace() << "ObsCategoricalTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsCategoricalTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -47,20 +45,20 @@ ObsCategoricalTLAD::~ObsCategoricalTLAD() {
 void ObsCategoricalTLAD::setTrajectory(const GeoVaLs & geovals,
                                        ObsDiagnostics & ydiags,
                                        const QCFlags_t & qc_flags) {
-  oops::Log::trace() << "ObsCategoricalTLAD: setTrajectory entered" << std::endl;
+  oops::Log::trace() << "ObsCategoricalTLAD::setTrajectory start" << std::endl;
 
   // Set trajectory for each operator.
   for (const auto& component : data_.components())
     component.second->setTrajectory(geovals, ydiags, qc_flags);
 
-  oops::Log::trace() << "ObsCategoricalTLAD: setTrajectory finished" <<  std::endl;
+  oops::Log::trace() << "ObsCategoricalTLAD::setTrajectory done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsCategoricalTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVector & ovec,
                                        const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsCategoricalTLAD: simulateObsTL entered" << std::endl;
+  oops::Log::trace() << "ObsCategoricalTLAD::simulateObsTL start" << std::endl;
 
   oops::Log::debug() << "Running TL operators" << std::endl;
 
@@ -77,14 +75,14 @@ void ObsCategoricalTLAD::simulateObsTL(const GeoVaLs & geovals, ioda::ObsVector 
 
   data_.fillHofX(ovecs, ovec);
 
-  oops::Log::trace() << "ObsCategoricalTLAD: simulateObsTL finished" <<  std::endl;
+  oops::Log::trace() << "ObsCategoricalTLAD::simulateObsTL done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsCategoricalTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVector & ovec,
                                        const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsCategoricalTLAD: simulateObsAD entered" << std::endl;
+  oops::Log::trace() << "ObsCategoricalTLAD::simulateObsAD start" << std::endl;
 
   oops::Log::debug() << "Running AD operators" << std::endl;
 
@@ -114,7 +112,7 @@ void ObsCategoricalTLAD::simulateObsAD(GeoVaLs & geovals, const ioda::ObsVector 
     }
   }
 
-  oops::Log::trace() << "ObsCategoricalTLAD: simulateObsAD finished" <<  std::endl;
+  oops::Log::trace() << "ObsCategoricalTLAD::simulateObsAD done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------

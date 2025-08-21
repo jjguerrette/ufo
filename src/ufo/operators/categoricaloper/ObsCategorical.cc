@@ -30,24 +30,22 @@ ObsCategorical::ObsCategorical(const ioda::ObsSpace & odb,
                                const Parameters_ & params)
   : ObsOperatorBase(odb), odb_(odb)
 {
-  oops::Log::trace() << "ObsCategorical constructor starting" << std::endl;
-
   data_.configure(odb, params);
 
-  oops::Log::trace() << "ObsCategorical constructor finished" << std::endl;
+  oops::Log::trace() << "ObsCategorical constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsCategorical::~ObsCategorical() {
-  oops::Log::trace() << "ObsCategorical destructed" << std::endl;
+  oops::Log::trace() << "ObsCategorical destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsCategorical::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
                                  ObsDiagnostics & ydiags, const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsCategorical: simulateObs entered" << std::endl;
+  oops::Log::trace() << "ObsCategorical::simulateObs start" << std::endl;
 
   oops::Log::debug() << "Running operators" << std::endl;
 
@@ -64,7 +62,7 @@ void ObsCategorical::simulateObs(const GeoVaLs & gv, ioda::ObsVector & ovec,
 
   data_.fillHofX(ovecs, ovec);
 
-  oops::Log::trace() << "ObsCategorical: simulateObs finished" <<  std::endl;
+  oops::Log::trace() << "ObsCategorical::simulateObs done" <<  std::endl;
 }
 
 // -----------------------------------------------------------------------------

@@ -36,14 +36,14 @@ ObsGroundgnssMetOffice::ObsGroundgnssMetOffice(const ioda::ObsSpace & odb,
 
   ufo_groundgnss_metoffice_setup_f90(keyOperGroundgnssMetOffice_, parameters.toConfiguration());
 
-  oops::Log::trace() << "ObsGroundgnssMetOffice created." << std::endl;
+  oops::Log::trace() << "ObsGroundgnssMetOffice constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsGroundgnssMetOffice::~ObsGroundgnssMetOffice() {
   ufo_groundgnss_metoffice_delete_f90(keyOperGroundgnssMetOffice_);
-  oops::Log::trace() << "ObsGroundgnssMetOffice destructed" << std::endl;
+  oops::Log::trace() << "ObsGroundgnssMetOffice destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -52,6 +52,7 @@ void ObsGroundgnssMetOffice::simulateObs(const GeoVaLs & gom, ioda::ObsVector & 
                                      ObsDiagnostics & d, const QCFlags_t & qc_flags) const {
   ufo_groundgnss_metoffice_simobs_f90(keyOperGroundgnssMetOffice_, gom.toFortran(), odb_,
                                   ovec.size(), ovec.toFortran());
+  oops::Log::trace() << "ObsGroundgnssMetOffice::simulateObs done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------

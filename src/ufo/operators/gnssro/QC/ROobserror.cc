@@ -25,24 +25,26 @@ ROobserror::ROobserror(ioda::ObsSpace & obsdb,
                        std::shared_ptr<ioda::ObsDataVector<float> > oberr)
   : FilterBase(obsdb, config, qc, oberr)
 {
-  oops::Log::trace() << "ROobserror contructor starting" << std::endl;
+  oops::Log::trace() << "ROobserror contructor start" << std::endl;
   // observation errors are always set up for the variables that are
   // assimilated
   const oops::ObsVariables filvar = obsdb.assimvariables();
-  oops::Log::trace() << "ROobserror contructor =  "<< filvar << std::endl;
+  // oops::Log::debug() << "ROobserror contructor =  "<< filvar << std::endl;
   ufo_roobserror_create_f90(key_, obsdb, config, filvar);
-  oops::Log::trace() << "ROobserror contructor key = " << key_ << std::endl;
+  // oops::Log::debug() << "ROobserror contructor key = " << key_ << std::endl;
 
   // Get the number of horizontal geovals (used by ROPP-2D)
   // Default to 1
   n_horiz = config.getInt("n_horiz", 1);
+  oops::Log::trace() << "ROobserror contructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ROobserror::~ROobserror() {
-  oops::Log::trace() << "ROobserror destructor key = " << key_ << std::endl;
+  // oops::Log::debug() << "ROobserror destructor key = " << key_ << std::endl;
   ufo_roobserror_delete_f90(key_);
+  oops::Log::trace() << "ROobserror destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -50,13 +52,14 @@ ROobserror::~ROobserror() {
 void ROobserror::applyFilter(const std::vector<bool> & apply,
                              const Variables & filtervars,
                              std::vector<std::vector<bool>> & flagged) const {
-  oops::Log::trace() << "ROobserror using priorFilter" << std::endl;
+  oops::Log::trace() << "ROobserror::applyFilter using priorFilter start" << std::endl;
   // Call the fortran routines to do the processing
   flags_->save("FortranQC");    // should pass values to fortran properly
   obserr_->save("FortranERR");  // should pass values to fortran properly
   ufo_roobserror_prior_f90(key_);
   flags_->read("FortranQC");    // should get values from fortran properly
   obserr_->read("FortranERR");  // should get values from fortran properly
+  oops::Log::trace() << "ROobserror::applyFilter using priorFilter done" << std::endl;
 }
 
 

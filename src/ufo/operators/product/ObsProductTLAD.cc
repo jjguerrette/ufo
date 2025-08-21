@@ -31,7 +31,7 @@ ObsProductTLAD::ObsProductTLAD(const ioda::ObsSpace & odb,
                                  const Parameters_ & parameters)
   : LinearObsOperatorBase(odb, VariableNameMap(parameters.AliasFile.value())), odb_(odb)
 {
-  oops::Log::trace() << "ObsProductTLAD constructor starting" << std::endl;
+  oops::Log::trace() << "ObsProductTLAD constructor start" << std::endl;
 
   getOperatorVariables(parameters.variables.value(), odb.assimvariables(),
                        operatorVars_, operatorVarIndices_);
@@ -56,19 +56,19 @@ ObsProductTLAD::ObsProductTLAD(const ioda::ObsSpace & odb,
       scalingVariableExponent_ = parameters.scalingVariableExponent.value().value();
   }
 
-  oops::Log::trace() << "ObsProductTLAD constructor finished" << std::endl;
+  oops::Log::trace() << "ObsProductTLAD constructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsProductTLAD::~ObsProductTLAD() {
-  oops::Log::trace() << "ObsProductTLAD destructed" << std::endl;
+  oops::Log::trace() << "ObsProductTLAD destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsProductTLAD::setTrajectory(const GeoVaLs & gv, ObsDiagnostics &, const QCFlags_t &) {
-  oops::Log::trace() << "ObsProductTLAD::setTrajectory starting" << std::endl;
+  oops::Log::trace() << "ObsProductTLAD::setTrajectory start" << std::endl;
 
   // Get variable that will scale h(x)
   if (variableGroupToScaleHofxBy_ == "GeoVaLs") {
@@ -112,7 +112,7 @@ void ObsProductTLAD::setTrajectory(const GeoVaLs & gv, ObsDiagnostics &, const Q
 
 void ObsProductTLAD::simulateObsTL(const GeoVaLs & dx, ioda::ObsVector & dy,
                                    const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsProductTLAD: TL observation operator starting" << std::endl;
+  oops::Log::trace() << "ObsProductTLAD::simulateObsTL start" << std::endl;
 
   std::vector<double> vec(dy.nlocs());
   const double missing = util::missingValue<double>();
@@ -130,14 +130,14 @@ void ObsProductTLAD::simulateObsTL(const GeoVaLs & dx, ioda::ObsVector & dy,
     }
   }
 
-  oops::Log::trace() << "ObsProductTLAD: TL observation operator finished" << std::endl;
+  oops::Log::trace() << "ObsProductTLAD::simulateObsTL done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsProductTLAD::simulateObsAD(GeoVaLs & dx, const ioda::ObsVector & dy,
                                    const QCFlags_t & qc_flags) const {
-  oops::Log::trace() << "ObsProductTLAD: adjoint observation operator starting" << std::endl;
+  oops::Log::trace() << "ObsProductTLAD::simulateObsAD start" << std::endl;
 
   const double missing = util::missingValue<double>();
 
@@ -158,7 +158,7 @@ void ObsProductTLAD::simulateObsAD(GeoVaLs & dx, const ioda::ObsVector & dy,
     dx.putAtLevel(vec, var, dx.nlevs(var) - 1);
   }
 
-  oops::Log::trace() << "ObsProductTLAD: adjoint observation operator finished" << std::endl;
+  oops::Log::trace() << "ObsProductTLAD::simulateObsAD done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

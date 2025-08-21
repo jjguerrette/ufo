@@ -36,14 +36,14 @@ ObsAodLUTs::ObsAodLUTs(const ioda::ObsSpace & odb,
                         channels_list.size(), channels_list[0], varin_);
   oops::Log::info() << "ObsAodLUTs variables: " << varin_ << std::endl;
   oops::Log::info() << "ObsAodLUTs channels: " << channels_list << std::endl;
-  oops::Log::trace() << "ObsAodLUTs created." << std::endl;
+  oops::Log::trace() << "ObsAodLUTs constructor done." << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 
 ObsAodLUTs::~ObsAodLUTs() {
   ufo_aodluts_delete_f90(keyOperAodLUTs_);
-  oops::Log::trace() << "ObsAodLUTs destructed" << std::endl;
+  oops::Log::trace() << "ObsAodLUTs destructor done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -52,6 +52,7 @@ void ObsAodLUTs::simulateObs(const GeoVaLs & gom, ioda::ObsVector & ovec,
                              ObsDiagnostics & diags, const QCFlags_t & qc_flags) const {
   ufo_aodluts_simobs_f90(keyOperAodLUTs_, gom.toFortran(), odb_,
                           ovec.nvars(), ovec.nlocs(), ovec.toFortran());
+  oops::Log::trace() << "ObsAodLUTs::simulateObs done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
