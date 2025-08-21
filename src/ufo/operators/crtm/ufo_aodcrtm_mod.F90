@@ -40,12 +40,13 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine ufo_aodcrtm_setup(self, f_confOper, channels)
+subroutine ufo_aodcrtm_setup(self, f_confOper, channels, midPointJulday)
 
 implicit none
 class(ufo_aodcrtm),        intent(inout) :: self
 type(fckit_configuration), intent(in)    :: f_confOper
 integer(c_int),            intent(in)    :: channels(:)  !List of channels to use
+integer(c_int64_t),        intent(in)    :: midPointJulday
 
 integer :: nvars_in
 character(len=max_string) :: err_msg
@@ -55,7 +56,7 @@ CHARACTER(len=MAXVARLEN), ALLOCATABLE :: var_aerosols(:)
 
  call f_confOper%get_or_die("obs options",f_confOpts)
 
- call crtm_conf_setup(self%conf, f_confOpts, f_confOper)
+ call crtm_conf_setup(self%conf, f_confOpts, f_confOper, midPointJulday)
  if ( ufo_vars_getindex(self%conf%Absorbers, var_mixr) /= 1 ) then
    write(err_msg,*) 'ufo_aodcrtm_setup error: H2O must be first in CRTM Absorbers for AOD'
    call abor1_ftn(err_msg)

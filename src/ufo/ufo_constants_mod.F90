@@ -64,6 +64,9 @@ real(kind_real), parameter, public :: n_beta  = 3.73E3          ! Refractivity c
 
 ! constants used in CRTM interface
 real(kind_real), parameter, public :: kg_to_g = 1000.0_kind_real
+real(kind_real), parameter, public :: co2_rescale_to_ppmv = 1.e6_kind_real
+real(kind_real), parameter, public :: co2_ppmv_value = 407.0
+real(kind_real), parameter, public :: midpoint_julday = -1.0_kind_real
 
 ! constants used in RTTOV interface
 real(kind_real), parameter, public :: g_to_kg = 0.001_kind_real

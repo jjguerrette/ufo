@@ -46,12 +46,13 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine ufo_aodcrtm_tlad_setup(self, f_confOper, channels)
+subroutine ufo_aodcrtm_tlad_setup(self, f_confOper, channels, midPointJulday)
 
 implicit none
 class(ufo_aodcrtm_tlad),   intent(inout) :: self
 type(fckit_configuration), intent(in)    :: f_confOper
-integer(c_int),               intent(in)    :: channels(:)  !List of channels to use
+integer(c_int),            intent(in)    :: channels(:)  !List of channels to use
+integer(c_int64_t),        intent(in)    :: midPointJulday
 
 type(fckit_configuration) :: f_confOpts
 integer :: nvars_in
@@ -60,7 +61,7 @@ CHARACTER(len=MAXVARLEN), ALLOCATABLE :: var_aerosols(:)
 
  call f_confOper%get_or_die("obs options",f_confOpts)
 
- call crtm_conf_setup(self%conf, f_confOpts, f_confOper)
+ call crtm_conf_setup(self%conf, f_confOpts, f_confOper, midPointJulday)
 
  CALL assign_aerosol_names(self%conf%aerosol_option,var_aerosols)
 

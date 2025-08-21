@@ -98,6 +98,14 @@ namespace ufo
     /// SurfaceWindGeoVars
     oops::Parameter<std::string> SurfaceWindGeoVars{"SurfaceWindGeoVars",
           "vector", this};
+    /// CO2 Absorber method & unit conversion to PPMV
+    oops::Parameter<std::string> CO2AbsorberMethod{"CO2AbsorberMethod",
+          "Background", this};
+    oops::Parameter<float> CO2gvConvertUnit{"CO2gvConvertUnit",
+          "mutiplicative factor to convert unit of CO2 GeoVaL", -1.0, this};
+    /// CO2 value when EternalConstant is selected
+    oops::Parameter<float> CO2ppmvValue{"CO2ppmvValue",
+          407.0, this};
     /// Clouds
     oops::OptionalParameter<std::vector<std::string> > Clouds{"Clouds", this};
     /// Cloud_Fraction

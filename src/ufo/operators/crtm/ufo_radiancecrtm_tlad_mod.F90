@@ -60,12 +60,13 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine ufo_radiancecrtm_tlad_setup(self, f_confOper, channels, comm)
+subroutine ufo_radiancecrtm_tlad_setup(self, f_confOper, channels, midPointJulday, comm)
 
 implicit none
 class(ufo_radiancecrtm_tlad), intent(inout) :: self
 type(fckit_configuration),    intent(in)    :: f_confOper
 integer(c_int),               intent(in)    :: channels(:)  !List of channels to use
+integer(c_int64_t),           intent(in)    :: midPointJulday
 type(fckit_mpi_comm),         intent(in)    :: comm
 
 integer :: nvars_in
@@ -74,14 +75,14 @@ type(fckit_configuration) :: f_confOpts,f_confLinOper
 character(max_string) :: err_msg
 
  call f_confOper%get_or_die("obs options",f_confOpts)
- call crtm_conf_setup(self%conf_traj, f_confOpts, f_confOper, comm)
+ call crtm_conf_setup(self%conf_traj, f_confOpts, f_confOper, midPointJulday, comm)
  call f_confOper%get_or_die("UseQCFlagsToSkipHofX",self%use_qc_flags)  
 
  if ( f_confOper%has("linear obs operator") ) then
     call f_confOper%get_or_die("linear obs operator",f_confLinOper)
-    call crtm_conf_setup(self%conf, f_confOpts, f_confLinOper, comm)
+    call crtm_conf_setup(self%conf, f_confOpts, f_confLinOper, midPointJulday, comm)
  else
-    call crtm_conf_setup(self%conf, f_confOpts, f_confOper, comm)
+    call crtm_conf_setup(self%conf, f_confOpts, f_confOper, midPointJulday, comm)
  end if
 
  ! request from the model var_ts +

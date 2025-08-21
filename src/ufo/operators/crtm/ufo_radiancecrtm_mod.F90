@@ -53,7 +53,7 @@ contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine ufo_radiancecrtm_setup(self, f_confOper, channels, comm)
+subroutine ufo_radiancecrtm_setup(self, f_confOper, channels, midPointJulday, comm)
 use ufo_utils_mod, only: cmp_strings
 use CRTM_SpcCoeff, only: CRTM_SpcCoeff_Load, SC
 
@@ -61,6 +61,7 @@ implicit none
 class(ufo_radiancecrtm),   intent(inout) :: self
 type(fckit_configuration), intent(in)    :: f_confOper
 integer(c_int),            intent(in)    :: channels(:)  !List of channels to use
+integer(c_int64_t),        intent(in)    :: midPointJulday
 type(fckit_mpi_comm),      intent(in)    :: comm
 integer :: nvars_in
 integer :: ind, js, jspec
@@ -77,7 +78,7 @@ character(len=maxvarlen), dimension(10), parameter :: more_hydrometeors = &
 
  call f_confOper%get_or_die("obs options",f_confOpts)
  call f_confOper%get_or_die("UseQCFlagsToSkipHofX",self%use_qc_flags)  
- call crtm_conf_setup(self%conf,f_confOpts,f_confOper,comm)
+ call crtm_conf_setup(self%conf,f_confOpts,f_confOper,midPointJulday,comm)
  if ( ufo_vars_getindex(self%conf%Absorbers, var_mixr) < 1 ) then
    write(err_msg,*) 'ufo_radiancecrtm_setup error: H2O must be included in CRTM Absorbers'
    call abor1_ftn(err_msg)

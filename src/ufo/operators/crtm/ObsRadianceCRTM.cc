@@ -18,7 +18,9 @@
 #include "oops/base/SamplingMethodSelector.h"
 #include "oops/base/Variables.h"
 #include "oops/interface/SampledLocations.h"
+#include "oops/util/dateFunctions.h"
 #include "oops/util/missingValues.h"
+#include "oops/util/TimeWindow.h"
 
 #include "ufo/fov/ReduceOverFieldOfView.h"
 #include "ufo/fov/SampleFieldOfView.h"
@@ -130,9 +132,19 @@ ObsRadianceCRTM::ObsRadianceCRTM(const ioda::ObsSpace & odb,
   const oops::ObsVariables & observed = odb.assimvariables();
   std::vector<int> channels_list = observed.channels();
 
+  // get a single central time from observation space
+  const util::DateTime midPoint = odb.timeWindow().midpoint();
+  std::string year, month, day, hour, minute, second;
+  midPoint.toYYYYMMDDhhmmss(year, month, day, hour,  minute,  second);
+  // Julian Day Number since noon Universal Time (UT) on January 1, 4713 BCE
+  uint64_t midPointJulday = util::datefunctions::dateToJulian(std::stoi(year),
+                                                              std::stoi(month),
+                                                              std::stoi(day));
+
   // call Fortran setup routine
   ufo_radiancecrtm_setup_f90(keyOperRadianceCRTM_, parameters_.toConfiguration(),
-                             channels_list.size(), channels_list[0], varin_, odb.comm());
+                             channels_list.size(), channels_list[0], midPointJulday,
+                             varin_, odb.comm());
 
   oops::Log::info() << "ObsRadianceCRTM channels: " << channels_list << std::endl;
   oops::Log::trace() << "ObsRadianceCRTM constructor done" << std::endl;

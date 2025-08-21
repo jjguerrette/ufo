@@ -1,0 +1,109 @@
+time window:
+  begin: 2018-04-14T21:00:00Z
+  end: 2018-04-15T03:00:00Z
+
+observations:
+- obs operator:
+    name: CRTM
+    Absorbers: [H2O,O3,CO2]
+    CO2AbsorberMethod: Background
+    SurfaceWindGeoVars: uv
+    linear obs operator:
+      Absorbers: [H2O,O3,CO2]
+      CO2AbsorberMethod: Background
+      Surfaces: [Water_Temperature, Land_Temperature, Ice_Temperature, Snow_Temperature]
+    obs options:
+      Sensor_ID: cris-fsr_npp
+      EndianType: little_endian
+      CoefficientPath: Data/
+  obs space:
+    name: cris-fsr_npp_co2option_background
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/cris-fsr_npp_obs_2018041500_m_unittest.nc4
+    simulated variables: [brightnessTemperature]
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/cris-fsr_npp_obs_2018041500_crtm_co2options_Background.nc4
+    channels: &all_channels
+              19, 24, 26, 27, 28, 31, 32, 33, 37, 39, 42, 44, 47, 49, 50,
+              51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68,
+              69, 70, 71, 72
+  geovals:
+    filename: Data/ufo/testinput_tier_1/cris-fsr_npp_geoval_2018041500_m_unittest.nc4
+  vector ref: JEDIco2background_hofx
+  tolerance: 1.e-7
+  linear obs operator test:
+    coef TL: 1.e-3
+    tolerance TL: 2.0e-3
+    tolerance AD: 1.0e-11
+- obs operator:
+    name: CRTM
+    Absorbers: [H2O,O3,CO2]
+    CO2AbsorberMethod: MaunaLoa
+    SurfaceWindGeoVars: uv
+    linear obs operator:
+      Absorbers: [H2O,O3,CO2]
+      CO2AbsorberMethod: MaunaLoa
+      Surfaces: [Water_Temperature, Land_Temperature, Ice_Temperature, Snow_Temperature]
+    obs options:
+      Sensor_ID: cris-fsr_npp
+      EndianType: little_endian
+      CoefficientPath: Data/
+  obs space:
+    name: cris-fsr_npp_co2option_maunaloa
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/cris-fsr_npp_obs_2018041500_m_unittest.nc4
+    simulated variables: [brightnessTemperature]
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/cris-fsr_npp_obs_2018041500_crtm_co2options_MaunaLoa.nc4
+    channels: *all_channels
+  geovals:
+    filename: Data/ufo/testinput_tier_1/cris-fsr_npp_geoval_2018041500_m_unittest.nc4
+  vector ref: JEDIco2maunaloa_hofx
+  tolerance: 1.e-7
+  linear obs operator test:
+    coef TL: 1.e-3
+    tolerance TL: 2.0e-3
+    tolerance AD: 1.0e-11
+- obs operator:
+    name: CRTM
+    Absorbers: [H2O,O3,CO2]
+    CO2AbsorberMethod: EternalConstant
+    CO2ppmvValue: 380
+    SurfaceWindGeoVars: uv
+    linear obs operator:
+      Absorbers: [H2O,O3,CO2]
+      CO2AbsorberMethod: EternalConstant
+      CO2ppmvValue: 380
+      Surfaces: [Water_Temperature, Land_Temperature, Ice_Temperature, Snow_Temperature]
+    obs options:
+      Sensor_ID: cris-fsr_npp
+      EndianType: little_endian
+      CoefficientPath: Data/
+  obs space:
+    name: cris-fsr_npp_co2option_eternalconstant
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/cris-fsr_npp_obs_2018041500_m_unittest.nc4
+    simulated variables: [brightnessTemperature]
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/cris-fsr_npp_obs_2018041500_crtm_co2options_EternalConstant.nc4
+    channels: *all_channels
+  geovals:
+    filename: Data/ufo/testinput_tier_1/cris-fsr_npp_geoval_2018041500_m_unittest.nc4
+  vector ref: JEDIco2eternalcontant_hofx
+  tolerance: 1.e-7
+  linear obs operator test:
+    coef TL: 1.e-3
+    tolerance TL: 2.0e-3
+    tolerance AD: 1.0e-11

@@ -11,7 +11,9 @@
 
 #include "ioda/ObsSpace.h"
 #include "ioda/ObsVector.h"
+#include "oops/util/dateFunctions.h"
 #include "oops/util/Logger.h"
+#include "oops/util/TimeWindow.h"
 #include "ufo/GeoVaLs.h"
 #include "ufo/operators/crtm/ObsAodCRTMTLAD.interface.h"
 
@@ -29,8 +31,18 @@ ObsAodCRTMTLAD::ObsAodCRTMTLAD(const ioda::ObsSpace & odb,
   const oops::ObsVariables & observed = odb.assimvariables();
   std::vector<int> channels_list = observed.channels();
 
+  // get a single central of middle time from observation space
+  const util::DateTime midPoint = odb.timeWindow().midpoint();
+  std::string year, month, day, hour, minute, second;
+  midPoint.toYYYYMMDDhhmmss(year, month, day, hour,  minute,  second);
+  // Julian Day Number since noon Universal Time (UT) on January 1, 4713 BCE
+  uint64_t midPointJulday = util::datefunctions::dateToJulian(std::stoi(year),
+                                                              std::stoi(month),
+                                                              std::stoi(day));
+
   ufo_aodcrtm_tlad_setup_f90(keyOperAodCRTM_, params.toConfiguration(),
-                             channels_list.size(), channels_list[0], varin_);
+                             channels_list.size(), channels_list[0], midPointJulday,
+                             varin_);
   oops::Log::info() << "ObsAodCRTMTLAD variables: " << varin_ << std::endl;
   oops::Log::info() << "ObsAodCRTMTLAD channels: " << channels_list << std::endl;
   oops::Log::trace() << "ObsAodCRTMTLAD constructor done" << std::endl;

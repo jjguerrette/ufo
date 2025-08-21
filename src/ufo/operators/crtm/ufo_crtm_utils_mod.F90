@@ -8,6 +8,7 @@
 MODULE ufo_crtm_utils_mod
 
 use fckit_configuration_module, only: fckit_configuration
+use fckit_exception_module, only: fckit_exception
 use fckit_mpi_module,   only: fckit_mpi_comm
 use iso_c_binding
 use kinds
@@ -16,8 +17,9 @@ use crtm_module
 
 use ufo_geovals_mod, only: ufo_geovals, ufo_geoval, ufo_geovals_get_var
 use ufo_vars_mod
+use ufo_ghg_utils_mod, only: co2_mauna_loa_rise
 use obsspace_mod
-use ufo_constants_mod, only: kg_to_g
+use ufo_constants_mod, only: kg_to_g, co2_rescale_to_ppmv, co2_ppmv_value, midpoint_julday
 use ufo_utils_mod, only: cmp_strings
 use CRTM_SpcCoeff, only: CRTM_SpcCoeff_Load, SC
 
@@ -90,7 +92,11 @@ type crtm_conf
  character(len=MAXVARLEN) :: aerosol_option
  character(len=255) :: salinity_option
  character(len=MAXVARLEN) :: sfc_wind_geovars
+ character(len=MAXVARLEN) :: co2_method_geovars
  real(kind_real) :: unit_coef = 1.0_kind_real
+ real(kind_real) :: co2_rescale_to_ppmv = co2_rescale_to_ppmv
+ real(kind_real) :: co2_ppmv_value = co2_ppmv_value
+ real(kind_real) :: midpoint_julday = midpoint_julday
  logical :: Cloud_Seeding = .false.
  logical :: cal_cloud_frac_in_fov = .false.
  logical :: cal_cloud_reff_in_fov  = .false.
@@ -227,21 +233,28 @@ END INTERFACE qsmith
  character(len=MAXVARLEN), parameter :: &
       ValidSurfaceWindGeoVars(2) = [character(len=MAXVARLEN) :: 'vector', 'uv']
 
+ character(len=MAXVARLEN), parameter :: &
+      ValidCO2AbsorberMethod(3) = [character(len=MAXVARLEN) :: 'Background', &
+                                                               'EternalConstant', &
+                                                               'MaunaLoa']
+
 
 
 contains
 
 ! ------------------------------------------------------------------------------
 
-subroutine crtm_conf_setup(conf, f_confOpts, f_confOper, comm)
+subroutine crtm_conf_setup(conf, f_confOpts, f_confOper, midPointJulday, comm)
 
 implicit none
+
 type(crtm_conf),                intent(inout) :: conf
 type(fckit_configuration),      intent(in)    :: f_confOpts
 type(fckit_configuration),      intent(in)    :: f_confOper
+integer(c_int64_t),             intent(in)    :: midPointJulday
 type(fckit_mpi_comm), optional, intent(in)    :: comm
 
-character(*), PARAMETER :: routine_name = 'crtm_conf_setup'
+character(*), parameter :: routine_name = 'crtm_conf_setup'
 character(len=255) :: IRwaterCoeff, VISwaterCoeff, &
                       IRVISlandCoeff, IRVISsnowCoeff, IRVISiceCoeff, &
                       MWwaterCoeff
@@ -250,7 +263,7 @@ character(len=max_string) :: message
 character(len=:), allocatable :: str
 character(len=:), allocatable :: str_array(:)
 
-CHARACTER(len=MAXVARLEN), ALLOCATABLE :: var_aerosols(:)
+character(len=maxvarlen), allocatable :: var_aerosols(:)
 logical :: message_flag = .true.
 character(max_string) :: cloud_fract_method
 character(max_string) :: cloud_reff_method
@@ -289,7 +302,7 @@ character(max_string) :: cloud_reff_method
  do jspec = 2, conf%n_Absorbers
    if ( any(conf%Absorbers(jspec-1) == conf%Absorbers(jspec:conf%n_Absorbers)) ) then
      write(message,*) trim(ROUTINE_NAME),' error: ',trim(conf%Absorbers(jspec)),' is duplicated in Absorbers'
-     call abor1_ftn(message)
+     call fckit_exception % throw(message)
    end if
  end do
 
@@ -298,7 +311,7 @@ character(max_string) :: cloud_reff_method
    ivar = ufo_vars_getindex(CRTM_Absorbers, conf%Absorbers(jspec))
    if (ivar < 1 .or. ivar > size(UFO_Absorbers)) then
      write(message,*) trim(ROUTINE_NAME),' error: ',trim(conf%Absorbers(jspec)),' not supported by UFO_Absorbers'
-     call abor1_ftn(message)
+     call fckit_exception % throw(message)
    end if
    conf%Absorbers(jspec) = UFO_Absorbers(ivar)
    conf%Absorber_Id(jspec) = CRTM_Absorber_Id(ivar)
@@ -331,7 +344,7 @@ character(max_string) :: cloud_reff_method
        write(message,*) trim(ROUTINE_NAME),' error: ' // &
                         ' "method for cloud fraction within fov"' // &
                         ' can only be "thompson", "Thompson", or "none".'
-       call abor1_ftn(message)
+       call fckit_exception % throw(message)
      end if
    end if
    if (f_confOper%has("method for hydrometeor effective radii within fov")) then
@@ -344,7 +357,7 @@ character(max_string) :: cloud_reff_method
        write(message,*) trim(ROUTINE_NAME),' error: ' // &
                         ' "method for hydrometeor effective radii within fov"' // &
                         ' can only be "thompson", "Thompson", or "none".'
-       call abor1_ftn(message)
+       call fckit_exception % throw(message)
      end if
    end if
    call f_confOper%get_or_die("Clouds",str_array)
@@ -363,7 +376,7 @@ character(max_string) :: cloud_reff_method
                           ' 0.0 <= Cloud_Fraction <= 1.0' // &
                           ' or remove Cloud_Fraction from conf' // &
                           ' and provide as a geoval'
-         call abor1_ftn(message)
+         call fckit_exception % throw(message)
        end if
      end if
    else
@@ -401,7 +414,7 @@ character(max_string) :: cloud_reff_method
    if ( any(conf%Clouds(jspec-1,1) == conf%Clouds(jspec:conf%n_Clouds,1)) ) then
      write(message,*) trim(ROUTINE_NAME),' error: ',trim(conf%Clouds(jspec,1)), &
                       ' is duplicated in Clouds'
-     call abor1_ftn(message)
+     call fckit_exception % throw(message)
    end if
  end do
 
@@ -410,7 +423,7 @@ character(max_string) :: cloud_reff_method
    ivar = ufo_vars_getindex(CRTM_Clouds, conf%Clouds(jspec,1))
    if (ivar < 1 .or. ivar > size(UFO_Clouds)) then
      write(message,*) trim(ROUTINE_NAME),' error: ',trim(conf%Clouds(jspec,1)),' not supported by UFO_Clouds'
-     call abor1_ftn(message)
+     call fckit_exception % throw(message)
    end if
 
    conf%Clouds(jspec,1:2) = UFO_Clouds(ivar,1:2)
@@ -452,7 +465,7 @@ character(max_string) :: cloud_reff_method
  do jspec = 2, conf%n_Surfaces
    if ( any(conf%Surfaces(jspec-1) == conf%Surfaces(jspec:conf%n_Surfaces)) ) then
      write(message,*) 'crtm_conf_setup error: ',trim(conf%Surfaces(jspec)),' is duplicated in Surfaces'
-     call abor1_ftn(message)
+     call fckit_exception % throw(message)
    end if
  end do
 
@@ -461,7 +474,7 @@ character(max_string) :: cloud_reff_method
    ivar = ufo_vars_getindex(CRTM_Surfaces, conf%Surfaces(jspec))
    if (ivar < 1 .or. ivar > size(UFO_Surfaces)) then
      write(message,*) 'crtm_conf_setup error: ',trim(conf%Surfaces(jspec)),' not supported by UFO_Surfaces'
-     call abor1_ftn(message)
+     call fckit_exception % throw(message)
    end if
    conf%Surfaces(jspec) = UFO_Surfaces(ivar)
 
@@ -475,8 +488,37 @@ character(max_string) :: cloud_reff_method
    conf%sfc_wind_geovars = 'vector'
  endif
  if (ufo_vars_getindex(ValidSurfaceWindGeoVars, conf%sfc_wind_geovars) < 1) then
-   write(message,*) 'crtm_conf_setup error: invalid SurfaceWindGeoVars ',trim(str)
-   call abor1_ftn(message)
+   write(message,*) 'crtm_conf_setup error: invalid SurfaceWindGeoVars ',trim(conf%sfc_wind_geovars)
+   call fckit_exception % throw(message)
+ end if
+
+ ! Select among one of different methods to handling CO2 Absorber
+ ! --------------------------------------------------------------
+ if (f_confOper%has('CO2AbsorberMethod')) then
+   call f_confOper%get_or_die('CO2AbsorberMethod', str)
+   conf%co2_method_geovars = str
+ else
+   conf%co2_method_geovars = 'Background'
+ end if
+ if (ufo_vars_getindex(ValidCO2AbsorberMethod, conf%co2_method_geovars) < 1) then
+   write(message,*) 'crtm_conf_setup error: invalid CO2 method ',trim(conf%co2_method_geovars)
+   call fckit_exception % throw(message)
+ end if
+
+ ! observation midpoint Julian day in proleptic Julian calendar (from 01Jan 4713BC)
+ ! --------------------------------------------------------------------------------
+ conf%midpoint_julday = midPointJulday
+
+ ! import a GeoVaLs scaling factor
+ ! -------------------------------
+ if (f_confOper%has('CO2gvConvertUnit')) then
+   call f_confOper%get_or_die('CO2gvConvertUnit', conf%co2_rescale_to_ppmv)
+ end if
+
+ ! import a ppmv value of CO2, only used if EternalConstant is selected
+ ! --------------------------------------------------------------------
+ if (f_confOper%has('CO2ppmvValue')) then
+   call f_confOper%get_or_die('CO2ppmvValue', conf%co2_ppmv_value)
  end if
 
  ! Sea_Surface_Salinity
@@ -594,7 +636,7 @@ character(max_string) :: cloud_reff_method
     case default
        write(message,*) trim(routine_name), ' error: unknown IR/vis land coeff classification ', &
                         trim(IRVISlandCoeff)
-       call abor1_ftn(message)
+       call fckit_exception % throw(message)
  end select
 
 
@@ -641,6 +683,7 @@ end subroutine crtm_conf_delete
 ! ------------------------------------------------------------------------------
 
 subroutine crtm_comm_stat_check(stat, PROGRAM_NAME, message, f_comm)
+
 use fckit_mpi_module,   only: fckit_mpi_comm
 
 implicit none
@@ -650,12 +693,13 @@ character(*),         intent(in) :: PROGRAM_NAME
 character(*),         intent(in) :: message
 type(fckit_mpi_comm), intent(in) :: f_comm
 
-character(max_string) :: rank_message
+character(len=max_string) :: rank_message, fmessage
 
  if ( stat /= SUCCESS ) THEN
     write(rank_message,*) trim(message)," on rank ",f_comm%rank()
     call Display_Message( PROGRAM_NAME, rank_message, FAILURE )
-    call abor1_ftn("Abort from "//PROGRAM_NAME)
+    fmessage = "Abort from "//PROGRAM_NAME
+    call fckit_exception % throw(fmessage)
  end if
 
 end subroutine crtm_comm_stat_check
@@ -675,6 +719,7 @@ use missing_values_mod
 use ufo_constants_mod, only: one
 
 implicit none
+
 integer,              intent(in)    :: n_Profiles, n_Channels
 type(c_ptr), value,   intent(in)    :: obss
 integer(c_int),       intent(in)    :: channels(:)
@@ -713,7 +758,7 @@ real(kind_real), allocatable :: alon(:),alat(:)
    obsGroupName = "ObsValue"
  else
    write(message,*) 'Group name for observed values is neither ObsValue nor DerivedObsValue'
-   call abor1_ftn(message)
+   call fckit_exception % throw(message)
  endif
 
  do jchannel = 1, n_Channels
@@ -761,7 +806,7 @@ enddo
        ', Land cover:', sfc(jprofile)%Land_Coverage, &
        ', Snow cover:', sfc(jprofile)%Snow_Coverage, &
        ', Ice cover:', sfc(jprofile)%Ice_Coverage
-     call abor1_ftn(message)
+     call fckit_exception % throw(message)
    endif
 
    ! check for missing values in water surface temperature when the mask
@@ -812,8 +857,10 @@ type(crtm_conf) :: conf
 integer :: k1, jspec, jlevel
 type(ufo_geoval), pointer :: geoval
 character(max_string) :: err_msg
+character(*), parameter :: routine_name = 'Load_Atm_Data'
 logical :: IsActiveSensor
 real(kind_real) :: geoval_unit_rescale
+real(kind_real) :: co2
 
 real(kind_real), allocatable :: geoval_qsat(:,:), airdens(:,:)
 real(kind_real), allocatable :: specific_humidity(:,:)
@@ -836,7 +883,7 @@ integer  :: id_cld(1)
   ! Check model levels is consistent in geovals & crtm
   if (geoval%nval /= n_Layers) then
     write(err_msg,*) 'Load_Atm_Data error: layers inconsistent!'
-    call abor1_ftn(err_msg)
+    call fckit_exception % throw(err_msg)
   endif
 
   do k1 = 1, n_Profiles
@@ -872,6 +919,27 @@ integer  :: id_cld(1)
       do k1 = 1, n_Profiles
         atm(k1)%Absorber(1:n_Layers, jspec) = ozone_default_value
       end do
+    else if (trim(conf%Absorbers(jspec))==var_co2 ) then
+      ! NOTE convert to ppmv
+      select case (trim(conf%co2_method_geovars))
+        case ("MaunaLoa")
+          call co2_mauna_loa_rise(conf%midpoint_julday,co2)
+          do k1 = 1, n_Profiles
+            atm(k1)%Absorber(1:n_Layers, jspec) = co2
+          end do
+        case ("EternalConstant")
+          do k1 = 1, n_Profiles
+            atm(k1)%Absorber(1:n_Layers, jspec) = conf%co2_ppmv_value
+          end do
+        case ("Background")
+          ! this should automatically be filled by Model2GeoVals
+          call ufo_geovals_get_var(geovals, conf%Absorbers(jspec), geoval)
+          do k1 = 1, n_Profiles
+            atm(k1)%Absorber(1:n_Layers, jspec) = geoval%vals(:, k1)
+          end do
+        case default
+          call fckit_exception % throw('CO2 provided to CRTM is incorrectly set')
+      end select
     else
       geoval_unit_rescale = one
       if (cmp_strings(conf%Absorbers(jspec), var_mixr)) then
@@ -1149,7 +1217,7 @@ real(kind_real), allocatable :: ObsTb(:,:)
     obsGroupName = "DerivedObsValue"
   else
     write(message,*) 'Group name for observed values is neither ObsValue nor DerivedObsValue'
-    call abor1_ftn(message)
+    call fckit_exception % throw(message)
   endif
 
   if (.not. Is_Active_Sensor) then
@@ -1213,7 +1281,7 @@ real(kind_real), allocatable :: ObsTb(:,:)
       sfc(k1)%Wind_Direction = uv_to_wdir(u%vals(1, k1), v%vals(1, k1))
     end do
   else
-    call abor1_ftn('Load_Sfc_Data error: missing surface wind geovals')
+    call fckit_exception % throw('Load_Sfc_Data error: missing surface wind geovals')
   end if
 
   !Water_Coverage
@@ -1279,7 +1347,7 @@ real(kind_real), allocatable :: ObsTb(:,:)
     else
       write(message,*) "Load_Sfc_Data error: cannot infer land type classification from " &
                        // "IRlandCoeff_File " // trim(conf%IRlandCoeff_File)
-      call abor1_ftn(message)
+      call fckit_exception % throw(message)
     end if
 
     do k1 = 1, n_Profiles
@@ -1571,7 +1639,7 @@ end function uv_to_wdir
     ELSE
        WRITE(err_msg,*) 'assign_aerosol_names: aerosol_option not implemented'&
        &//TRIM(aerosol_option)
-       call abor1_ftn(err_msg)
+       call fckit_exception % throw(err_msg)
      END IF
 
    END SUBROUTINE assign_aerosol_names
@@ -1861,7 +1929,7 @@ end function uv_to_wdir
                ' is not included in ', TRIM(aerosol_model), ' LUT'
                atm(m)%aerosol(i)%TYPE  = -1
             WRITE(err_msg,*) TRIM(conf%aerosol_option)//' not ready in UFO/AODCRTM'
-            call abor1_ftn(err_msg)
+            call fckit_exception % throw(err_msg)
 
             END SELECT
 
@@ -1957,7 +2025,7 @@ end function uv_to_wdir
                ' is not included in ', TRIM(aerosol_model), ' LUT'
                atm(m)%aerosol(i)%TYPE  = -1
             WRITE(err_msg,*) TRIM(conf%aerosol_option)//' not ready in UFO/AODCRTM'
-            call abor1_ftn(err_msg)
+            call fckit_exception % throw(err_msg)
 
             END SELECT
 
