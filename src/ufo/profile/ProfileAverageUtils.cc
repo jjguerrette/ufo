@@ -103,9 +103,6 @@ namespace ufo {
     for (size_t mlev = 0; mlev < nlocs_ext-1; ++mlev) {
       mid_levels[mlev] = 0.5*(model_vert_coord[locsExt[mlev]]+
                               model_vert_coord[locsExt[mlev+1]]);
-      oops::Log::debug() << "mid_levels[mlev]: " << mid_levels[mlev] << std::endl;
-      oops::Log::debug() << "model_vert_coord[mlev]: " <<
-                            model_vert_coord[locsExt[mlev]] << std::endl;
     }
     if (nlocs_ext > 1) {
       // set final (bottom-most) mid-level:
@@ -200,12 +197,8 @@ namespace ufo {
             increments[jlev] != missingValFloat) {
           sum_increments += increments[jlev];
           count_increments++;
-          oops::Log::debug() << "vector_linking_indices[jlev]: " << vector_linking_indices[jlev] <<
-                                "[" << jlev << "]" << std::endl;
         }
       }
-      oops::Log::debug() << "Increments[mlev]: " << sum_increments <<
-                            "[" << mlev << "]" << std::endl;
       if (count_increments > 0) {
         obs[locsExt[mlev]] = hofx[locsExt[mlev]] + sum_increments / count_increments;
       }
@@ -222,19 +215,21 @@ namespace ufo {
                           const std::vector<float> &model_vert_coord) {
     const size_t nlocs_obs = locsOriginal.size();
     const size_t nlocs_ext = locsExt.size();
+    const float missing = util::missingValue<float>();
 
     // Stop if no model vertical coordinate:
-    std::vector<size_t> model_vert_coord_ext(nlocs_ext);
+    std::vector<float> model_vert_coord_ext(nlocs_ext);
     for (size_t mlev = 0; mlev < nlocs_ext; ++mlev) {
       model_vert_coord_ext[mlev] = model_vert_coord[locsExt[mlev]];
-      oops::Log::debug() << "model_vert_coord[" << mlev << "]: " <<
-                            model_vert_coord[locsExt[mlev]] << std::endl;
     }
     if (std::all_of(model_vert_coord_ext.begin(), model_vert_coord_ext.end(),
-                    [](float i) { return (i == 0); })) {
-      throw eckit::UserError(": The model vertical coordinate extended space is all zeros. "
-                              "Did you remember to include the vertical coordinate variable "
-                              "when applying the ProfileAverage obsOperator?", Here());
+                    [missing](float i) {
+                      return (std::fabs(i) < 1e-6f
+                             || (std::isnan(missing) ? std::isnan(i) : i == missing));
+                    })) {
+      throw eckit::UserError(": The model vertical coordinate extended space is all zeros or "
+                              "missing. Did you remember to include the vertical coordinate "
+                              "variable when applying the ProfileAverage obsOperator?", Here());
     }
 
     // Stop if model vertical coordinate not in same direction as obs vertical coordinate:
@@ -276,12 +271,8 @@ namespace ufo {
     }
 
     if (obs_vert_coord_equal) {
-      oops::Log::debug() << " obs_vert_coord_equal " << obs_vert_coord[locsOriginal[1]] << " == "
-                         << obs_vert_coord[locsOriginal[0]] << std::endl;
       return mod_vert_coord_increasing;
     } else if (mod_vert_coord_equal) {
-      oops::Log::debug() << " mod_vert_coord_equal " << model_vert_coord[locsExt[1]] << " == "
-                         << model_vert_coord[locsExt[0]] << std::endl;
       return obs_vert_coord_increasing;
     }
     if (obs_vert_coord_increasing && !mod_vert_coord_increasing) {
