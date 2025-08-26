@@ -93,6 +93,9 @@ ObsErrorFactorPressureCheck::ObsErrorFactorPressureCheck(const eckit::Configurat
   const std::string errgrp = options_->testObserr.value();
   const std::string flaggrp = options_->testQCflag.value();
 
+  const bool obsErrorRamp = options_->obsErrorRamp.value();
+  const float max_levels_below_surface = options_->maxLevelsBelowSurface.value();
+
   invars_ += Variable("ObsType/"+inflatevars);
   invars_ += Variable(errgrp+"/"+inflatevars);
   invars_ += Variable(flaggrp+"/"+inflatevars);
@@ -121,7 +124,7 @@ ObsErrorFactorPressureCheck::ObsErrorFactorPressureCheck(const eckit::Configurat
 // -----------------------------------------------------------------------------
 
 ObsErrorFactorPressureCheck::~ObsErrorFactorPressureCheck() {
-  oops::Log::trace() << "ObsErrorFactorPressureCheck destructor"  << std::endl;
+  oops::Log::trace() << "ObsErrorFactorPressureCheck destructor" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -144,6 +147,8 @@ void ObsErrorFactorPressureCheck::compute(const ObsFilterData & data,
   const float infl_coeff = options_->infl_coeff.value();
   const std::string errgrp = options_->testObserr.value();
   const std::string flaggrp = options_->testQCflag.value();
+  const bool obsErrorRamp = options_->obsErrorRamp.value();
+  const float max_levels_below_surface = options_->maxLevelsBelowSurface.value();
   const std::string adjusterr_name = options_->adjusterr_name.value();
   const ufo::GeoVaLs * gvals = data.getGeoVaLs();
 
@@ -209,7 +214,7 @@ void ObsErrorFactorPressureCheck::compute(const ObsFilterData & data,
   const float flattening = Constants::flattening;
   const float grav_ratio = Constants::grav_ratio;
   float fact, slat, sin2, termg, termr, termrg;
-  float dpres, sfcchk, logobspres, logsfcpres, rlow, rhgh, drpx;
+  float dpres, sfcchk, logobspres, logsfcpres, rlow, ramp, rhgh, drpx;
   float obserror, new_error, error_factor;
   std::vector<float> zges_mh(nlevs);
   std::vector<float> logprsl(nlevs), airtemp_prof(nlevs);
@@ -390,15 +395,26 @@ void ObsErrorFactorPressureCheck::compute(const ObsFilterData & data,
       }  // reported pressure conditional statement bracket
 
       rlow = std::max(sfcchk-dpres, 0.0f);
+      if (obsErrorRamp) {
+          ramp = std::min(std::max((rlow - 1.0) / (max_levels_below_surface - 1.0), 0.0), 1.0);
+      } else {
+          ramp = rlow;
+      }
       rhgh = std::max(dpres-0.001f- static_cast<float>(nlevs)-1.0f, 0.0f);
 
       obserr[iv][iloc] = 1.0;
       if (inflatevars.compare("specificHumidity") == 0) {
           errorx = (adjustErr[iloc]+drpx)*sat_specific_humidity;
           errorx = std::max(0.0001, errorx);
-          obserr[iv][iloc] = (errorx + (1.e6*rhgh)+(infl_coeff*rlow)) /(currentObserr[iloc]);
+          if (obsErrorRamp) {
+              obserr[iv][iloc] = (errorx + (1.e6*rhgh)+(0.001*infl_coeff*ramp))
+                                /(currentObserr[iloc]);
+          } else {
+              obserr[iv][iloc] = (errorx + (1.e6*rhgh)+(infl_coeff*ramp))
+                                /(currentObserr[iloc]);
+          }
       } else {
-          obserr[iv][iloc] = (currentObserr[iloc]+drpx+1.e6*rhgh+infl_coeff*rlow)
+          obserr[iv][iloc] = (currentObserr[iloc]+drpx+1.e6*rhgh+infl_coeff*ramp)
                             /currentObserr[iloc];
       }
       if (dpres > nlevs) obserr[iv][iloc]=1.e20f;
