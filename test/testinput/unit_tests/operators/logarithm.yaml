@@ -251,10 +251,10 @@ observations:
       engine:
         type: H5File
         obsfile: Data/ufo/testinput_tier_1/logarithm_obs.nc4
-    obsdataout:
-      engine:
-        type: H5File
-        obsfile: Data/logarithm_out.nc4
+#    obsdataout:
+#      engine:
+#        type: H5File
+#        obsfile: Data/logarithm_out.nc4
     simulated variables: [airTemperature, pressure, relativeHumidity, surfacePressure]
     observed variables: [airTemperature, pressure, relativeHumidity, surfacePressure]
   obs operator:
@@ -286,10 +286,10 @@ observations:
       engine:
         type: H5File
         obsfile: Data/ufo/testinput_tier_1/logarithm_obs.nc4
-    obsdataout:
-      engine:
-        type: H5File
-        obsfile: Data/logarithm_out.nc4
+#    obsdataout:
+#      engine:
+#        type: H5File
+#        obsfile: Data/logarithm_out.nc4
     simulated variables: [airTemperature, pressure, relativeHumidity, surfacePressure]
     observed variables: [airTemperature, pressure, relativeHumidity, surfacePressure]
   obs operator:
