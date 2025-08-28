@@ -1,0 +1,37 @@
+time window:
+  begin: 2020-10-26T00:00:00Z
+  end: 2020-10-26T23:00:00Z
+
+observations:
+- obs operator:
+    name: VertInterp
+    observation alias file: ../resources/namemap/test_name_map.yaml
+# Explicit specification of the model and observation vertical coordinates
+    vertical coordinate: height_wrt_surface
+    observation vertical coordinate: height
+  linear obs operator test:
+    coef TL: 0.1
+    tolerance TL: 1.0e-13
+    tolerance AD: 1.0e-11
+  obs space:
+    name: Ionosonde
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/ionosonde_obs_20201026_opr_testData.nc4
+#   obsdataout:
+#     engine:
+#       type: H5File
+#       obsfile: Data/ionosonde_obs_2020102600_opr_out1.nc4
+    simulated variables: [electronDensity]
+  geovals:
+    filename: Data/ufo/testinput_tier_1/ionosonde_geoval_20201026.nc4
+# Vector ref is ref-hofx < tolerance*100
+# For large electron density values, absolute tolerance has to be large enough
+# to avoid rounding errors due to float (test referene in netcdf) number 
+# compared with double precision (hofx from UFO)
+# vector ref: TestReference 
+# tolerance: 1.0e-03
+# Normalized ref is ref-hofx/hofx < tolerance*100
+  norm ref: TestReference 
+  tolerance: 1.0e-07

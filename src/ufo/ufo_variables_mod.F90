@@ -226,6 +226,10 @@ character(len=maxvarlen), dimension(n_aerosols_gocart_geos), public, parameter :
      &var_ss001, var_ss002, var_ss003, var_ss004, var_ss005,&
      &var_no3an1, var_no3an2, var_no3an3]
 
+!TODo: need naming convention
+! variables for space weather ionosphere/thermosphere
+character(len=MAXVARLEN), public, parameter :: var_dene    = "electron_density"
+
 ! ------------------------------------------------------------------------------
 contains
 

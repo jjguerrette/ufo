@@ -35,6 +35,8 @@ variable maps:
     alias: mole_fraction_of_ozone_in_air
   - name: cloudAmount
     alias: cloud_layer
+  - name: electronDensity
+    alias: electron_density
   - name: height
     alias: height_above_mean_sea_level
   - name: height_levels
