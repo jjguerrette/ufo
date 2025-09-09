@@ -405,6 +405,7 @@ void ObsErrorFactorPressureCheck::compute(const ObsFilterData & data,
       obserr[iv][iloc] = 1.0;
       if (inflatevars.compare("specificHumidity") == 0) {
           errorx = (adjustErr[iloc]+drpx)*sat_specific_humidity;
+          if ( (itype[iloc] == 136 ) || (itype[iloc] == 137 )) errorx=adjustErr[iloc];
           errorx = std::max(0.0001, errorx);
           if (obsErrorRamp) {
               obserr[iv][iloc] = (errorx + (1.e6*rhgh)+(0.001*infl_coeff*ramp))
