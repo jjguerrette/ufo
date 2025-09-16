@@ -3,8 +3,8 @@
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 
-!> Fortran sfcpcorrected module for functions on the interface between C++ and Fortran
-!  to handle observation operators
+!> Fortran module for functions on the interface between C++ and Fortran
+!  to perform vertical interpolation
 
 module vert_interp_mod_c
 
