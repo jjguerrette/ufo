@@ -48,7 +48,6 @@ class DensityReductionSimple : public DensityReductionBase {
                              std::vector<float> &,
                              std::vector<util::DateTime> &,
                              std::vector<util::Range<size_t>> &) const override;
-  void fillReducedGeoVaLs(GeoVaLs &) const override;
 
  private:
   const Parameters_ params_;

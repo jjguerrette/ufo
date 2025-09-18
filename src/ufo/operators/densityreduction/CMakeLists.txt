@@ -6,6 +6,8 @@
 set ( densityreduction_files
       DensityReductionBase.cc
       DensityReductionBase.h
+      DensityReductionLatLonGrid.cc
+      DensityReductionLatLonGrid.h
       DensityReductionSimple.cc
       DensityReductionSimple.h
       ObsDensityReduction.cc

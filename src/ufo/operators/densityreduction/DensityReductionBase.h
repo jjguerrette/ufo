@@ -64,10 +64,16 @@ class DensityReductionBase {
                                      std::vector<util::DateTime> &,
                                      std::vector<util::Range<size_t>> &) const = 0;
 
-  virtual void fillReducedGeoVaLs(GeoVaLs &) const = 0;
+  virtual void fillReducedGeoVaLs(GeoVaLs &) const;
 
  protected:
   const ioda::ObsSpace & odb_;
+
+  mutable int numSamples_;
+
+  void updateNumSamples(const int n) const {
+    numSamples_ = n;
+  }
 };
 
 /// DensityReduction factory.

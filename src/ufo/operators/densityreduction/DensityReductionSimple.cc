@@ -35,18 +35,18 @@ void DensityReductionSimple::fillModifiedLocations
   // Fill reduced lat/lon/time.
   const int reductionFactor = params_.reductionFactor;
   // Count the number of sampled locations.
-  nsamples_ = 0;
+  int numSamples = 0;
   for (size_t jloc = 0; jloc < nlocs; ++jloc) {
     if (jloc % reductionFactor == 0) {
-      nsamples_++;
+      numSamples++;
     }
   }
 
   // Fill latsModified, lonsModified and timesModified after resizing them
   // to the correct number of locations.
-  latsModified.resize(nsamples_);
-  lonsModified.resize(nsamples_);
-  timesModified.resize(nsamples_);
+  latsModified.resize(numSamples);
+  lonsModified.resize(numSamples);
+  timesModified.resize(numSamples);
   size_t jlocModified = 0;
   for (size_t jloc = 0; jloc < nlocs; ++jloc) {
     if (jloc % reductionFactor == 0) {
@@ -64,36 +64,7 @@ void DensityReductionSimple::fillModifiedLocations
     pathsGroupedByLocation[jloc].begin = jlocModified;
     pathsGroupedByLocation[jloc].end = jlocModified + 1;
   }
-}
-
-void DensityReductionSimple::fillReducedGeoVaLs(GeoVaLs & geovals) const {
-  const oops::Variables & gvars = geovals.getVars();
-
-  // Lengths of each GeoVaL.
-  std::vector<size_t> nLevelsGeoVaLs(gvars.size());
-  for (size_t i = 0; i < gvars.size(); ++i) {
-    nLevelsGeoVaLs[i] = geovals.nlevs(gvars[i], GeoVaLFormat::SAMPLED);
-  }
-
-  // Retrieve pathsGroupedByLocation.
-  std::vector<util::Range<size_t>> pathsGroupedByLocation;
-  geovals.getProfileIndicesGroupedByLocation(gvars[0], pathsGroupedByLocation);
-  const size_t nlocs = pathsGroupedByLocation.size();
-
-  // Fill in reduced vectors of GeoVaLs.
-  std::vector<double> sampledValues(nsamples_);
-  std::vector<double> reducedValues(nlocs);
-  const int reductionFactor = params_.reductionFactor;
-  for (size_t i = 0; i < gvars.size(); ++i) {
-    const auto var = gvars[i];
-    for (size_t jlev = 0; jlev < nLevelsGeoVaLs[i]; ++jlev) {
-      geovals.getAtLevel(sampledValues, var, jlev, GeoVaLFormat::SAMPLED);
-      for (size_t jloc = 0; jloc < nlocs; ++jloc) {
-        reducedValues[jloc] = sampledValues[pathsGroupedByLocation[jloc].begin];
-      }
-      geovals.putAtLevel(reducedValues, var, jlev, GeoVaLFormat::REDUCED);
-    }
-  }
+  updateNumSamples(numSamples);
 }
 
 }  // namespace ufo
