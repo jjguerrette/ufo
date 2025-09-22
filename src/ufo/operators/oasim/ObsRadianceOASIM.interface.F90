@@ -51,6 +51,8 @@ f_conf = fckit_configuration(c_conf)
 
 call self%setup(f_conf, c_channels)
 
+call f_conf%final()
+
 end subroutine ufo_radianceoasim_setup_c
 
 ! ------------------------------------------------------------------------------

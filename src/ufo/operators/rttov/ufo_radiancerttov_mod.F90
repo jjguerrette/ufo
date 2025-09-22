@@ -140,6 +140,7 @@ contains
 
     message = 'Finished setting up rttov'
     call fckit_log%info(message)
+    call f_confOpts%final()
 
   end subroutine ufo_radiancerttov_setup
 
@@ -617,6 +618,7 @@ contains
       message = 'Done. Returning'
       call fckit_log%debug(message)
     end if
+    call f_comm%final()
 
   end subroutine ufo_radiancerttov_simobs
 

@@ -57,6 +57,8 @@ self%geovars = oops_variables(c_geovars)
 
 call self%setup(f_conf)
 
+call f_conf%final()
+
 end subroutine ufo_atmvertinterplay_setup_c
 
 ! ------------------------------------------------------------------------------

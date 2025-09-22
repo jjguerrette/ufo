@@ -291,6 +291,8 @@ ic = str
 locs = ufo_sampled_locations(c_locs)
 call ufo_geovals_analytic_init(self,locs,ic)
 
+call f_conf%final()
+
 end subroutine ufo_geovals_analytic_init_c
 
 ! ------------------------------------------------------------------------------
@@ -1022,6 +1024,8 @@ vars = oops_variables(c_vars)
 ! read geovals
 call ufo_geovals_read_netcdf(self, filename, loc_multiplier, levels_are_top_down, c_obspace, vars)
 
+call f_conf%final()
+
 end subroutine ufo_geovals_read_file_c
 
 ! ------------------------------------------------------------------------------
@@ -1060,6 +1064,8 @@ endif
 
 call ufo_geovals_registry%get(c_key_self, self)
 call ufo_geovals_write_netcdf(self, fout)
+
+call f_conf%final()
 
 end subroutine ufo_geovals_write_file_c
 

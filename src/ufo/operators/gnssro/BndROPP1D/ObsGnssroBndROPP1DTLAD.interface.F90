@@ -43,6 +43,8 @@ f_conf = fckit_configuration(c_conf)
 
 call self%setup(f_conf)
 
+call f_conf%final()
+
 end subroutine ufo_gnssro_bndropp1d_tlad_setup_c
   
 ! ------------------------------------------------------------------------------

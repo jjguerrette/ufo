@@ -50,6 +50,8 @@ self%obsvars = obs_variables(c_obsvars)
 
 call self%setup(f_conf)
 
+call f_conf%final()
+
 end subroutine ufo_seaicethickness_setup_c
 
 ! ------------------------------------------------------------------------------

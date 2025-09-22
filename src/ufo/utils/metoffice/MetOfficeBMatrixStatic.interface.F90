@@ -75,6 +75,8 @@ call self % setup(background_fields, trim(filepath), qtotal_flag)
 nbands = self % nbands
 nelements = size(self % store, 1)
 
+call f_conf%final()
+
 end subroutine ufo_metoffice_bmatrixstatic_setup_c
 
 !-------------------------------------------------------------------------------

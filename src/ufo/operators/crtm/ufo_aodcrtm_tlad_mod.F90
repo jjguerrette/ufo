@@ -73,6 +73,8 @@ CHARACTER(len=MAXVARLEN), ALLOCATABLE :: var_aerosols(:)
  allocate(self%channels(size(channels)))
  self%channels(:) = channels(:)
 
+ call f_confOpts%final()
+
 end subroutine ufo_aodcrtm_tlad_setup
 
 ! ------------------------------------------------------------------------------

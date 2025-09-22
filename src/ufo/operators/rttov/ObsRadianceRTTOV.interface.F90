@@ -61,6 +61,8 @@ call self%setup(f_conf, c_channels, c_qc_passed)
 oops_vars = oops_variables(c_varlist)
 call oops_vars%push_back( self%varin )
 
+call f_conf%final()
+
 end subroutine ufo_radiancerttov_setup_c
 
 ! ------------------------------------------------------------------------------

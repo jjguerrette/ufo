@@ -116,6 +116,8 @@ character(max_string) :: err_msg
  ! save channels
  allocate(self%channels(size(channels)))
  self%channels(:) = channels(:)
+ call f_confOpts%final()
+ call f_confLinOper%final()
 
 end subroutine ufo_radiancecrtm_tlad_setup
 
@@ -630,6 +632,7 @@ integer, allocatable :: zeroCloudInCRTM0(:)
  ! Set flag that the tracectory was set
  ! ------------------------------------
  self%ltraj = .true.
+ call f_comm%final()
 
 end subroutine ufo_radiancecrtm_tlad_settraj
 

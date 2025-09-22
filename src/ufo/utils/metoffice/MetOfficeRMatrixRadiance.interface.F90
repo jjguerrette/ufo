@@ -61,6 +61,8 @@ nchans = self % nchans
 wmoid = self % wmo_id
 rtype = self % rtype
 
+call f_conf%final()
+
 end subroutine ufo_metoffice_rmatrixradiance_setup_c
 
 !-------------------------------------------------------------------------------

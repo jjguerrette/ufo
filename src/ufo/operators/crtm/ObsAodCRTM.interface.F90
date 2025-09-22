@@ -59,6 +59,8 @@ call self%setup(f_conf, c_channels, midPointJulday)
 oops_vars = oops_variables(c_varlist)
 call oops_vars%push_back( self%varin )
 
+call f_conf%final()
+
 end subroutine ufo_aodcrtm_setup_c
 
 ! ------------------------------------------------------------------------------

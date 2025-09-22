@@ -42,6 +42,8 @@ call ufo_gnssro_BndROPP2D_tlad_registry%setup(c_key_self, self)
 f_conf = fckit_configuration(c_conf)
 
 call self%setup(f_conf)
+
+call f_conf%final()
    
 end subroutine ufo_gnssro_bndropp2d_tlad_setup_c
   

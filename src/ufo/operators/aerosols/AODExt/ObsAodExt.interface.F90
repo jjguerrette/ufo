@@ -55,6 +55,8 @@ self%geovars = oops_variables(c_geovars)
 
 call self%setup(f_conf, c_channels)
 
+call f_conf%final()
+
 end subroutine ufo_aodext_setup_c
 
 ! ------------------------------------------------------------------------------

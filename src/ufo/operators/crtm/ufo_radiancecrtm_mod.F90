@@ -219,6 +219,8 @@ character(len=maxvarlen), dimension(10), parameter :: more_hydrometeors = &
  allocate(self%channels(size(channels)))
  self%channels(:) = channels(:)
 
+ call f_confOpts%final()
+
 end subroutine ufo_radiancecrtm_setup
 
 ! ------------------------------------------------------------------------------
@@ -769,6 +771,7 @@ integer, allocatable :: zeroCloudInCRTM0(:)
  err_stat = CRTM_Destroy( chinfo )
  message = 'Error destroying CRTM'
  call crtm_comm_stat_check(err_stat, PROGRAM_NAME, message, f_comm)
+ call f_comm%final()
 
 end subroutine ufo_radiancecrtm_simobs
 

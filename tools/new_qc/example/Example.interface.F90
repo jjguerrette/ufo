@@ -52,6 +52,8 @@ if (allocated(self%geovars)) then
   call oops_vars%push_back(self%geovars)
 end if
 
+call f_conf%final()
+
 end subroutine ufo_example_create_c
 
 ! ------------------------------------------------------------------------------

@@ -65,6 +65,8 @@ self%geovars = oops_variables(c_geovars)
 
 call self%setup(c_channels, surface_type_check, surface_type_sea)
 
+call f_conf%final()
+
 end subroutine ufo_scatwind_neutralmetoffice_tlad_setup_c
   
 ! ------------------------------------------------------------------------------

@@ -55,6 +55,8 @@ self%obsvarindices(:) = c_obsvarindices(:) + 1  ! Convert from C to Fortran inde
 self%geovars = oops_variables(c_geovars)
 call self%setup(f_conf)
 
+call f_conf%final()
+
 end subroutine ufo_vertinterp_tlad_setup_c
 
 ! ------------------------------------------------------------------------------

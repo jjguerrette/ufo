@@ -50,6 +50,8 @@ self%variable = self%obsvar%variable(1)
 
 call ufo_roobserror_create(self, c_obspace, f_conf)
 
+call f_conf%final()
+
 end subroutine ufo_roobserror_create_c
 
 ! ------------------------------------------------------------------------------

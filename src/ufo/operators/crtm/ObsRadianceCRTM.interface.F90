@@ -63,6 +63,9 @@ call self%setup(f_conf, c_channels, midPointJulday, f_comm)
 oops_vars = oops_variables(c_varlist)
 call oops_vars%push_back( self%varin )
 
+call f_conf%final()
+call f_comm%final()
+
 end subroutine ufo_radiancecrtm_setup_c
 
 ! ------------------------------------------------------------------------------
