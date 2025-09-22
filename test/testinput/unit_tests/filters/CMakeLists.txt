@@ -1200,6 +1200,16 @@ if( ${rttov_FOUND} )
                   LIBS    ufo
                   LABELS  rttov filters
                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
+
+    ufo_add_test( NAME    test_ufo_mtgirs_reconrad_obsop_check
+                  TIER    1
+                  ECBUILD
+                  COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
+                  ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/mtgirs_reconrad_obsop_check.yaml"
+                  MPI     1
+                  LIBS    ufo
+                  LABELS  rttov filters
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
 #
     ufo_add_test( NAME    test_ufo_ssmis_rttov_ops_qc_rttovonedvarcheck
                   TIER    1

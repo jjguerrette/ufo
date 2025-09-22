@@ -649,9 +649,11 @@ if( ${rttov_FOUND} )
     rttov7pred54L/rtcoef_noaa_19_amsua.dat
     rttov7pred54L/rtcoef_jpss_0_atms.dat
     rttov7pred54L/rtcoef_noaa_20_atms.dat
+    rttov7pred54L/rtcoef_mtg_2_irs.H5
     )
   list( APPEND rttov_emis_atlas_data
     CAMEL_coef_climatology_01Month_V002.H5
+    CAMEL_coef_climatology_06Month_V002.H5
     pchsr_v10.2.H5
     pchsr_v10.3.H5
     pchsr_v11.3.H5

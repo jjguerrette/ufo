@@ -51,6 +51,9 @@ real(kind_real), parameter, public :: pi      = acos(-one)
 real(kind_real), parameter, public :: deg2rad =  pi/180.0_kind_real
 real(kind_real), parameter, public :: rad2deg = one/deg2rad
 real(kind_real), parameter, public :: pref = 1.0E5
+real(kind_real), parameter, public :: hplanck = 6.62607015e-34 ! Planck's constant in J.s
+real(kind_real), parameter, public :: cspeed = 2.99792458e8 ! Speed of light in m/s
+real(kind_real), parameter, public :: kboltz = 1.380649e-23 ! Boltzmann's constant in J/K
 ! constants relating to WGS-84 ellipsoid and gravity above ellipsoid
 real(kind_real), parameter, public :: ecc = 0.081819            ! eccentricity
 real(kind_real), parameter, public :: k_somig = 1.931853E-3     ! Somigliana's constant

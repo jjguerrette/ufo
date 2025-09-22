@@ -133,6 +133,13 @@ class RTTOVObsOptionsParameters : public oops::Parameters {
   oops::OptionalParameter<std::string> SurfaceEmissivityAtlasPath{"SurfaceEmissivityAtlasPath",
                                                                    this};
 
+  /// if true, initialise and read C matrix for reconstructed radiances
+  oops::OptionalParameter<bool> ReconstructedRadianceCorrection
+                                 {"ReconstructedRadianceCorrection", this};
+
+  /// C matrix path
+  oops::OptionalParameter<std::string> CMatrixPath{"CMatrixPath", this};
+
   /// Specify the profiles where further diagnostics are needed
   /// for debugging e.g. [1, 2, 3]
   /// Note this is numbering from 1 as it is Fortran that will provide output.

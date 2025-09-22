@@ -141,6 +141,7 @@ module ufo_radiancerttov_utils_mod
     type(mw_scatt_io)                :: mw_scatt
     real(kind_real), allocatable     :: ciw(:,:)                ! pointer to either ice from RTTOV-SCATT or diagnosed ice from Qsplit
     real(kind_real), allocatable     :: tc_ozone(:)             ! total column ozone
+          
     logical, allocatable             :: q_profile_reset(:,:)    ! flag to say if the humidity has been reset to a minimum value
     logical, allocatable             :: clw_profile_reset(:,:)  ! flag to say if cloud liquid water has been reset to a minimum value
     logical, allocatable             :: ciw_profile_reset(:,:)  ! flag to say if cloud ice has been reset to a minimum value
@@ -165,6 +166,8 @@ module ufo_radiancerttov_utils_mod
     procedure :: print_rtprof            => ufo_rttov_print_rtprof
     procedure :: scale_ozone             => ufo_rttov_scale_ozone
     procedure :: calculate_tc_ozone      => ufo_rttov_calculate_tc_ozone
+    procedure :: rad_to_bt               => ufo_rttov_Rad_to_BT
+    procedure :: dBT_dRad                => ufo_rttov_dBT_dRad
 
   end type ufo_rttov_io
 
@@ -209,6 +212,7 @@ module ufo_radiancerttov_utils_mod
     logical                               :: RTTOV_profile_checkinput
     logical                               :: Do_MW_Scatt
     logical                               :: UseQCFlagsToSkipHofX
+    logical                               :: RTTOV_switchrad
 
     logical                               :: prof_by_prof
     logical                               :: RTTOV_scale_ref_ozone
@@ -228,6 +232,9 @@ module ufo_radiancerttov_utils_mod
     character(len=255)                    :: emissivity_atlas_name
     type(rttov_emis_atlas_data)           :: rttov_emissivity_atlas ! emissivity atlases
     integer                               :: month
+
+    logical                               :: read_Cmatrix
+    character(len=255)                    :: Cmatrix_path
 
   contains
 
@@ -437,6 +444,22 @@ contains
        conf % emissivity_atlas_path = trim(str)
        call f_confOpts % get_or_die("SurfaceEmissivityAtlasName", str)
        conf % emissivity_atlas_name = trim(str)
+    end if
+
+    ! Set the jacobians to be in brightness temperature or radiance units    
+    if (f_confOpts % has("RTTOV_switchrad")) then
+       call f_confOpts % get_or_die("RTTOV_switchrad", conf % RTTOV_switchrad)
+    end if
+
+    ! Set up the options to read the C matrix for reconstructed radiances
+    conf % read_Cmatrix = .false.
+    if (f_confOpts % has("ReconstructedRadianceCorrection")) then
+       call f_confOpts % get_or_die("ReconstructedRadianceCorrection", conf % read_Cmatrix)
+    end if
+
+    if (conf % read_Cmatrix) then
+       call f_confOpts % get_or_die("CMatrixPath", str)
+       conf % Cmatrix_path = trim(str)
     end if
 
     ! Set interface options - SatRad_compatibility dependent variables
@@ -3021,5 +3044,82 @@ contains
     end if
 
   end subroutine get_from_obsspace
+
+! Conversion from radiance to BT
+subroutine ufo_rttov_Rad_to_BT(self, cwn, rad, bt)
+
+  use ufo_constants_mod, only: hplanck, cspeed, kboltz
+
+  implicit none
+
+  class(ufo_rttov_io),          intent(in)  :: self
+  real(kind_real),              intent(in)  :: cwn(:)    ! wavenumber in m-1
+  real(kind_real),              intent(in)  :: rad(:)    ! radiance in W / (m2 * sr * m-1)
+  real(kind_real),              intent(inout) :: bt(:)
+
+  character(len=*), parameter               :: RoutineName = "ufo_rttov_Rad_to_BT"
+  character(len=max_string)                 :: message
+  integer                                   :: nchan
+
+
+  if (size(cwn) /= size(rad)) then
+    write(message,*) RoutineName, 'Inconsistent number of channels: ', &
+      size(cwn), ' and ', size(rad)
+    call abor1_ftn(message)
+  else
+    nchan = size(cwn)
+  end if
+
+  if (any(rad(1:nchan) <= 0.0)) then
+   write(message,*) RoutineName, 'radiance elements should be greater than zero'
+   call abor1_ftn(message)
+  end if
+
+  bt(1:nchan) = rad(1:nchan) * cwn * cwn ! rad with lambda in units of m
+  ! conversion to brightness temperature based on Planck function with lambda in units of m
+  bt(1:nchan) = (hplanck*cspeed*cwn/kboltz) / log((2.0*hplanck*cspeed*cspeed*cwn**5) &
+                 / bt(1:nchan) + 1.0) ! brightness temperatures in K
+  
+end subroutine ufo_rttov_Rad_to_BT
+
+! Derivative of BT wrt radiance from Planck function
+subroutine ufo_rttov_dBT_dRad(self, cwn, rad, dBT_dRad)
+
+  use ufo_constants_mod, only: hplanck, cspeed, kboltz
+
+  implicit none
+
+  class(ufo_rttov_io), intent(in)           :: self
+  real(kind_real),              intent(in)  :: cwn(:)    ! wavenumber in m-1
+  real(kind_real),              intent(in)  :: rad(:)    ! radiance in W / (m2 * sr * m-1)
+  real(kind_real), allocatable, intent(out) :: dBT_dRad(:)
+
+  character(len=*), parameter               :: RoutineName = "ufo_rttov_dBT_dRad"
+  character(len=max_string)                 :: message
+  real(kind_real)                           :: const1
+  real(kind_real)                           :: const2
+  integer                                   :: nchan
+
+
+  if (size(cwn) /= size(rad)) then
+    write(message,*) RoutineName, 'Inconsistent number of channels: ', &
+      size(cwn), ' and ', size(rad)
+    call abor1_ftn(message)
+  else
+    nchan = size(cwn)
+  end if
+
+  if (any(rad(1:nchan) <= 0.0)) then
+   write(message,*) RoutineName, 'radiance elements should be greater than zero'
+   call abor1_ftn(message)
+  end if
+
+  const1 = (2.0*(hplanck**2)*(cspeed**3)/kboltz)
+  const2 = 2.0*hplanck*cspeed**2
+  allocate(dBT_dRad(nchan)) 
+  dBT_dRad(1:nchan) = const1*cwn(1:nchan)**4/rad(1:nchan)**2 * 1.0/(log(const2*cwn(1:nchan)**3/rad(1:nchan) + 1)**2 &
+                      * (const2*cwn(1:nchan)**3/rad(1:nchan) + 1.0))
+
+end subroutine ufo_rttov_dBT_dRad
 
 end module ufo_radiancerttov_utils_mod

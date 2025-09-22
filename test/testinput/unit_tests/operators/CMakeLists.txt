@@ -2029,6 +2029,36 @@ if( ${rttov_FOUND} )
               LABELS  rttov operators
               WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
 #
+    ufo_add_test( NAME    test_ufo_mtgirs_reconrad_linop_check
+              TIER    1
+              ECBUILD
+              COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsOperator.x
+              ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/mtgirs_reconrad_linop_check.yaml"
+              MPI     1
+              LIBS    ufo
+              LABELS  rttov operators
+              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
+#
+    ufo_add_test( NAME    test_ufo_mtgirs_reconrad_linop_tlad_check
+              TIER    1
+              ECBUILD
+              COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsOperatorTLAD.x
+              ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/mtgirs_reconrad_linop_check.yaml"
+              MPI     1
+              LIBS    ufo
+              LABELS  rttov operators
+              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
+#
+    ufo_add_test( NAME    test_ufo_mtgirs_reconrad_linop_tlad_2pe_check
+              TIER    1
+              ECBUILD
+              COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsOperatorTLAD.x
+              ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/mtgirs_reconrad_linop_check.yaml"
+              MPI     2
+              LIBS    ufo
+              LABELS  rttov operators
+              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
+#
     ufo_add_test( NAME    test_ufo_opr_ssmis_rttov_ops
               TIER    1
               ECBUILD

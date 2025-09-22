@@ -18,6 +18,7 @@ module ufo_radiancerttov_mod
   use ufo_geovals_mod, only: ufo_geovals, ufo_geoval, ufo_geovals_get_var
   use ufo_vars_mod
   use ufo_radiancerttov_utils_mod
+  use ufo_reconradop_mod
 
   use rttov_types
   use rttov_const, only : errorstatus_fatal, errorstatus_success
@@ -35,6 +36,7 @@ module ufo_radiancerttov_mod
     integer, allocatable                          :: coefindex(:)  ! list of the coefindex for the channels to simulate.
     type(rttov_conf)                              :: conf
     type(ufo_rttov_io)                            :: RTProf
+    type(ufo_reconradop)                          :: reconradop
   contains
     procedure :: setup  => ufo_radiancerttov_setup
     procedure :: delete => ufo_radiancerttov_delete
@@ -133,6 +135,9 @@ contains
       enddo
     end if
 
+    if (self % conf % read_Cmatrix) &
+      call self % reconradop % setup(self % RTprof, self % conf)
+
     message = 'Finished setting up rttov'
     call fckit_log%info(message)
 
@@ -147,6 +152,8 @@ contains
     if (allocated(self % varin)) deallocate(self % varin)
     if (allocated(self % channels)) deallocate(self % channels)
     if (allocated(self % coefindex)) deallocate(self % coefindex)
+    if (allocated(self % reconradop % Cmatrix_bias)) deallocate (self % reconradop % Cmatrix_bias)
+    if (allocated(self % reconradop % Cmatrix)) deallocate (self % reconradop % Cmatrix)
 
   end subroutine ufo_radiancerttov_delete
 
@@ -250,6 +257,9 @@ contains
     end if
     do_profile_diagnostics = .false.
     if (any(self % RTProf % print_profile(:))) do_profile_diagnostics = .true.
+
+    if (self % conf % read_Cmatrix) &
+      call self % reconradop % allocate(self % RTProf)
 
     ! Read emissivity from obs space if its requested
     if (self % conf % surface_emissivity_group /= "") then
@@ -521,21 +531,26 @@ contains
 
         ! Put simulated brightness temperature into hofx
         if ( errorstatus == errorstatus_success ) then
-          do ichan = 1, nchan_sim, size(self%channels)
-            iprof = self % RTProf % chanprof(nchan_total + ichan)%prof
-            hofx(1:size(self%channels),iprof) = self % RTprof % radiance % bt(ichan:ichan+size(self%channels)-1)
-            
-            !store transmittance if ob_info present in call and transmittance part of structure
-            if (present(ob_info)) then
-              if (allocated(ob_info % transmittance)) then
-                if (self % conf % do_mw_scatt) then
-                  ob_info % transmittance(1:size(self%channels)) = self % RTprof % mw_scatt % emis_retrieval % tau_clr(ichan:ichan+size(self%channels)-1)
-                else
-                  ob_info % transmittance(1:size(self%channels)) = self % RTProf % transmission % tau_total(ichan:ichan+size(self%channels)-1)
+          if (self % conf % read_Cmatrix) then
+            call self % reconradop % hofx_jac_calc(self % RTProf, self % conf, chanprof(1:nchan_sim), &
+                                                   prof_start, jacobian_needed, hofx=hofx, ob_info=ob_info)
+          else
+            do ichan = 1, nchan_sim, size(self%channels)
+              iprof = self % RTProf % chanprof(nchan_total + ichan)%prof
+              hofx(1:size(self%channels),iprof) = self % RTprof % radiance % bt(ichan:ichan+size(self%channels)-1)
+
+              !store transmittance if ob_info present in call and transmittance part of structure
+              if (present(ob_info)) then
+                if (allocated(ob_info % transmittance)) then
+                  if (self % conf % do_mw_scatt) then
+                    ob_info % transmittance(1:size(self%channels)) = self % RTprof % mw_scatt % emis_retrieval % tau_clr(ichan:ichan+size(self%channels)-1)
+                  else
+                    ob_info % transmittance(1:size(self%channels)) = self % RTProf % transmission % tau_total(ichan:ichan+size(self%channels)-1)
+                  end if
                 end if
               end if
-            end if
-          enddo
+            enddo
+          end if
 
           ! Write out emissivity out and hofx
           if (do_profile_diagnostics) then
@@ -578,6 +593,7 @@ contains
 
     if (allocated(sfc_emiss)) deallocate(sfc_emiss)
     if (allocated(RTTOV_Atlas_Emissivity)) deallocate (RTTOV_Atlas_Emissivity)
+    if (self % conf % read_Cmatrix) call self % reconradop % delete()
 
     ! Deallocate structures for rttov_direct
     if(jacobian_needed) then

@@ -19,6 +19,7 @@ module ufo_radiancerttov_tlad_mod
   use ufo_geovals_mod, only: ufo_geovals, ufo_geoval, ufo_geovals_get_var, ufo_geovals_print
   use ufo_vars_mod
   use ufo_radiancerttov_utils_mod
+  use ufo_reconradop_mod
 
   use rttov_types
   use rttov_const ! errorstatus and gas_id
@@ -36,6 +37,7 @@ module ufo_radiancerttov_tlad_mod
     type(rttov_conf)                              :: conf
     type(rttov_conf)                              :: conf_traj
     type(ufo_rttov_io)                            :: RTProf_K
+    type(ufo_reconradop)                          :: reconradop
 
     integer                                       :: nprofiles
     integer                                       :: nchan_total
@@ -78,7 +80,7 @@ contains
 
     !DAR what is the RTTOV equivalant of making sure that humidity and ozone data are present
     if ( ufo_vars_getindex(self%conf%Absorbers, var_q) < 1 ) then
-      message = 'ufo_radiancerttov_setup error: H2O must be included in RTTOV Absorbers'
+      message = 'ufo_radiancerttov_tlad_setup error: H2O must be included in RTTOV Absorbers'
       call abor1_ftn(message)
     end if
 
@@ -112,9 +114,12 @@ contains
     end do coefloop
 
     if ( any(self % coefindex == 0) ) then
-      message = 'ufo_radiancerttov_setup error: input channels not in the coefficient file'
+      message = 'ufo_radiancerttov_tlad_setup error: input channels not in the coefficient file'
       call abor1_ftn(message)
     end if
+
+    if (self % conf % read_Cmatrix) &
+      call self % reconradop % setup(self % RTprof_k, self % conf)
 
   end subroutine ufo_radiancerttov_tlad_setup
 
@@ -166,7 +171,7 @@ contains
     integer                                      :: sensor_index
     integer, allocatable                         :: prof_list(:,:)  ! store list of 'good' profiles
 
-    logical                                      :: jacobian_needed, do_profile_diagnostics
+    logical                                      :: jacobian_needed, jacobian_needed_rr, do_profile_diagnostics
     real(kind_real), allocatable                 :: sfc_emiss(:,:)
     real(kind_real), allocatable                 :: RTTOV_Atlas_Emissivity(:)
     character(len = MAXVARLEN)                   :: varname
@@ -230,6 +235,9 @@ contains
     if (self % conf % use_emissivity_atlas) then
       allocate (RTTOV_Atlas_Emissivity(size(self % RTprof_K % chanprof)))
     end if
+
+    if (self % conf % read_Cmatrix) &
+      call self % reconradop % allocate(self % RTprof_K)
 
     ! Maximum number of profiles to be processed by RTTOV per pass
     if(self % conf % prof_by_prof) then
@@ -403,6 +411,11 @@ contains
           emissivity_k = self % RTprof_K % emissivity_k(1:nchan_sim))                    ! inout input/output emissivities gradients per channel
       end if
 
+      if (self % conf % read_Cmatrix) then
+        jacobian_needed_rr = .true.
+        call self % reconradop % hofx_jac_calc(self % RTprof_K, self % conf, chanprof(1:nchan_sim), prof_start, jacobian_needed_rr)
+      end if 
+
       if(self % conf % SatRad_compatibility) then
         ! Zero jacobians if the humidity had been set to the minimum threshold
         if (self % conf % UseMinimumQ) then
@@ -531,6 +544,7 @@ contains
 
     if (allocated(sfc_emiss)) deallocate(sfc_emiss)
     if (allocated(RTTOV_Atlas_Emissivity)) deallocate (RTTOV_Atlas_Emissivity)
+    if (self % conf % read_Cmatrix) call self % reconradop % delete()
 
     ! Deallocate structures for rttov_direct
     call self % RTprof_K % alloc_k(errorstatus, self % conf, -1, -1, -1, asw=0)
@@ -635,7 +649,7 @@ contains
             end do
           end do
         ! Variables with 1 level - surface
-        case (var_sfc_t2m, var_sfc_q2m, var_sfc_u10, var_sfc_v10, var_sfc_tskin)
+        case (var_sfc_t2m, var_sfc_q2m, var_sfc_u10, var_sfc_v10, var_sfc_tskin, var_sfc_emiss)
           call ufo_geovals_get_var(geovals, trim(varname), geoval_d)
 
           do ichan = 1, self % nchan_total, size(self % channels)
@@ -659,6 +673,9 @@ contains
               else if (trim(varname) == var_sfc_tskin) then
                 hofx(jchan, prof) = hofx(jchan, prof) + &
                   self % RTprof_K % profiles_k(ichan+jchan-1) % skin % t * geoval_d % vals(1, prof)
+              else if (trim(varname) == var_sfc_emiss) then
+                hofx(jchan, prof) = hofx(jchan, prof) + &
+                  self % RTProf_K % emissivity_k(ichan+jchan-1) % emis_in * geoval_d % vals(1, prof)
               end if
             end do
           end do
@@ -668,7 +685,7 @@ contains
           call abor1_ftn(message)
       end select
 
-    end do ! main variable loop
+    end do ! main variable loop 
 
   end subroutine ufo_radiancerttov_simobs_tl
 
@@ -754,7 +771,7 @@ contains
             enddo
           end do
         ! Variables with 1 level - surface
-        case (var_sfc_t2m, var_sfc_q2m, var_sfc_u10, var_sfc_v10, var_sfc_tskin)
+        case (var_sfc_t2m, var_sfc_q2m, var_sfc_u10, var_sfc_v10, var_sfc_tskin, var_sfc_emiss)
           call ufo_geovals_get_var(geovals, trim(varname), geoval_d)
 
           do ichan = 1, self % nchan_total, size(self % channels)
@@ -779,6 +796,9 @@ contains
                 else if (trim(varname) == var_sfc_tskin) then
                   geoval_d % vals(1, prof) = geoval_d % vals(1, prof) + &
                     self % RTprof_K % profiles_k(ichan+jchan-1) % skin % t * hofx(jchan, prof)
+                else if (trim(varname) == var_sfc_emiss) then
+                  geoval_d % vals(1, prof) = geoval_d % vals(1, prof) + &
+                    self % RTProf_K % emissivity_k(ichan+jchan-1) % emis_in * hofx(jchan, prof)
                 end if
               end if
             end do
