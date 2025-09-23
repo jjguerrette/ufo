@@ -1,0 +1,219 @@
+time window:
+  begin: 2017-12-31T21:00:00Z
+  end: 2030-01-01T03:00:00Z
+
+observations:
+- obs space:
+    name: Ice Thickness from Sea Ice Freeboard with uncertainties
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/ice_freeboard_to_thickness_testdata.nc
+    simulated variables:
+     - iceThickness
+    observed variables:
+     - seaIceFreeboard
+     - totalSnowDepth
+     - snowDensity
+     - iceDensity
+    derived variables:
+     - iceThickness
+  obs filters:
+  - filter: Variable Transforms
+    Transform: Calculate iceThickness from seaIceFreeboard
+    ice freeboard variable: ObsValue/seaIceFreeboard
+    sea water density variable: hofx/seaWaterDensity
+    snow depth variable: ObsValue/totalSnowDepth
+    snow density variable: ObsValue/snowDensity
+    ice density variable: ObsValue/iceDensity
+    ice thickness variable: DerivedObsValue/iceThickness
+    calculate error standard deviations: true
+    ice freeboard error standard deviation variable: ObservedErrorStandardDeviation/seaIceFreeboard
+    ice density error standard deviation variable: ObservedErrorStandardDeviation/iceDensity
+    snow depth error standard deviation variable: ObservedErrorStandardDeviation/totalSnowDepth
+    snow density error standard deviation variable: ObservedErrorStandardDeviation/snowDensity
+    ice thickness systematic error standard deviation variable: SystematicErrorStandardDeviation/iceThickness
+    ice thickness random error standard deviation variable: RandomErrorStandardDeviation/iceThickness
+
+  compareVariables:
+    - reference:
+        name: TestReference/iceThickness
+      test:
+        name: DerivedObsValue/iceThickness
+      relTol: 1.0e-6
+    - reference:
+        name: TestReferenceSystematicErrorStandardDeviation/iceThickness
+      test:
+        name: SystematicErrorStandardDeviation/iceThickness
+      relTol: 1.0e-6
+    - reference:
+        name: TestReferenceRandomErrorStandardDeviation/iceThickness
+      test:
+        name: RandomErrorStandardDeviation/iceThickness
+      relTol: 1.0e-6
+    - reference:
+        name: TestReferenceError/iceThickness
+      test:
+        name: EffectiveError/iceThickness
+      relTol: 1.0e-6
+  passedBenchmark: 44  # 50
+                       # - 4 -- 1 missing from each of seaIceFreeboard, iceDensity, snowDensity, and totalSnowDepth
+                       # - 1 -- seaWaterDensity is less than iceDensity for position 5
+                       # - 1 -- ObservedErrorStandardDeviation/iceFreeboard is missing for position 7
+                       # = 44
+- obs space:
+    name: Ice Thickness from Sea Ice Freeboard default parameters with uncertainties
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/ice_freeboard_to_thickness_testdata.nc
+    simulated variables:
+     - iceThickness
+    observed variables:
+     - seaIceFreeboard
+     - totalSnowDepth
+     - snowDensity
+     - iceDensity
+    derived variables:
+     - iceThickness
+  obs filters:
+  - filter: Variable Transforms
+    Transform: Calculate iceThickness from seaIceFreeboard
+    sea water density variable: hofx/seaWaterDensity
+    ice thickness variable: DerivedObsValue/iceThickness
+    calculate error standard deviations: true
+
+  compareVariables:
+    - reference:
+        name: TestReference/iceThickness
+      test:
+        name: DerivedObsValue/iceThickness
+      relTol: 1.0e-6
+    - reference:
+        name: TestReferenceSystematicErrorStandardDeviation/iceThickness
+      test:
+        name: SystematicErrorStandardDeviation/iceThickness
+      relTol: 1.0e-6
+    - reference:
+        name: TestReferenceRandomErrorStandardDeviation/iceThickness
+      test:
+        name: RandomErrorStandardDeviation/iceThickness
+      relTol: 1.0e-6
+    - reference:
+        name: TestReferenceError/iceThickness
+      test:
+        name: EffectiveError/iceThickness
+      relTol: 1.0e-6
+  passedBenchmark: 44  # 50
+                       # - 4 -- 1 missing from each of seaIceFreeboard, iceDensity, snowDensity, and totalSnowDepth
+                       # - 1 -- seaWaterDensity is less than iceDensity for position 5
+                       # - 1 -- ObservedErrorStandardDeviation/iceFreeboard is missing for position 7
+                       # = 44
+- obs space:
+    name: Ice Thickness from Sea Ice Freeboard without uncertainties
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/ice_freeboard_to_thickness_testdata.nc
+    simulated variables:
+     - iceThickness
+    observed variables:
+     - seaIceFreeboard
+     - totalSnowDepth
+     - snowDensity
+     - iceDensity
+    derived variables:
+     - iceThickness
+  obs filters:
+  - filter: Variable Transforms
+    Transform: Calculate iceThickness from seaIceFreeboard
+    ice freeboard variable: ObsValue/seaIceFreeboard
+    sea water density variable: hofx/seaWaterDensity
+    snow depth variable: ObsValue/totalSnowDepth
+    snow density variable: ObsValue/snowDensity
+    ice density variable: ObsValue/iceDensity
+    ice thickness variable: DerivedObsValue/iceThickness
+    calculate error standard deviations: false
+  - filter: Perform Action
+    action:
+      name: assign error
+      error parameter: 1
+
+  compareVariables:
+    - reference:
+        name: TestReference/iceThickness
+      test:
+        name: DerivedObsValue/iceThickness
+      relTol: 1.0e-6
+  passedBenchmark: 45  # 50
+                       # - 4 -- 1 missing from each of seaIceFreeboard, iceDensity, snowDensity, and totalSnowDepth
+                       # - 1 -- seaWaterDensity is less than iceDensity for position 5
+                       # = 45
+
+- obs space:
+    name: Ice Thickness from Sea Ice Freeboard ObsValue variable exception
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/ice_freeboard_to_thickness_testdata.nc
+    simulated variables:
+     - iceThickness
+    observed variables:
+     - seaIceFreeboard
+     - totalSnowDepth
+     - snowDensity
+     - iceDensity
+    derived variables:
+     - iceThickness
+  obs filters:
+  - filter: Variable Transforms
+    Transform: Calculate iceThickness from seaIceFreeboard
+    ice freeboard variable: ObsValue/seaIceFreeboardDoesntExist
+    sea water density variable: hofx/seaWaterDensity
+    snow depth variable: ObsValue/totalSnowDepth
+    snow density variable: ObsValue/snowDensity
+    ice density variable: ObsValue/iceDensity
+    calculate error standard deviations: true
+    ice freeboard error standard deviation variable: ObservedErrorStandardDeviation/seaIceFreeboard
+    ice density error standard deviation variable: ObservedErrorStandardDeviation/iceDensity
+    snow depth error standard deviation variable: ObservedErrorStandardDeviation/totalSnowDepth
+    snow density error standard deviation variable: ObservedErrorStandardDeviation/snowDensity
+    ice thickness variable: DerivedObsValue/iceThickness
+    ice thickness systematic error standard deviation variable: SystematicErrorStandardDeviation/iceThickness
+    ice thickness random error standard deviation variable: RandomErrorStandardDeviation/iceThickness
+  passedBenchmark: 0
+  expectExceptionWithMessage: "Cal_IceThicknessFromFreeboard:: `ObsValue/seaIceFreeboardDoesntExist` must be a variable for this variable transform."
+
+- obs space:
+    name: Ice Thickness from Sea Ice Freeboard error standard deviation variable exception
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/ice_freeboard_to_thickness_testdata.nc
+    simulated variables:
+     - iceThickness
+    observed variables:
+     - seaIceFreeboard
+     - totalSnowDepth
+     - snowDensity
+     - iceDensity
+    derived variables:
+     - iceThickness
+  obs filters:
+  - filter: Variable Transforms
+    Transform: Calculate iceThickness from seaIceFreeboard
+    ice freeboard variable: ObsValue/seaIceFreeboard
+    sea water density variable: hofx/seaWaterDensity
+    snow depth variable: ObsValue/totalSnowDepth
+    snow density variable: ObsValue/snowDensity
+    ice density variable: ObsValue/iceDensity
+    calculate error standard deviations: true
+    ice freeboard error standard deviation variable: ObservedErrorStandardDeviation/seaIceFreeboardDoesntExist
+    ice density error standard deviation variable: ObservedErrorStandardDeviation/iceDensity
+    snow depth error standard deviation variable: ObservedErrorStandardDeviation/totalSnowDepth
+    snow density error standard deviation variable: ObservedErrorStandardDeviation/snowDensity
+    ice thickness variable: DerivedObsValue/iceThickness
+    ice thickness systematic error standard deviation variable: SystematicErrorStandardDeviation/iceThickness
+    ice thickness random error standard deviation variable: RandomErrorStandardDeviation/iceThickness
+  passedBenchmark: 0
+  expectExceptionWithMessage: "Cal_IceThicknessFromFreeboard:: `ObservedErrorStandardDeviation/seaIceFreeboardDoesntExist` must be a variable for this variable transform if calculating errors."
