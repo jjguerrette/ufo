@@ -8,6 +8,7 @@
 #include "ufo/variabletransforms/Cal_IceThicknessFromFreeboard.h"
 
 #include <cmath>
+#include <limits>
 
 #include "eckit/log/CodeLocation.h"
 #include "ioda/ObsDataVector.h"
@@ -58,9 +59,11 @@ Cal_IceThicknessFromFreeboard::Cal_IceThicknessFromFreeboard(
 
 void Cal_IceThicknessFromFreeboard::runTransform(
     const std::vector<bool> &apply) {
-  oops::Log::trace() << classname_ << "::runTransform: Calculate Ocean Ice Thickness and errors from ice "
-                        "freeboard, snow, and density observations "
-                     << std::endl;
+  oops::Log::trace()
+    << classname_
+    << "::runTransform: Calculate Ocean Ice Thickness and errors from ice "
+       "freeboard, snow, and density observations "
+    << std::endl;
 
   // dimension
   const size_t nlocs = obsdb_.nlocs();
