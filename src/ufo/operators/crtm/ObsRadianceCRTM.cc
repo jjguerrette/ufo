@@ -296,6 +296,11 @@ void ObsRadianceCRTM::fillReducedVarsByMaskedAveraging(GeoVaLs & geovals) const 
   std::vector<util::Range<size_t>> sample_ranges;
   geovals.getProfileIndicesGroupedByLocation(vars_to_reduce[0], sample_ranges);
   const size_t nlocs = sample_ranges.size();
+  if (nlocs == 0) {
+      // Do nothing
+      return;
+  }
+
   // The statement below assumes the samples run over obs locs in increasing order
   const size_t nsamples = sample_ranges.back().end;
 

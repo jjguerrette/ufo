@@ -30,7 +30,7 @@ std::pair<std::vector<float>, std::vector<float>> lonlat_grid_over_ellipse(
     const std::vector<double>& ellipse_lats) {
   ASSERT(sample_points_per_semi_axis > 1);
   ASSERT(sample_points_per_semi_axis < 10);  // avoid expensive config with diminishing returns
-  ASSERT(lon >= 0.0);
+  ASSERT(lon >= -180.0);
   ASSERT(lon < 360.0);
   ASSERT(lat >= -90.0);
   ASSERT(lat < 90.0);
