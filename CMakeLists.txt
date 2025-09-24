@@ -165,34 +165,10 @@ if( ${crtm_FOUND} )
     endif()
 endif( ${crtm_FOUND} )
 
-
-# DH 2023/10/06 - this is unfortunately still true ...
-### The ufo_data package is problematic in bundles because it has some special CMake logic
-### at the root bundle location. So, we cannot find the ufo data while in ufo!
-### Basically, with the current logic we hack ufo-data_FOUND to match ENABLE_UFO_DATA
-#find_package( ufo-data QUIET )
-if (ENABLE_UFO_DATA)
-    set (ufo-data_FOUND TRUE)
-else()
-    # Set values for downloading ufo test data from tarball
-    set (ufo_data_download_url "https://bin.ssec.wisc.edu/pub/s4/CRTM/file")
-    set (ufo_data_tag "1.10.0")
-    set (ufo_data_tarball_name "ufo_testinput_tier_1_${ufo_data_tag}.tar.gz")
-    set (ufo_data_tarball_hash "9dde2bc6a84da5d5e0e18e6d0aa62148")
-endif()
-
 ################################################################################
 # Sources
 ################################################################################
-
 add_subdirectory( src )
-add_subdirectory( test )
-# Make UFO_CRTM_TESTFILES_PATH and ufo_data_testinput_tier_1_local
-# (rename to UFO_UFO_TESTFILES_PATH) set in test available at parent
-# scope so that downstream repos have access to it
-set (UFO_CRTM_TESTFILES_PATH ${UFO_CRTM_TESTFILES_PATH} PARENT_SCOPE)
-set (UFO_UFO_TESTFILES_PATH ${UFO_UFO_TESTFILES_PATH} PARENT_SCOPE)
-
 add_subdirectory( tools )
 add_subdirectory( resources )
 
@@ -200,12 +176,27 @@ if( ENABLE_UFO_DOC )
     add_subdirectory( docs )
 endif()
 
-## Global Tests
-ecbuild_add_test( TARGET ufo_coding_norms
-                  TYPE SCRIPT
-                  COMMAND ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}_cpplint.py
-                  ARGS --quiet --recursive ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/test
-                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+if( BUILD_TESTING )
+  find_package( ufo-data QUIET )
+  if( NOT ufo-data_FOUND )
+    # Set values for downloading ufo test data from tarball
+    set( ufo_data_download_url "https://bin.ssec.wisc.edu/pub/s4/CRTM/file" )
+    set( ufo_data_tag "1.10.0" )
+    set( ufo_data_tarball_name "ufo_testinput_tier_1_${ufo_data_tag}.tar.gz" )
+    set( ufo_data_tarball_hash "9dde2bc6a84da5d5e0e18e6d0aa62148" )
+  endif()
+  add_subdirectory( test )
+  # Make UFO_CRTM_TESTFILES_PATH and ufo_data_testinput_tier_1_local
+  # (rename to UFO_UFO_TESTFILES_PATH) set in test available at parent
+  # scope so that downstream repos have access to it
+  set (UFO_CRTM_TESTFILES_PATH ${UFO_CRTM_TESTFILES_PATH} PARENT_SCOPE)
+  set (UFO_UFO_TESTFILES_PATH ${UFO_UFO_TESTFILES_PATH} PARENT_SCOPE)
+  ecbuild_add_test( TARGET ufo_coding_norms
+                    TYPE SCRIPT
+                    COMMAND ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}_cpplint.py
+                    ARGS --quiet --recursive ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/test
+                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+endif()
 
 ## Export package
 ecbuild_install_project( NAME ${PROJECT_NAME} )
