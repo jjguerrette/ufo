@@ -6,10 +6,11 @@
 set ( errors_files
     ObsErrorCrossVarCov.cc
     ObsErrorCrossVarCov.h
-    ObsErrorWithinGroupCov.cc
-    ObsErrorWithinGroupCov.h
     ObsErrorDiagonal.cc
     ObsErrorDiagonal.h
+    ObsErrorParametersBase.h
+    ObsErrorWithinGroupCov.cc
+    ObsErrorWithinGroupCov.h
 )
 PREPEND( _p_errors_files     "errors"     ${errors_files} )
 
