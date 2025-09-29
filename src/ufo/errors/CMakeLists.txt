@@ -9,6 +9,8 @@ set ( errors_files
     ObsErrorDiagonal.cc
     ObsErrorDiagonal.h
     ObsErrorParametersBase.h
+    ObsErrorReconditioner.cc
+    ObsErrorReconditioner.h
     ObsErrorWithinGroupCov.cc
     ObsErrorWithinGroupCov.h
 )

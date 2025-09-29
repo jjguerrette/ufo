@@ -22,6 +22,7 @@
 #include "oops/util/parameters/Parameters.h"
 
 #include "ufo/errors/ObsErrorParametersBase.h"
+#include "ufo/errors/ObsErrorReconditioner.h"
 #include "ufo/ObsTraits.h"
 
 namespace ioda {
@@ -29,52 +30,6 @@ namespace ioda {
 }
 
 namespace ufo {
-
-enum class ReconditionMethod {
-  MINIMUMEIGENVALUE, RIDGEREGRESSION, NORECONDITIONING
-};
-
-struct ReconditionMethodParameterTraitsHelper {
-  typedef ReconditionMethod EnumType;
-  static constexpr char enumTypeName[] = "ReconditionMethod";
-  static constexpr util::NamedEnumerator<ReconditionMethod> namedValues[] = {
-    { ReconditionMethod::MINIMUMEIGENVALUE, "Minimum Eigenvalue" },
-    { ReconditionMethod::RIDGEREGRESSION, "Ridge Regression" },
-    { ReconditionMethod::NORECONDITIONING, "No reconditioning" }
-  };
-};
-
-}  // namespace ufo
-
-namespace oops {
-
-template <>
-struct ParameterTraits<ufo::ReconditionMethod> :
-    public EnumParameterTraits<ufo::ReconditionMethodParameterTraitsHelper>
-{};
-
-}  // namespace oops
-
-namespace ufo {
-/// \brief Parameters for Recondition method
-class ReconditionParameters : public oops::Parameters {
-    OOPS_CONCRETE_PARAMETERS(ReconditionParameters, Parameters)
- public:
-  /// Method of reconditioning, either Ridge regression or minimum eigenvalue
-  oops::Parameter<ReconditionMethod> ReconMethod{"recondition method",
-                                                 "recondition method (options:"
-                                                 " Minimum Eigenvalue,"
-                                                 " Ridge Regression,"
-                                                 " No reconditioning)",
-                                                 ReconditionMethod::NORECONDITIONING,
-                                                 this};
-  /// Target fraction of condition number
-  oops::OptionalParameter<float> kFrac{"fraction", this};
-  /// Threshold for Minimum EigenValue
-  oops::OptionalParameter<float> Threshold{"threshold", this};
-  /// Shift for Ridge Regression
-  oops::OptionalParameter<float> Shift{"shift", this};
-};
 
 /// \brief Parameters for obs errors with cross-variable correlations
 class ObsErrorCrossVarCovParameters : public ObsErrorParametersBase {
@@ -84,7 +39,8 @@ class ObsErrorCrossVarCovParameters : public ObsErrorParametersBase {
   /// specified, they will be converted to correlations.
   oops::RequiredParameter<std::string> inputFile{"input file", this};
 
-  oops::OptionalParameter<ReconditionParameters> reconditioning{"reconditioning", this};
+  oops::Parameter<ObsErrorReconditionerParameters> reconditioning{"reconditioning",
+    ObsErrorReconditionerParameters(), this};
 };
 // -----------------------------------------------------------------------------
 /// \brief Observation error covariance matrix with cross-variable
@@ -108,9 +64,6 @@ class ObsErrorCrossVarCov : public oops::interface::ObsErrorBase<ObsTraits> {
 
   /// Update obs error standard deviations to be equal to \p stddev
   void update(const ioda::ObsVector & stddev) override;
-
-  /// Recondition the R matrix.
-  void recondition(const Parameters_ & options, const ioda::ObsVector & mask);
 
   /// Multiply \p y by this observation error covariance
   /// Computed as R * dy = D^{1/2} * C * D^{1/2} * dy
@@ -142,12 +95,16 @@ class ObsErrorCrossVarCov : public oops::interface::ObsErrorBase<ObsTraits> {
  private:
   /// Print covariance details (for logging)
   void print(std::ostream &) const override;
+  /// Recondition the R matrix - called by update
+  void recondition(const ioda::ObsVector & mask);
   /// Observation error standard deviations
   ioda::ObsVector stddev_;
   /// Variables for which correlations are defined (same as ObsSpace::obsvariables())
   const oops::ObsVariables vars_;
   /// Correlations between variables
   Eigen::MatrixXd varcorrelations_;
+  /// Create reconditioner
+  std::unique_ptr<ObsErrorReconditioner> reconditioner_;
   /// Configuration as a Parameters_
   Parameters_ params_;
 };

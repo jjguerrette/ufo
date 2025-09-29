@@ -8,8 +8,6 @@
 
 #include "ufo/errors/ObsErrorCrossVarCov.h"
 
-#include <math.h>
-#include <string>
 #include <vector>
 
 #include "ioda/Engines/EngineUtils.h"
@@ -17,14 +15,10 @@
 #include "ioda/Layout.h"
 #include "ioda/ObsGroup.h"
 
+#include "ufo/errors/ObsErrorReconditioner.h"
 #include "ufo/utils/IodaGroupIndices.h"
 
 namespace ufo {
-
-constexpr char ReconditionMethodParameterTraitsHelper::enumTypeName[];
-constexpr util::NamedEnumerator<ReconditionMethod>
-ReconditionMethodParameterTraitsHelper::namedValues[];
-
 
 // -----------------------------------------------------------------------------
 
@@ -33,10 +27,13 @@ ObsErrorCrossVarCov::ObsErrorCrossVarCov(const eckit::Configuration & crossVarCo
                                          const eckit::mpi::Comm &timeComm)
   : ObsErrorBase(timeComm),
     stddev_(obspace, "ObsError"), vars_(obspace.assimvariables()),
-    varcorrelations_(Eigen::MatrixXd::Identity(stddev_.nvars(), stddev_.nvars()))
+    varcorrelations_(Eigen::MatrixXd::Identity(stddev_.nvars(), stddev_.nvars())),
+    reconditioner_(nullptr)
 {
   // deserialize configuration into ObsErrorCrossVarCovParameters
   params_.validateAndDeserialize(crossVarConf);
+  // Create reconditioner
+  reconditioner_.reset(new ObsErrorReconditioner(params_.reconditioning.value()));
   // Open and read error correlations from the hdf5 file
   ioda::Engines::BackendNames  backendName = ioda::Engines::BackendNames::Hdf5File;
   ioda::Engines::BackendCreationParameters backendParams;
@@ -107,56 +104,21 @@ ObsErrorCrossVarCov::ObsErrorCrossVarCov(const eckit::Configuration & crossVarCo
                          << " channels/variables in file: " << params_.inputFile.value()
                          << ". To see which channels, turn on OOPS_TRACE\n" << std::endl;
   }
-
-  // Checking valid reconditioning options if reconditioning specified.
-  if (params_.reconditioning.value() != boost::none) {
-    ufo::ReconditionMethod recon_method = params_.reconditioning.value()->ReconMethod.value();
-    size_t nvalid_options = 0;
-    switch (recon_method) {
-      case ufo::ReconditionMethod::MINIMUMEIGENVALUE:
-        nvalid_options += static_cast<int>(params_.reconditioning.value()
-                                      ->kFrac.value() != boost::none);
-        nvalid_options += static_cast<int>(params_.reconditioning.value()
-                                      ->Threshold.value() != boost::none);
-        if (nvalid_options == 0) {
-          throw eckit::BadParameter("No viable reconditioning metric"
-                                    " for minimum eigenvalue provided.",
-                                    Here());
-        } else if (nvalid_options > 1) {
-          throw eckit::BadParameter("Too many reconditioning metrics provided.", Here());
-        }
-        break;
-      case ufo::ReconditionMethod::RIDGEREGRESSION:
-        nvalid_options += static_cast<int>(params_.reconditioning.value()
-                                           ->kFrac.value() != boost::none);
-        nvalid_options += static_cast<int>(params_.reconditioning.value()
-                                           ->Shift.value() != boost::none);
-        if (nvalid_options == 0) {
-          throw eckit::BadParameter("No viable reconditioning metric"
-                                    " for ridge regression provided.",
-                                    Here());
-        } else if (nvalid_options > 1) {
-          throw eckit::BadParameter("Too many reconditioning metrics provided.", Here());
-        }
-        break;
-      case ufo::ReconditionMethod::NORECONDITIONING:
-        oops::Log::trace() << "'No reconditioning' option selected, "
-                              "recondition method can be tested, "
-                              "R matrix should not change.\n";
-        break;
-    }
-  }
 }
 
 // -----------------------------------------------------------------------------
 
 void ObsErrorCrossVarCov::update(const ioda::ObsVector & obserr) {
   stddev_ = obserr;
+  if (params_.reconditioning.value().ReconMethod.value() !=
+      ufo::ObsErrorReconditionerMethod::NORECONDITIONING) {
+    this->recondition(obserr);
+  }
 }
 
 // -----------------------------------------------------------------------------
 
-void ObsErrorCrossVarCov::recondition(const Parameters_ & options, const ioda::ObsVector & mask) {
+void ObsErrorCrossVarCov::recondition(const ioda::ObsVector & mask) {
   const size_t nlocs = mask.nlocs();
   const size_t nvars = mask.nvars();
   const double missing = util::missingValue<double>();
@@ -204,94 +166,9 @@ void ObsErrorCrossVarCov::recondition(const Parameters_ & options, const ioda::O
                        * stddev_[ind];
       }
     }
-    // Performing eigendecomposition
-    oops::Log::trace() << "R before reconditioning:\n" << R << std::endl << std::endl;
-    Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver;
-    solver.compute(R);
-    Eigen::VectorXd evals = solver.eigenvalues();
-    const Eigen::MatrixXd & evecs = solver.eigenvectors();
 
-    // Ensure positive definiteness
-    double eval_min = evals.minCoeff();
-    if (eval_min <= 0.0) {
-      oops::Log::trace() << "eval_min = " << eval_min
-                         << " , performing a ridge regression to ensure positive definiteness\n";
-      double alpha = 1.0 + 1e-15;
-      alpha = (eval_min == 0.0) ? alpha - 1.0 : alpha * abs(eval_min);
-      for (size_t jvar = 0; jvar < nused; ++jvar) {
-          evals[jvar] += alpha;
-      }
-    }
-    const double precondno = evals.maxCoeff() / evals.minCoeff();
-    oops::Log::trace() << "Condition no. before = " << precondno << std::endl;
-
-    // Reconditioning
-    ufo::ReconditionMethod recon_method = options.reconditioning.value()->ReconMethod.value();
-    double threshold = 0.0;
-    double delta = 0.0;
-    switch (recon_method) {
-      case ufo::ReconditionMethod::MINIMUMEIGENVALUE:
-        oops::Log::trace() << "Performing Minimum Eigen Value reconditioning\n";
-        // Determining threshold from options
-        if (options.reconditioning.value()->Threshold.value() != boost::none) {
-          threshold = options.reconditioning.value()->Threshold.value().value();
-        } else if (options.reconditioning.value()->kFrac.value() != boost::none) {
-          const double kmax = precondno*options.reconditioning.value()->kFrac.value().value();
-          if (kmax < 1.0) {
-            oops::Log::warning() << "Unviable kmax = "
-                                 << kmax
-                                 << ", skipping reconditioning\n";
-            continue;
-          }
-          threshold = evals.maxCoeff() / kmax;
-        }
-        // Adjusting eigenvalues
-        for (size_t jvar = 0; jvar < nused; jvar++) {
-          if (evals[jvar] <= threshold) {
-            evals[jvar] = threshold;
-          }
-        }
-        break;
-      case ufo::ReconditionMethod::RIDGEREGRESSION:
-        oops::Log::trace() << "Performing Ridge Regression reconditioning\n";
-        // Determining delta from options
-        if (options.reconditioning.value()->kFrac.value() != boost::none) {
-          const double kmax = precondno * options.reconditioning.value()->kFrac.value().value();
-          if (kmax < 1.0) {
-            oops::Log::warning() << "Unviable kmax = "
-                                 << kmax
-                                 << ", skipping reconditioning\n";
-            continue;
-          }
-          delta = (evals.maxCoeff() - evals.minCoeff() * kmax)/(kmax - 1);
-        } else if (options.reconditioning.value()->Shift.value() != boost::none) {
-          delta = options.reconditioning.value()->Shift.value().value();
-        }
-        // Adjusting eigenvalues
-        for (size_t jvar = 0; jvar < nused; ++jvar) {
-          evals[jvar] += delta;
-        }
-        break;
-      case ufo::ReconditionMethod::NORECONDITIONING:
-        break;
-    }
-
-    // Fail-safe for if reconditioning
-    // produces non positive definite matrix
-    eval_min = evals.minCoeff();
-    if (eval_min <= 0.0) {
-      oops::Log::trace() << "eval_min = " << eval_min
-                         << " at jloc = " << jloc
-                         << " , skipping reconditioning\n";
-      continue;
-    }
-
-    // Re-evaluating R
-    R = evecs * evals.asDiagonal() * evecs.transpose();
-    oops::Log::trace() << "R after reconditioning:\n" << R << std::endl << std::endl;
-    const double condno = evals.maxCoeff() / evals.minCoeff();
-    oops::Log::trace() << "Condition no. after = " << condno << std::endl;
-    oops::Log::trace() << "Ratio of condition numbers = " << condno / precondno << std::endl;
+    // Recondition the R matrix
+    this->reconditioner_->recondition(R);
 
     // Unpacking the reconditioned matrix
     // into stddev_ and varcorrelations_ members
@@ -328,7 +205,7 @@ void ObsErrorCrossVarCov::recondition(const Parameters_ & options, const ioda::O
                      * dnlocs
                      / static_cast<double>(nused_locs);
   }
-}
+}  // recondition
 
 // -----------------------------------------------------------------------------
 

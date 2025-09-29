@@ -53,8 +53,8 @@ void testNoReconditioning() {
     const eckit::LocalConfiguration rconf(conf[jj], "obs error");
     ufo::ObsErrorCrossVarCovParameters Params;
     Params.validateAndDeserialize(rconf);
-    if (Params.reconditioning.value()->ReconMethod.value()
-        != ufo::ReconditionMethod::NORECONDITIONING)
+    if (Params.reconditioning.value().ReconMethod.value()
+        != ufo::ObsErrorReconditionerMethod::NORECONDITIONING)
       continue;
     const eckit::LocalConfiguration obsSpaceConf(conf[jj], "obs space");
     ioda::ObsSpace obsspace(obsSpaceConf, oops::mpi::myself(), timeWindow, oops::mpi::myself());
@@ -64,7 +64,7 @@ void testNoReconditioning() {
     oops::Log::info() << "Corr before:\n" << R << std::endl;
 
     ioda::ObsVector mask(obsspace, "ObsError");
-    RRecon.recondition(Params, mask);
+    RRecon.update(mask);
     oops::Log::info() << "Corr after:\n" << RRecon << std::endl;
 
     const double rmseR = R.getRMSE();
@@ -101,7 +101,7 @@ void compareKnownOutput() {
     ioda::ObsVector mask(obsspace, "ObsError");
     ioda::ObsVector sample(obsspace, "ObsValue");
     std::vector<double> refVec = TestParams.refVec.value().value();
-    R.recondition(Params, mask);
+    R.update(mask);
     R.multiply(sample);
     std::vector<double> sampleVec;
     sample.maskAndSerialize(sample, sampleVec);
