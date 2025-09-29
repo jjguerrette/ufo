@@ -12,16 +12,16 @@
 #include <string>
 #include <utility>
 
-#include "oops/base/ObsLocalizationParametersBase.h"
 #include "oops/util/missingValues.h"
 #include "oops/util/parameters/OptionalParameter.h"
 #include "oops/util/parameters/Parameter.h"
+#include "ufo/obslocalization/ObsLocalizationParametersBase.h"
 
 namespace ufo {
 
 /// \brief Options controlling vertical localization
-class ObsVertLocParameters : public oops::ObsLocalizationParametersBase {
-  OOPS_CONCRETE_PARAMETERS(ObsVertLocParameters, oops::ObsLocalizationParametersBase)
+class ObsVertLocParameters : public ObsLocalizationParametersBase {
+  OOPS_CONCRETE_PARAMETERS(ObsVertLocParameters, ObsLocalizationParametersBase)
 
  public:
   /// Localization lengthscale (find all obs within the distance from reference point)

@@ -10,6 +10,7 @@ set ( obslocalization_files
       ObsHorLocalization.h
       ObsHorLocParameters.cc
       ObsHorLocParameters.h
+      ObsLocalizationParametersBase.h
       ObsVertLocalization.h
       ObsVertLocParameters.h
 )
