@@ -9,6 +9,8 @@
 
 #include <cmath>
 #include <limits>
+#include <memory>
+#include <vector>
 
 #include "eckit/log/CodeLocation.h"
 #include "ioda/ObsDataVector.h"
@@ -20,40 +22,13 @@
 namespace ufo {
 
 static TransformMaker<Cal_IceThicknessFromFreeboard>
-    makerCal_IceThicknessFromFreeboard_(
-        "Calculate iceThickness from seaIceFreeboard");
+makerCal_IceThicknessFromFreeboard_("Calculate iceThickness from seaIceFreeboard");
 
 Cal_IceThicknessFromFreeboard::Cal_IceThicknessFromFreeboard(
     const Parameters_ &options, const ObsFilterData &data,
     const std::shared_ptr<ioda::ObsDataVector<int>> &flags,
     const std::shared_ptr<ioda::ObsDataVector<float>> &obserr)
-    : TransformBase(options, data, flags, obserr), options_(options) {
-  for (const Variable &var :
-       {options.IceFreeboardVariable.value(),
-        options.WaterDensityVariable.value(), options.SnowDepthVariable.value(),
-        options.SnowDensityVariable.value(),
-        options.IceDensityVariable.value()}) {
-    if (!obsdb_.has(var.group(), var.variable())) {
-      throw eckit::BadValue(
-          "" + classname_ + ":: `" + var.fullName() +
-              "` must be a variable for this variable transform.",
-          Here());
-    }
-  }
-  if (options.calculateErrors.value()) {
-    for (const Variable &var : {options.IceFreeboardESDVariable.value(),
-                                options.IceDensityESDVariable.value(),
-                                options.SnowDensityESDVariable.value(),
-                                options.SnowDepthESDVariable.value()}) {
-      if (!obsdb_.has(var.group(), var.variable())) {
-        throw eckit::BadValue("" + classname_ + ":: `" + var.fullName() +
-                                  "` must be a variable for "
-                                  "this variable transform if calculating errors.",
-                              Here());
-      }
-    }
-  }
-}
+    : TransformBase(options, data, flags, obserr), options_(options) {}
 
 // -----------------------------------------------------------------------------
 
@@ -64,6 +39,33 @@ void Cal_IceThicknessFromFreeboard::runTransform(
     << "::runTransform: Calculate Ocean Ice Thickness and errors from ice "
        "freeboard, snow, and density observations "
     << std::endl;
+
+  for (const Variable &var :
+       {options_.IceFreeboardVariable.value(),
+        options_.WaterDensityVariable.value(),
+        options_.SnowDepthVariable.value(),
+        options_.SnowDensityVariable.value(),
+        options_.IceDensityVariable.value()}) {
+    if (!obsdb_.has(var.group(), var.variable())) {
+      throw eckit::BadValue(
+          "" + classname_ + ":: `" + var.group() + '/' + var.variable() +
+              "` must be a variable for this variable transform.",
+          Here());
+    }
+  }
+  if (options_.calculateErrors.value()) {
+    for (const Variable &var : {options_.IceFreeboardESDVariable.value(),
+                                options_.IceDensityESDVariable.value(),
+                                options_.SnowDensityESDVariable.value(),
+                                options_.SnowDepthESDVariable.value()}) {
+      if (!obsdb_.has(var.group(), var.variable())) {
+        throw eckit::BadValue("" + classname_ + ":: `" + var.fullName() +
+                                  "` must be a variable for "
+                                  "this variable transform if calculating errors.",
+                              Here());
+      }
+    }
+  }
 
   // dimension
   const size_t nlocs = obsdb_.nlocs();
