@@ -7,7 +7,6 @@
 
 #include "ufo/filters/ModelBestFitPressure.h"
 
-#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <limits>
@@ -17,7 +16,6 @@
 #include "ioda/ObsDataVector.h"
 #include "ioda/ObsSpace.h"
 
-#include "oops/util/FloatCompare.h"
 #include "oops/util/Logger.h"
 
 #include "ufo/GeoVaLs.h"
@@ -144,6 +142,10 @@ void ModelBestFitPressure::applyFilter(const std::vector<bool> & apply,
       obsdb_.distribution()->createAccumulator<size_t>();
 
   for (size_t idata = 0; idata < nlocs; ++idata) {
+    // Check for missing obsvalues
+    if (obs_eastward[idata] == missing || obs_northward[idata] == missing) {
+      continue;
+    }
     if (apply[idata]) {
       // Get GeoVaLs at the specified location.
       gvals->getAtLocation(model_pressure_profile, model_pressure_name, idata);
