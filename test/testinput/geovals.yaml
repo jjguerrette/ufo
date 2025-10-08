@@ -61,4 +61,4 @@ observations:
     - soil_temperature
     - volume_fraction_of_condensed_water_in_soil
     - soil_type
-    norm: 5948559.5277
+    norm: 5948463.2165

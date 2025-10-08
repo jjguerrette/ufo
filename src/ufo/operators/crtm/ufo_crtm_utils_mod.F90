@@ -935,7 +935,7 @@ integer  :: id_cld(1)
           ! this should automatically be filled by Model2GeoVals
           call ufo_geovals_get_var(geovals, conf%Absorbers(jspec), geoval)
           do k1 = 1, n_Profiles
-            atm(k1)%Absorber(1:n_Layers, jspec) = geoval%vals(:, k1)
+            atm(k1)%Absorber(1:n_Layers, jspec) = co2_rescale_to_ppmv * geoval%vals(:, k1)
           end do
         case default
           call fckit_exception % throw('CO2 provided to CRTM is incorrectly set')
