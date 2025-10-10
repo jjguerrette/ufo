@@ -41,7 +41,7 @@ class ObsHorLocalization: public oops::ObsLocalizationBase<MODEL, ObsTraits> {
   typedef typename MODEL::GeometryIterator   GeometryIterator_;
 
  public:
-  ObsHorLocalization(const eckit::Configuration &, const ioda::ObsSpace &);
+  ObsHorLocalization(const eckit::Configuration &, ioda::ObsSpace &);
 
   /// Compute localization and save localization values in \p locvector.
   /// Missing values indicate that observation is outside of localization.
@@ -94,6 +94,10 @@ class ObsHorLocalization: public oops::ObsLocalizationBase<MODEL, ObsTraits> {
   /// TODO(travis) distribution name is needed for temporary fix, should be removed eventually
   std::string distName_;
   double haloSize_;
+
+  /// Cached values
+  mutable eckit::geometry::Point2 cachepoint_;
+  mutable ioda::ObsVector cachelocvector_;
 };
 
 // -----------------------------------------------------------------------------
@@ -103,8 +107,9 @@ class ObsHorLocalization: public oops::ObsLocalizationBase<MODEL, ObsTraits> {
  */
 template<typename MODEL>
 ObsHorLocalization<MODEL>::ObsHorLocalization(const eckit::Configuration & config,
-                                              const ioda::ObsSpace & obsspace)
-  : options_(), lats_(obsspace.nlocs()), lons_(obsspace.nlocs())
+                                              ioda::ObsSpace & obsspace)
+  : options_(), lats_(obsspace.nlocs()), lons_(obsspace.nlocs()),
+    cachepoint_(-999, -999), cachelocvector_(obsspace)
 {
   options_.deserialize(config);
   // check that this distribution supports local obs space
@@ -145,8 +150,16 @@ ObsHorLocalization<MODEL>::ObsHorLocalization(const eckit::Configuration & confi
 
 template<typename MODEL>
 void ObsHorLocalization<MODEL>::computeLocalization(const GeometryIterator_ & i,
-                                                 ioda::ObsVector & locvector) const {
+                                                    ioda::ObsVector & locvector) const {
   oops::Log::trace() << "ObsHorLocalization::computeLocalization" << std::endl;
+
+  const eckit::geometry::Point3 refpoint = *i;
+  const eckit::geometry::Point2 refpoint2D(refpoint[0], refpoint[1]);
+
+  if (refpoint2D == cachepoint_) {
+    locvector = cachelocvector_;
+    return;
+  }
 
   // get the set of local observations using the lengthscale given in the
   // config file options.
@@ -155,6 +168,10 @@ void ObsHorLocalization<MODEL>::computeLocalization(const GeometryIterator_ & i,
   // compute localization of those local obs. Note that since this is
   // a virtual method, it could be overriden by dervied classes
   localizeLocalObs(i, locvector, localobs);
+
+  // Reassign cached values
+  cachelocvector_ = locvector;
+  cachepoint_ = refpoint2D;
 }
 
 // -----------------------------------------------------------------------------

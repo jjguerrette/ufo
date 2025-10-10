@@ -30,7 +30,7 @@ class ObsHorLocSOAR: public ufo::ObsHorLocalization<MODEL> {
   typedef typename ObsHorLocalization<MODEL>::LocalObs LocalObs_;
 
  public:
-  ObsHorLocSOAR(const eckit::Configuration &, const ioda::ObsSpace &);
+  ObsHorLocSOAR(const eckit::Configuration &, ioda::ObsSpace &);
 
  protected:
   /// Compute SOAR localization using the set of \p localobs and save localization
@@ -49,7 +49,7 @@ class ObsHorLocSOAR: public ufo::ObsHorLocalization<MODEL> {
 
 template<typename MODEL>
 ObsHorLocSOAR<MODEL>::ObsHorLocSOAR(const eckit::Configuration & config,
-                                    const ioda::ObsSpace & obsspace)
+                                    ioda::ObsSpace & obsspace)
   : ObsHorLocalization<MODEL>::ObsHorLocalization(config, obsspace), options_()
 {
   options_.validateAndDeserialize(config);

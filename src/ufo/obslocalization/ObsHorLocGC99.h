@@ -30,7 +30,7 @@ class ObsHorLocGC99: public ufo::ObsHorLocalization<MODEL> {
   typedef typename ObsHorLocalization<MODEL>::LocalObs LocalObs_;
 
  public:
-  ObsHorLocGC99(const eckit::Configuration &, const ioda::ObsSpace &);
+  ObsHorLocGC99(const eckit::Configuration &, ioda::ObsSpace &);
 
  protected:
   /// Compute GC99 localization using the set of \p localobs, the same lengthscale
@@ -47,7 +47,7 @@ class ObsHorLocGC99: public ufo::ObsHorLocalization<MODEL> {
 
 template<typename MODEL>
 ObsHorLocGC99<MODEL>::ObsHorLocGC99(const eckit::Configuration & conf,
-                                    const ioda::ObsSpace & obsspace)
+                                    ioda::ObsSpace & obsspace)
   : ObsHorLocalization<MODEL>::ObsHorLocalization(conf, obsspace)
 {}
 
