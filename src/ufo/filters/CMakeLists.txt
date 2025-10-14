@@ -22,6 +22,8 @@ set ( filters_files
       DiagnosticFlag.h
       DifferenceCheck.cc
       DifferenceCheck.h
+      EnsembleStatistics.cc
+      EnsembleStatistics.h
       FilterBase.cc
       FilterBase.h
       FilterParametersBase.cc

@@ -18,6 +18,7 @@
 #include "ufo/filters/CopyFlagsFromExtendedToOriginalSpace.h"
 #include "ufo/filters/CreateDiagnosticFlags.h"
 #include "ufo/filters/DifferenceCheck.h"
+#include "ufo/filters/EnsembleStatistics.h"
 #include "ufo/filters/FinalCheck.h"
 #include "ufo/filters/Gaussian_Thinning.h"
 #include "ufo/filters/GeoVaLsWriter.h"
@@ -194,6 +195,8 @@ void instantiateObsFilterFactory() {
   static FilterMaker<GeoVaLsWriter> GVWriterMaker("GOMsaver");
   static FilterMaker<ObsDiagnosticsWriter>
            YDIAGsaverMaker("YDIAGsaver");
+  static FilterMaker<EnsembleStatistics>
+           ensembleStatisticsMaker("Ensemble Statistics");
 
   // Only include this filter if gsw is present
   #if defined(GSW_FOUND)

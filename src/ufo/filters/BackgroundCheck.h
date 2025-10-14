@@ -33,9 +33,13 @@ class BackgroundCheckParameters : public FilterParametersBase {
 
  public:
   /// The filter will flag observations whose bias-corrected value differs from its model equivalent
-  /// by more than `threshold` times the current estimate of the observation error. Or if the
-  /// option "threshold wrt background error" is true, the `threshold` is multiplied by the
-  /// background error rather than observation error. E.g.
+  /// by more than `threshold` times the current estimate of
+  /// * the observation error (by default) or
+  /// * the background error (if the "threshold wrt background error" option is set), or
+  /// * the ensemble spread, i.e. standard deviation (if the "threshold wrt ensemble spread"
+  ///   option is set).
+  ///
+  /// E.g.
   ///
   ///   filter variables:
   ///   - name: sea_surface_height
@@ -47,7 +51,16 @@ class BackgroundCheckParameters : public FilterParametersBase {
 
   /// A switch indicating whether threshold must be multiplied by background error rather than
   /// observation error. If true, `threshold` must have a value.
+  ///
+  /// Mutually exclusive with `threshold wrt ensemble spread`.
   oops::Parameter<bool> thresholdWrtBGerror{"threshold wrt background error", false, this};
+
+  /// A switch indicating whether threshold must be multiplied by the ensemble spread (standard
+  /// deviation) of model equivalents rather than the observation error. If true, `threshold` must
+  /// have a value.
+  ///
+  /// Mutually exclusive with `threshold wrt background error`.
+  oops::Parameter<bool> thresholdWrtEnsembleSpread{"threshold wrt ensemble spread", false, this};
 
   /// The filter will flag observations whose bias-corrected value differs from its model equivalent
   /// by more than `absolute threshold`

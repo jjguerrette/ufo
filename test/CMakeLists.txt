@@ -163,6 +163,11 @@ ecbuild_add_executable( TARGET  test_ObsFilters.x
                         LIBS    ufo
                        )
 
+ecbuild_add_executable( TARGET  test_EnsembleObsFilters.x
+                       SOURCES mains/TestEnsembleObsFilters.cc
+                       LIBS    ufo
+                      )
+
 ecbuild_add_executable( TARGET  test_ObsFunction.x
                         SOURCES mains/TestObsFunction.cc
                         LIBS    ufo

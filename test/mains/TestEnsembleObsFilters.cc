@@ -1,0 +1,18 @@
+/*
+ * (C) Crown copyright 2025 Met Office
+ * 
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ */
+
+#include "../ufo/ObsFilters.h"
+#include "oops/runs/EnsembleApplication.h"
+#include "oops/runs/Run.h"
+#include "ufo/instantiateObsFilterFactory.h"
+
+int main(int argc,  char ** argv) {
+  oops::Run run(argc, argv);
+  ufo::instantiateObsFilterFactory();
+  oops::EnsembleApplication<ufo::test::ObsFilters> tests;
+  return run.execute(tests);
+}

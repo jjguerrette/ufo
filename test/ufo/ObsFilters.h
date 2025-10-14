@@ -622,7 +622,9 @@ void runTest() {
 class ObsFilters : public oops::Test {
   typedef ::test::ObsTestsFixture<ObsTraits> Test_;
  public:
-  ObsFilters() {}
+  explicit ObsFilters(const eckit::mpi::Comm & comm = oops::mpi::world()) : oops::Test(comm) {
+    Test_::setComm(comm);
+  }
   virtual ~ObsFilters() {}
  private:
   std::string testid() const override {return "test::ObsFilters";}

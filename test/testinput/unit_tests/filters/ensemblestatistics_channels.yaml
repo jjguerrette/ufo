@@ -1,0 +1,143 @@
+members:
+# Member 0
+- time window: &time_window
+    begin: 2018-01-01T00:00:00Z
+    end: 2019-01-01T00:00:00Z
+
+  observations:
+  - obs space: &obsspace_member0
+      name: test data
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/ufo/testinput_tier_1/ensemble_statistics_channels_member0.nc4
+      simulated variables: [variable1]
+      channels: 3, 5, 8
+    HofX: HofX
+    obs filters: &compute_mean_hofx
+    - filter: Ensemble Statistics
+      statistics:
+      - HofXEnsembleMean
+      filter variables:
+      - name: variable1
+        channels: 3, 8
+    compareVariables: &compare_mean_hofx
+    - test:
+        name: HofXEnsembleMean/variable1
+      reference:
+        name: TestReference/variable1_hofxensmean
+      relTol: 1e-6
+  - obs space: *obsspace_member0
+    HofX: HofX
+    obs filters: &compute_hofx_stddev
+    - filter: Ensemble Statistics
+      statistics:
+      - HofXEnsembleStdDev
+      filter variables:
+      - name: variable1
+        channels: 3, 8
+    compareVariables: &compare_hofx_stddev
+    - test:
+        name: HofXEnsembleStdDev/variable1
+      reference:
+        name: TestReference/variable1_hofxensstddev
+      relTol: 1e-6
+  - obs space: *obsspace_member0
+    HofX: HofX
+    obs filters: &compute_hofx_mean_and_stddev
+    - filter: Ensemble Statistics
+      statistics:
+      - HofXEnsembleMean
+      - HofXEnsembleStdDev
+      filter variables:
+      - name: variable1
+        channels: 3, 8
+    compareVariables: &compare_hofx_mean_and_stddev
+    - test:
+        name: HofXEnsembleMean/variable1
+      reference:
+        name: TestReference/variable1_hofxensmean
+      relTol: 1e-6
+    - test:
+        name: HofXEnsembleStdDev/variable1
+      reference:
+        name: TestReference/variable1_hofxensstddev
+      relTol: 1e-6
+  
+###############################################################################  
+# Member 1  
+- time window: *time_window
+
+  observations:
+  # Compare observations to ensemble mean of H(x)
+  - obs space: &obsspace_member1
+      name: test data
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/ufo/testinput_tier_1/ensemble_statistics_channels_member1.nc4
+      simulated variables: [variable1]
+      channels: 3, 5, 8
+    HofX: HofX
+    obs filters: *compute_mean_hofx
+    compareVariables: *compare_mean_hofx
+  - obs space: *obsspace_member1
+    HofX: HofX
+    obs filters: *compute_hofx_stddev
+    compareVariables: *compare_hofx_stddev
+  - obs space: *obsspace_member1
+    HofX: HofX
+    obs filters: *compute_hofx_mean_and_stddev
+    compareVariables: *compare_hofx_mean_and_stddev
+
+###############################################################################  
+# Member 2  
+- time window: *time_window
+
+  observations:
+  # Compare observations to ensemble mean of H(x)
+  - obs space: &obsspace_member2
+      name: test data
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/ufo/testinput_tier_1/ensemble_statistics_channels_member2.nc4
+      simulated variables: [variable1]
+      channels: 3, 5, 8
+    HofX: HofX
+    obs filters: *compute_mean_hofx
+    compareVariables: *compare_mean_hofx
+  - obs space: *obsspace_member2
+    HofX: HofX
+    obs filters: *compute_hofx_stddev
+    compareVariables: *compare_hofx_stddev
+  - obs space: *obsspace_member2
+    HofX: HofX
+    obs filters: *compute_hofx_mean_and_stddev
+    compareVariables: *compare_hofx_mean_and_stddev
+
+###############################################################################  
+# Member 3
+- time window: *time_window
+
+  observations:
+  # Compare observations to ensemble mean of H(x)
+  - obs space: &obsspace_member3
+      name: test data
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/ufo/testinput_tier_1/ensemble_statistics_channels_member3.nc4
+      simulated variables: [variable1]
+      channels: 3, 5, 8
+    HofX: HofX
+    obs filters: *compute_mean_hofx
+    compareVariables: *compare_mean_hofx
+  - obs space: *obsspace_member3
+    HofX: HofX
+    obs filters: *compute_hofx_stddev
+    compareVariables: *compare_hofx_stddev
+  - obs space: *obsspace_member3
+    HofX: HofX
+    obs filters: *compute_hofx_mean_and_stddev
+    compareVariables: *compare_hofx_mean_and_stddev

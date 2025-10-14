@@ -1,0 +1,142 @@
+members:
+# Member 0
+- time window: &time_window
+    begin: 2018-01-01T00:00:00Z
+    end: 2019-01-01T00:00:00Z
+
+  observations:
+  - obs space: &obsspace_member0
+      name: test data
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/ufo/testinput_tier_1/ensemble_statistics_member0.nc4
+      simulated variables: [variable1, variable2, variable3]
+    HofX: HofX
+    obs filters: &check_against_mean_hofx_with_absolute_threshold
+    - filter: Ensemble Statistics
+      statistics:
+      - HofXEnsembleMean
+      filter variables:
+      - name: variable1
+      - name: variable2
+    - filter: Background Check
+      filter variables:
+      - name: variable1
+      - name: variable2
+      absolute threshold: 0.15
+      test_hofx: HofXEnsembleMean
+      defer to post: true
+    passedBenchmark: 23
+  - obs space: *obsspace_member0
+    HofX: HofX
+    obs filters: &check_against_local_hofx_with_threshold_scaled_by_hofx_spread
+    - filter: Ensemble Statistics
+      statistics:
+      - HofXEnsembleStdDev
+      filter variables:
+      - name: variable1
+      - name: variable2
+    - filter: Background Check
+      filter variables:
+      - name: variable1
+      - name: variable2
+      threshold: 0.7
+      threshold wrt ensemble spread: true
+      defer to post: true
+    passedBenchmark: 19
+  - obs space: *obsspace_member0
+    HofX: HofX
+    obs filters: &check_against_mean_hofx_with_threshold_scaled_by_hofx_spread
+    - filter: Ensemble Statistics
+      statistics:
+      - HofXEnsembleMean
+      - HofXEnsembleStdDev
+      filter variables:
+      - name: variable1
+      - name: variable2
+    - filter: Background Check
+      filter variables:
+      - name: variable1
+      - name: variable2
+      threshold: 0.1
+      threshold wrt ensemble spread: true
+      test_hofx: HofXEnsembleMean
+      defer to post: true
+    passedBenchmark: 20
+
+###############################################################################
+# Member 1
+- time window: *time_window
+
+  observations:
+  # Compare observations to ensemble mean of H(x)
+  - obs space: &obsspace_member1
+      name: test data
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/ufo/testinput_tier_1/ensemble_statistics_member1.nc4
+      simulated variables: [variable1, variable2, variable3]
+    HofX: HofX
+    obs filters: *check_against_mean_hofx_with_absolute_threshold
+    passedBenchmark: 23
+  - obs space: *obsspace_member1
+    HofX: HofX
+    obs filters: *check_against_local_hofx_with_threshold_scaled_by_hofx_spread
+    passedBenchmark: 20
+  - obs space: *obsspace_member1
+    HofX: HofX
+    obs filters: *check_against_mean_hofx_with_threshold_scaled_by_hofx_spread
+    passedBenchmark: 20
+
+###############################################################################
+# Member 2
+- time window: *time_window
+
+  observations:
+  # Compare observations to ensemble mean of H(x)
+  - obs space: &obsspace_member2
+      name: test data
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/ufo/testinput_tier_1/ensemble_statistics_member2.nc4
+      simulated variables: [variable1, variable2, variable3]
+    HofX: HofX
+    obs filters: *check_against_mean_hofx_with_absolute_threshold
+    passedBenchmark: 23
+  - obs space: *obsspace_member2
+    HofX: HofX
+    obs filters: *check_against_local_hofx_with_threshold_scaled_by_hofx_spread
+    passedBenchmark: 19
+  - obs space: *obsspace_member2
+    HofX: HofX
+    obs filters: *check_against_mean_hofx_with_threshold_scaled_by_hofx_spread
+    passedBenchmark: 20
+
+###############################################################################
+# Member 3
+- time window: *time_window
+
+  observations:
+  # Compare observations to ensemble mean of H(x)
+  - obs space: &obsspace_member3
+      name: test data
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/ufo/testinput_tier_1/ensemble_statistics_member3.nc4
+      simulated variables: [variable1, variable2, variable3]
+    HofX: HofX
+    obs filters: *check_against_mean_hofx_with_absolute_threshold
+    passedBenchmark: 23
+  - obs space: *obsspace_member3
+    HofX: HofX
+    obs filters: *check_against_local_hofx_with_threshold_scaled_by_hofx_spread
+    passedBenchmark: 16
+  - obs space: *obsspace_member3
+    HofX: HofX
+    obs filters: *check_against_mean_hofx_with_threshold_scaled_by_hofx_spread
+    passedBenchmark: 20
+

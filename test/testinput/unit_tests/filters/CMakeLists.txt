@@ -29,6 +29,26 @@ ufo_add_test( NAME    test_ufo_assign_error_using_where
               LABELS  filters
               WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
 #
+ufo_add_test( NAME    test_ufo_ensemblestatistics
+              TIER    1
+              ECBUILD
+              COMMAND ${CMAKE_BINARY_DIR}/bin/test_EnsembleObsFilters.x
+              ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/ensemblestatistics.yaml"
+              MPI     8
+              LIBS    ufo
+              LABELS  filters
+              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
+#
+ufo_add_test( NAME    test_ufo_ensemblestatistics_channels
+              TIER    1
+              ECBUILD
+              COMMAND ${CMAKE_BINARY_DIR}/bin/test_EnsembleObsFilters.x
+              ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/ensemblestatistics_channels.yaml"
+              MPI     8
+              LIBS    ufo
+              LABELS  filters
+              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
+#
 ufo_add_test( NAME    test_ufo_filter_stage
               TIER    1
               ECBUILD
@@ -276,6 +296,16 @@ ufo_add_test( NAME    test_ufo_qc_backgroundcheck
               COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
               ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/qc_backgroundcheck.yaml"
               MPI     1
+              LIBS    ufo
+              LABELS  filters
+              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
+#
+ufo_add_test( NAME    test_ufo_qc_backgroundcheck_ensemblestatistics
+              TIER    1
+              ECBUILD
+              COMMAND ${CMAKE_BINARY_DIR}/bin/test_EnsembleObsFilters.x
+              ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/qc_backgroundcheck_ensemblestatistics.yaml"
+              MPI     8
               LIBS    ufo
               LABELS  filters
               WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )

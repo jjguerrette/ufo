@@ -50,6 +50,8 @@ BackgroundCheck::BackgroundCheck(ioda::ObsSpace & obsdb, const Parameters_ & par
       allvars_ += backgrErrVariable(filtervars_[jv]);
     }
   }
+  if (parameters_.thresholdWrtEnsembleSpread.value())
+    allvars_ += Variables(filtervars_, "HofXEnsembleStdDev");
   ASSERT(parameters_.threshold.value() ||
          parameters_.absoluteThreshold.value() ||
          parameters_.absoluteThresholdVector.value() ||
@@ -64,6 +66,8 @@ BackgroundCheck::BackgroundCheck(ioda::ObsSpace & obsdb, const Parameters_ & par
   }
   ASSERT(!parameters_.absoluteThreshold.value() ||
          !parameters_.absoluteThresholdVector.value());
+  ASSERT(!parameters_.thresholdWrtBGerror.value() ||
+         !parameters_.thresholdWrtEnsembleSpread.value());
 }
 
 // -----------------------------------------------------------------------------
@@ -142,8 +146,11 @@ void BackgroundCheck::applyFilter(const std::vector<bool> & apply,
 //    H(x) error
       std::vector<float> hofxerr;
       bool thresholdWrtBGerror = parameters_.thresholdWrtBGerror.value();
+      bool thresholdWrtEnsembleSpread = parameters_.thresholdWrtEnsembleSpread.value();
       if (thresholdWrtBGerror) {
         data_.get(backgrErrVariable(filtervars[jv]), hofxerr);
+      } else if (thresholdWrtEnsembleSpread) {
+        data_.get(Variable(filtervars[jv], "HofXEnsembleStdDev"), hofxerr);
       }
 //    Bias correction (only read in if removeBiasCorrection is set to true, otherwise
 //    set to zero).
@@ -177,8 +184,8 @@ void BackgroundCheck::applyFilter(const std::vector<bool> & apply,
           ASSERT(hofx[jobs] != missing);
           ASSERT(bias[jobs] != missing);
 
-          const std::vector<float> &errorMultiplier = thresholdWrtBGerror ?
-                                                      hofxerr : (*obserr_)[iv];
+          const std::vector<float> &errorMultiplier =
+              (thresholdWrtBGerror || thresholdWrtEnsembleSpread) ? hofxerr : (*obserr_)[iv];
 //        Threshold for current observation
           float zz = (thr[jobs] == std::numeric_limits<float>::max()) ? abs_thr[jobs] :
             std::min(abs_thr[jobs], thr[jobs] * errorMultiplier[jobs]);
