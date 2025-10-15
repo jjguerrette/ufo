@@ -1115,7 +1115,7 @@ if( crtm_FOUND )
                   MPI     1
                   LIBS    ufo
                   LABELS  crtm filters
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ ) 
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
 #
     ufo_add_test( NAME    test_ufo_gmi_skylab_filters
                   TIER    1
@@ -1258,7 +1258,7 @@ if( ${rttov_FOUND} )
                   ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/atovs_rttovonedvar_multiplatform.yaml"
                   MPI     1
                   LIBS    ufo
-                  LABELS  rttov operators
+                  LABELS  rttov filters
                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
 #
     ufo_add_test( NAME    test_ufo_opr_atovs_rttovonedvar_transmittance
@@ -1268,7 +1268,7 @@ if( ${rttov_FOUND} )
                   ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/atovs_rttovonedvar_transmittance.yaml"
                   MPI     1
                   LIBS    ufo
-                  LABELS  rttov operators
+                  LABELS  rttov filters
                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
 #
     ufo_add_test( NAME    test_ufo_opr_atovs_rttovonedvar_transmittance_multiplatform
@@ -1278,7 +1278,7 @@ if( ${rttov_FOUND} )
                   ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/atovs_rttovonedvar_transmittance_multiplatform.yaml"
                   MPI     1
                   LIBS    ufo
-                  LABELS  rttov operators
+                  LABELS  rttov filters
                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
 endif( ${rttov_FOUND} )
 
@@ -1297,3 +1297,13 @@ if( ${ropp-ufo_FOUND} )
                   LABELS  ropp-ufo filters
                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
 endif( ${ropp-ufo_FOUND} )
+
+ufo_add_test( NAME    test_ufo_preprocess
+              TIER    1
+              ECBUILD
+              COMMAND ${CMAKE_BINARY_DIR}/bin/ufo_preprocess.x
+              ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/preprocess.yaml"
+              MPI     1
+              LIBS    ufo
+              LABELS  filters
+              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )

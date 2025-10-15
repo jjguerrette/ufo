@@ -65,7 +65,7 @@ class ObsErrorWithinGroupCovDiags : public oops::Application {
     params.deserialize(fullConfig);
 
     ioda::ObsSpace obsdb(params.obsSpace.value().toConfiguration(), this->getComm(),
-                         util::TimeWindow(fullConfig.getSubConfiguration("time window")),
+                         util::TimeWindow(params.timeWindow.value()),
                          this->getComm());
     ioda::ObsVector randomVec(obsdb);
     randomVec.random();

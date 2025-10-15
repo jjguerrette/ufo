@@ -1,0 +1,21 @@
+time window:
+  begin: 2018-04-14T20:30:00Z
+  end: 2018-04-15T03:30:00Z
+
+obs space:
+  name: Aircraft
+  obsdatain:
+    engine:
+      type: H5File
+      obsfile: Data/ufo/testinput_tier_1/aircraft_obs_2018041500_m.nc4
+  obsdataout:
+    engine:
+      type: H5File
+      obsfile: Data/aircraft_obs_2018041500_m_out_preprocess.nc4
+  simulated variables: [airTemperature]
+  observed variables: [airTemperature]
+obs filters:
+- filter: Gaussian Thinning
+  horizontal_mesh:   1111.949266 #km = 10 deg at equator
+  action:
+    name: reduce obs space

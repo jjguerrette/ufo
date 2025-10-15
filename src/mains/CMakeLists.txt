@@ -12,3 +12,8 @@ ecbuild_add_executable( TARGET  ufo_obserrorcov_diags.x
                         SOURCES ufoObsErrorWithinGroupCovDiags.cc
                         LIBS    ufo
                        )
+
+ecbuild_add_executable( TARGET  ufo_preprocess.x
+                        SOURCES ufoRunPreProcess.cc
+                        LIBS    ufo
+                       )
