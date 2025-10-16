@@ -1380,13 +1380,13 @@ real(kind_real), allocatable :: ObsTb(:,:)
     !Vegetation_Type
     call ufo_geovals_get_var(geovals, var_sfc_vegtyp, geoval)
     do k1 = 1, n_Profiles
-      sfc(k1)%Vegetation_Type = int(geoval%vals(1, k1))
+      sfc(k1)%Vegetation_Type = nint(geoval%vals(1, k1))
     end do
 
     !Soil_Type
     call ufo_geovals_get_var(geovals, var_sfc_soiltyp, geoval)
     do k1 = 1, n_Profiles
-      sfc(k1)%Soil_Type = int(geoval%vals(1, k1))
+      sfc(k1)%Soil_Type = nint(geoval%vals(1, k1))
     end do
   end if
 
