@@ -42,6 +42,11 @@ void CosineOfLatitudeTimesOrbitNode::compute(const ioda::ObsSpace & odb,
 
   for (std::size_t jloc = 0; jloc < nlocs; ++jloc) {
     for (std::size_t jvar = 0; jvar < nvars; ++jvar) {
+      if (node[jloc] != 0 && node[jloc] != 1 && node[jloc] != -1) {
+        throw eckit::BadParameter(std::to_string(node[jloc]) +
+         " is not a valid satelliteAscendingFlag. "
+         "Possible values are 0,1,-1.", Here());
+      }
       int adjusted_node = (node[jloc] == 0) ? -1 : node[jloc];
       out[jloc * nvars + jvar] = adjusted_node * cos(cenlat[jloc] * Constants::deg2rad);
     }

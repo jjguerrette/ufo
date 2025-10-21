@@ -1,0 +1,39 @@
+time window:
+  begin: 2020-11-01T09:00:00Z
+  end: 2020-11-01T15:00:00Z
+
+observations:
+- obs space:
+    name: ssmis_f17
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/instruments/radiance/ssmis_f17_obs_cos_lat_predictor_neg.nc4
+    simulated variables: [brightnessTemperature]
+    channels: 1-24
+  # obsdataout:
+  #   engine:
+  #     type: H5File
+  #     obsfile: Data/cosineOfLatitudeTimesOrbitNode_out.nc4
+  obs bias:
+    variational bc:
+      predictors:
+      - name: cosineOfLatitudeTimesOrbitNode
+  tolerance: 1.0e-6
+- obs space:
+    name: ssmis_f17
+    obsdatain:
+      engine:
+        type: H5File
+        obsfile: Data/ufo/testinput_tier_1/instruments/radiance/ssmis_f17_obs_cos_lat_predictor_badvalue.nc4
+    simulated variables: [brightnessTemperature]
+    channels: 1-24
+  # obsdataout:
+  #   engine:
+  #     type: H5File
+  #     obsfile: Data/cosineOfLatitudeTimesOrbitNode_out.nc4
+  obs bias:
+    variational bc:
+      predictors:
+      - name: cosineOfLatitudeTimesOrbitNode
+  expectExceptionWithMessage: not a valid satelliteAscendingFlag. Possible values are 0,1,-1.

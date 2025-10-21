@@ -202,6 +202,16 @@ ufo_add_test( NAME    test_ufo_constant_predictor
               LIBS    ufo
               LABELS  unit_tests predictors
               WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
+
+ufo_add_test( NAME    test_ufo_cosine_of_latitude_predictor
+              TIER    1
+              ECBUILD
+              COMMAND ${CMAKE_BINARY_DIR}/bin/test_Predictor.x
+              ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/cosine_of_latitude_predictor.yaml"
+              MPI     1
+              LIBS    ufo
+              LABELS  unit_tests predictors
+              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
 #
 ufo_add_test( NAME    test_ufo_legendre_predictor
               TIER    1
@@ -238,6 +248,16 @@ ufo_add_test( NAME    test_ufo_satellite_selector_predictor
               ECBUILD
               COMMAND ${CMAKE_BINARY_DIR}/bin/test_Predictor.x
               ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/satellite_selector_predictor.yaml"
+              MPI     1
+              LIBS    ufo
+              LABELS  unit_tests predictors
+              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
+#
+ufo_add_test( NAME    test_ufo_sine_of_latitude_predictor
+              TIER    1
+              ECBUILD
+              COMMAND ${CMAKE_BINARY_DIR}/bin/test_Predictor.x
+              ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/sine_of_latitude_predictor.yaml"
               MPI     1
               LIBS    ufo
               LABELS  unit_tests predictors
