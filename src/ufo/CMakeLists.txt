@@ -18,7 +18,6 @@ add_subdirectory( variabletransforms )
 # Operators
 add_subdirectory( operators/aerosols )
 add_subdirectory( operators/atmvertinterplay )
-add_subdirectory( operators/atmsfcinterp )
 add_subdirectory( operators/columnretrieval )
 add_subdirectory( operators/backgrounderroridentity )
 add_subdirectory( operators/backgrounderrorvertinterp )
@@ -125,7 +124,6 @@ list( APPEND ufo_src_files
     ${product_src_files}
     ${vertinterp_src_files}
     ${atmvertinterplay_src_files}
-    ${atmsfcinterp_src_files}
     ${columnretrieval_src_files}
     ${crtm_src_files}
     ${rttov_src_files}

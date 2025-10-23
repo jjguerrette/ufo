@@ -6,28 +6,6 @@
 # Instrument tests for Surface-based marine observations (ship, buoy, C-MAN)
 
 
-# H(x) test
-ufo_add_test( NAME    instrument_sfcMarine_gfs_HofX
-              TIER    1
-              ECBUILD
-              COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsOperator.x
-              ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/sfcMarine_gfs_HofX.yaml"
-              MPI     1
-              LIBS    ufo
-              LABELS  sfcMarine HofX instrument
-              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
-
-# H(x) with QC
-ufo_add_test( NAME    instrument_sfcMarine_gfs_qc
-              TIER    1
-              ECBUILD
-              COMMAND ${CMAKE_BINARY_DIR}/bin/test_ObsFilters.x
-              ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/sfcMarine_gfs_qc.yaml"
-              MPI     1
-              LIBS    ufo
-              LABELS  sfcMarine QC instrument
-              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../../ )
-
 # H(x) with QC (GMAO setup)
 ufo_add_test( NAME    instrument_sfcMarine_geos_qc
               TIER    1
