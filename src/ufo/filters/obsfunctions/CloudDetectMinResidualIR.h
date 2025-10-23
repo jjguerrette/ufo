@@ -46,6 +46,9 @@ class CloudDetectMinResidualIRParameters : public oops::Parameters {
   /// Parameter for original observation error
   oops::OptionalParameter<std::vector<float>> obserrOriginal{"error parameter vector", this};
 
+  /// Parameter for using estimated cloud fraction to determine if the sky is clear
+  oops::OptionalParameter<float> CldFraction{"cldthreshold_clearsky", this};
+
   /// Name of the data group to which the observation error is applied (default: ObsErrorData)
   oops::Parameter<std::string> testObserr{"test_obserr", "ObsErrorData", this};
 

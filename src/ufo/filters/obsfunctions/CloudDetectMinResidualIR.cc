@@ -279,6 +279,7 @@ void CloudDetectMinResidualIR::compute(const ObsFilterData & in,
     int lcloud = 0;
     float cldfrac = 0.0;
     float cldprs = prsl[0][iloc] * 0.01;     // convert from [Pa] to [hPa]
+    float sum_min = 1.e20;
 
     // Loop through vertical layer from surface to model top
     for (size_t k = 0 ; k < nlevs ; ++k) {
@@ -309,8 +310,8 @@ void CloudDetectMinResidualIR::compute(const ObsFilterData & in,
           sum = sum + tmp * tmp * varinv_use[ichan][iloc];
           }
         }
-        if (sum < sum3) {
-          sum3 = sum;
+        if (sum < sum_min) {
+          sum_min = sum;
           lcloud = k + 1;   // array index + 1 -> model coordinate index
           cldfrac = cloudp;
           cldprs = prsl[k][iloc] * 0.01;
@@ -318,6 +319,17 @@ void CloudDetectMinResidualIR::compute(const ObsFilterData & in,
       }
     // end of vertical loop
     }
+
+  // Get threshold for cloud fraction to determine if the sky is clear
+  // If not explicitly specified in the YAML, the default(sum_min >= sum3) is used instead.
+  if (options_.CldFraction.value() != boost::none) {
+    float cldthreshold;
+    cldthreshold = options_.CldFraction.value().get();
+    if (cldfrac < cldthreshold)lcloud = 0;
+  } else {
+    if (sum_min >= sum3) lcloud = 0;
+    }
+
     // If more than 2% of the transmittance comes from the cloud layer,
     // reject the channel (marked as cloudy channel)
     float tao_cld = -999.0;
