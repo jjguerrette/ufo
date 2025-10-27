@@ -79,7 +79,6 @@ MODULE RADARZ_MODULE
   PUBLIC :: power_mom
   PUBLIC :: calc_N0x_mp
   PUBLIC :: calc_N0x_melt
-  PUBLIC :: gamma
   PUBLIC :: cal_N0
   PUBLIC :: calc_lamda_mp
   PUBLIC :: cal_Nt
@@ -516,7 +515,7 @@ TYPE(T_obs_dual) FUNCTION rainIceRefl(var_dsd,rho,flg)
   REAL(kind_real) :: tair_C
   REAL(kind_real) :: z_snow_thom
   REAL(kind_real) :: ntms, ntmh, ntmg
-  REAL(kind_real) :: gamma,exp_term,gam_term
+  REAL(kind_real) :: exp_term,gam_term
   logical :: firstcall = .true.
   SAVE firstcall
 
@@ -1298,7 +1297,6 @@ SUBROUTINE partialRefRain(N0,alpha,alp_a,alp_b,beta_a,beta_b,lamda,    &
   REAL(kind_real),INTENT(  OUT) :: refRainHH,refRainVV
 
   !local variables
-  REAL(kind_real) :: gamma
   REAL(kind_real) :: N0_units,lamda_units_h,lamda_units_v
   REAL(kind_real) :: gamma_h,expon_h,gamma_v,expon_v
 
@@ -1357,7 +1355,6 @@ SUBROUTINE partialRhoRain(N0,alpha,alp_a,alp_b,beta_a,beta_b,         &
   REAL(kind_real),INTENT(  OUT) :: refRainHV
 
   !local variables
-  REAL(kind_real) :: gamma
   REAL(kind_real) :: expon_hv,gamma_hv
   REAL(kind_real) :: N0_units,lamda_units_hv
 
@@ -1409,7 +1406,6 @@ SUBROUTINE partialRefIce(N0,alpha,Ai,Bi,Ci,alp_a,alp_b,beta_a,beta_b,   &
   !local variables
   REAL(kind_real) :: gamma_h, gamma_v, expon_h, expon_v
   REAL(kind_real) :: N0_units, lamda_units_h, lamda_units_v
-  REAL(kind_real) :: gamma
 
   gamma_h = gamma((alpha + 2.0_kind_real*dble(beta_a)+1.0_kind_real)/(3.0_kind_real*mu_x))
   expon_h = -(alpha+2*dble(beta_a)+1.0_kind_real)/(3.0_kind_real*mu_x)
@@ -1465,7 +1461,6 @@ SUBROUTINE partialRhoIce(N0,alpha,Ci,Di,alp_a,alp_b,beta_a,beta_b,rho_0,lamda,re
   !local variables
   REAL(kind_real) :: gamma_hv, expon
   REAL(kind_real) :: N0_units,lamda_units
-  REAL(kind_real) :: gamma
 
    gamma_hv = gamma((dble(beta_a)+dble(beta_b)+alpha + 1.0_kind_real)/(3.0_kind_real*mu_x))
    expon = -(alpha + dble(beta_a) + dble(beta_b) + 1.0_kind_real)/(3.0_kind_real*mu_x)
@@ -1888,7 +1883,6 @@ SUBROUTINE calc_N0x_mp(rhoa,rhoms,rhomh,rhomg,ntr,nts,ntms,nth,ntmh,ntg, &
   REAL(kind_real) :: mvd_r
   REAL(kind_real) :: dble_alfr
   REAL(kind_real) :: lamr
-  REAL(kind_real) :: gamma
   REAL(kind_real) :: xslwq,ygra1,zans1
   REAL(kind_real) :: N0_exp,N0_min
   REAL(kind_real) :: rg,am_g,oge1,cgg_1,cgg_2,cgg_3,ogg1,ogg2,ogmg,cge_1
@@ -2111,39 +2105,6 @@ SUBROUTINE calc_N0x_melt(rhoa,rhoms,rhomh,rhomg,ntr,nts,ntms,nth,ntmh, &
 
 END SUBROUTINE calc_N0x_melt
 
-FUNCTION gamma(xx)
-
-!  Modified from "Numerical Recipes"
-
-  IMPLICIT NONE
-
-! PASSING PARAMETERS:
-  REAL(kind_real), INTENT(IN   ) :: xx
-
-! LOCAL PARAMETERS:
-  REAL(kind_real) :: gamma
-  REAL(kind_real) :: ser,stp,tmp,x,y,cof(6)
-  INTEGER(kind_int)  :: j
-
-
-  SAVE cof,stp
-  DATA cof,stp/76.180091729471460_kind_real,-86.505320329416770_kind_real,               &
-       24.014098240830910_kind_real,-1.2317395724501550_kind_real,.1208650973866179e-2_kind_real,  &
-       -.5395239384953e-5_kind_real,2.50662827463100050_kind_real/
-  x=xx
-  y=x
-  tmp=x+5.50_kind_real
-  tmp=(x+0.50_kind_real)*log(tmp)-tmp
-  ser=1.0000000001900150_kind_real
-  do j=1,4
-     y=y+1.0_kind_real
-     ser=ser+cof(j)/y
-  enddo
-  gamma=tmp+log(stp*ser/x)
-  gamma= exp(gamma)
-
-END FUNCTION gamma
-
 SUBROUTINE cal_N0(rhoa,q,Ntx,rhox,alpha,N0,mu_x)
 !
 !-----------------------------------------------------------------------
@@ -2184,7 +2145,6 @@ SUBROUTINE cal_N0(rhoa,q,Ntx,rhox,alpha,N0,mu_x)
 
   REAL(kind_real), PARAMETER :: pi = 3.141592_kind_real   ! pi
   REAL(kind_real) :: gamma1, gamma4
-  REAL(kind_real) :: gamma
 
   REAL(kind_real):: lamda
 
@@ -2435,7 +2395,6 @@ SUBROUTINE cal_Nt(rhoa,q,N0,cx,alpha,Ntx,mu_x)
   REAL(kind_real),  INTENT(  OUT) :: Ntx
 
   REAL(kind_real) :: gamma1,gamma4
-  REAL(kind_real) :: gamma
 
   gamma1 = gamma((1.0_kind_real+alpha)/(3.0_kind_real*mu_x))
   gamma4 = gamma((4.0_kind_real+alpha)/(3.0_kind_real*mu_x))
@@ -2481,7 +2440,6 @@ SUBROUTINE cal_lamda(rhoa,q,Ntx,rhox,alpha,lamda,mu_x)
   REAL(kind_real), PARAMETER :: pi = 3.141592_kind_real   ! pi
 
   REAL(kind_real) :: gamma1, gamma4
-  REAL(kind_real) :: gamma
 
   gamma1 = gamma((1.0_kind_real+alpha)/(3.0_kind_real*mu_x))
   gamma4 = gamma((4.0_kind_real+alpha)/(3.0_kind_real*mu_x))
