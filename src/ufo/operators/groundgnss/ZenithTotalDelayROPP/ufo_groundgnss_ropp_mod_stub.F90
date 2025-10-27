@@ -46,11 +46,6 @@ subroutine ufo_groundgnss_ropp_simobs(self, geovals, hofx, obss)
 
   character(max_string)              :: err_msg
 
-  write(err_msg,*) "TRACE: ufo_groundgnss_ropp_simobs_stub: begin"
-  call fckit_log%info(err_msg)
-  write(err_msg,*) "WARNING: GroundgnssROPP operator cannot run when ROPP code is not available"
-  call fckit_log%info(err_msg)
-
 ! check if nobs is consistent in geovals & hofx
   if (geovals%nlocs /= size(hofx)) then
       write(err_msg,*) myname_, ' error: nlocs inconsistent!'

@@ -101,8 +101,6 @@ subroutine ufo_groundgnss_metoffice_tlad_settraj(self, geovals, obss)
   real(kind_real), allocatable :: za(:)              ! Model heights of rho levs (in pressure monotonic order)
   real(kind_real), allocatable :: zb(:)              ! Model heights of theta levs (in pressure monotonic order)
 
-  call fckit_log%info("TRACE: ufo_groundgnss_metoffice_tlad_settraj: begin")
-
 ! Make sure that any previous values of geovals don't get carried over
   call self%delete()
 
@@ -190,8 +188,6 @@ subroutine ufo_groundgnss_metoffice_simobs_tl(self, geovals, hofx, obss)
   real(kind_real), allocatable :: humidity_d(:) ! Increment to the specific humidity  (in pressure monotonic order)
   real(kind_real), allocatable :: x_d(:)        ! Increment to the complete state
 
-  call fckit_log%info("TRACE: ufo_groundgnss_metoffice_simobs_tl: begin")
-
 ! Check if trajectory was set
   if (.not. self%ltraj) then
      call abor1_ftn(trim(myname_) // ' trajectory wasnt set!')
@@ -231,8 +227,6 @@ subroutine ufo_groundgnss_metoffice_simobs_tl(self, geovals, hofx, obss)
   deallocate(pressure_d)
   deallocate(humidity_d)
 
-  call fckit_log%info("TRACE: ufo_groundgnss_metoffice_simobs_tl: complete")
-
   return
 
 end subroutine ufo_groundgnss_metoffice_simobs_tl
@@ -269,8 +263,6 @@ subroutine ufo_groundgnss_metoffice_simobs_ad(self, geovals, hofx, obss)
   real(kind_real), allocatable :: pressure_d(:) ! Perturbation to pressure (monotonic order)
   real(kind_real), allocatable :: humidity_d(:) ! Perturbation to specific humidity  (in pressure monotonic order)
 
-  call fckit_log%info("TRACE: ufo_groundgnss_metoffice_simobs_ad: begin")
-
 ! Check if trajectory was set
   if (.not. self%ltraj) then
      call abor1_ftn(trim(myname_) // ' trajectory wasnt set!')
@@ -300,8 +292,6 @@ subroutine ufo_groundgnss_metoffice_simobs_ad(self, geovals, hofx, obss)
     end do obs_loop
   end if
   deallocate(x_d)
-
-  call fckit_log%info("TRACE: ufo_groundgnss_metoffice_simobs_ad: complete")
 
   return
 

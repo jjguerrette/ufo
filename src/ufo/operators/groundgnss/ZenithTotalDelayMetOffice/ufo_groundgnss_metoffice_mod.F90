@@ -91,10 +91,6 @@ subroutine ufo_groundgnss_metoffice_simobs(self, geovals, hofx, obss)
   REAL(kind_real), allocatable :: za(:)         ! Model heights of rho levs (in pressure monotonic order)
   REAL(kind_real), allocatable :: zb(:)         ! Model heights of theta levs (in pressure monotonic order)
 
-
-  write(err_msg,*) "TRACE: ufo_groundgnss_metoffice_simobs: begin"
-  call fckit_log%info(err_msg)
-
 ! check if nlocs is consistent in geovals & hofx
   IF (geovals%nlocs /= size(hofx)) THEN
     write(err_msg,*) myname_, ' error: nlocs inconsistent!'
@@ -114,9 +110,6 @@ subroutine ufo_groundgnss_metoffice_simobs(self, geovals, hofx, obss)
   allocate(zStation(nobs))
 
   call obsspace_get_db(obss, "MetaData", "stationElevation", zStation)
-
-  write(err_msg,*) "TRACE: ufo_groundgnss_metoffice_simobs: begin observation loop, nobs =  ", nobs
-  call fckit_log%info(err_msg)
 
   hofx(:) = 0
 
@@ -153,9 +146,6 @@ subroutine ufo_groundgnss_metoffice_simobs(self, geovals, hofx, obss)
 
     end do obs_loop
   endif
-  
-  write(err_msg,*) "TRACE: ufo_groundgnss_metoffice_simobs: completed"
-  call fckit_log%info(err_msg)
   
   deallocate(pressure)
   deallocate(humidity)

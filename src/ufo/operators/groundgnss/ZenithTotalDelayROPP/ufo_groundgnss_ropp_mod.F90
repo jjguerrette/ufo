@@ -83,8 +83,6 @@ subroutine ufo_groundgnss_ropp_simobs(self, geovals, hofx, obss)
   real(kind_real)                    :: model_ztd                 ! simulated observation (zenith total delay)
   integer                            :: iflip                     ! monotonic increasing height
   logical                            :: l_linear                  ! indicator of refractivity interpolation method
-  write(err_msg,*) "TRACE: ufo_groundgnss_ropp_simobs: begin"
-  call fckit_log%info(err_msg)
 
 ! check if nlocs is consistent in geovals & hofx
   if (geovals%nlocs /= size(hofx)) then
@@ -132,9 +130,6 @@ subroutine ufo_groundgnss_ropp_simobs(self, geovals, hofx, obss)
 
      allocate(ichk(nlev))
      ichk(:) = 0   ! this will hold QC values for observation from QC flags
-
-     write(err_msg,*) "TRACE: ufo_groundgnss_ropp_simobs: begin observation loop, nobs =  ", nobs
-     call fckit_log%info(err_msg)   ! always print
 
      obs_loop: do iobs = 1, nobs 
 
@@ -197,9 +192,6 @@ subroutine ufo_groundgnss_ropp_simobs(self, geovals, hofx, obss)
      deallocate(obsHeight)
      deallocate(obsValue)
   end if ! nobs > 0
-
-  write(err_msg,*) "TRACE: ufo_groundgnss_ropp_simobs: completed"
-  call fckit_log%info(err_msg)
 
 end subroutine ufo_groundgnss_ropp_simobs
 ! ------------------------------------------------------------------------------
