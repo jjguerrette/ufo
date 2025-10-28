@@ -96,9 +96,9 @@ subroutine ufo_radarradialvelocity_simobs(self, geovals, obss, nvars, nlocs, hof
   allocate(vterminal(nlocs))
 
   call obsspace_get_db(obss, "MetaData", "height", obsvcoord)
-  call obsspace_get_db(obss, "MetaData", "cosazm_costilt", cosazm_costilt)
-  call obsspace_get_db(obss, "MetaData", "sinazm_costilt", sinazm_costilt)
-  call obsspace_get_db(obss, "MetaData", "sintilt", sintilt)
+  call obsspace_get_db(obss, "MetaData", "cosAzimuthCosTilt", cosazm_costilt)
+  call obsspace_get_db(obss, "MetaData", "sinAzimuthCosTilt", sinazm_costilt)
+  call obsspace_get_db(obss, "MetaData", "sinTilt", sintilt)
 
 ! put observation operator code here
 ! Allocate arrays for interpolation weights

@@ -10,7 +10,7 @@ observations:
     obsdatain:
       engine:
         type: H5File
-        obsfile: Data/ufo/testinput_tier_1/radar_rw_obs_2020101300_m.nc4
+        obsfile: Data/ufo/testinput_tier_1/radar_rw_obs_2020101300_m.nc
 #   obsdataout:
 #     engine:
 #       type: H5File
