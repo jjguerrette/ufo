@@ -100,7 +100,7 @@ type crtm_conf
  logical :: Cloud_Seeding = .false.
  logical :: cal_cloud_frac_in_fov = .false.
  logical :: cal_cloud_reff_in_fov  = .false.
- logical :: precip_hydro = .false. 
+ logical :: precip_hydro = .false.
  logical :: flag_deep_conv_mass_flux = .true.
 end type crtm_conf
 
@@ -203,7 +203,7 @@ END INTERFACE qsmith
            IceSphere                     , &
            LiquidSphere                  ]
 
-! Clouds used in the Thompson microphysics scheme to calculate cloud fraction or particle radius 
+! Clouds used in the Thompson microphysics scheme to calculate cloud fraction or particle radius
  integer, parameter :: &
       thompson_Cloud_Id(5) = &
          [ WATER_CLOUD                   , &
@@ -335,7 +335,7 @@ character(max_string) :: cloud_reff_method
      if (cmp_strings(cloud_fract_method,'thompson') .or. &
              cmp_strings(cloud_fract_method,'Thompson')) then
        conf%cal_cloud_frac_in_fov = .true.
-       !  Get scale-aware mass-flux deep conv scheme flag used in calculating 
+       !  Get scale-aware mass-flux deep conv scheme flag used in calculating
        !  cloud fraction by the Thompson method
        if (f_confOper%has("convection_mass_flux_flag")) then
          call f_confOper%get_or_die("convection_mass_flux_flag",conf%flag_deep_conv_mass_flux)
@@ -428,10 +428,10 @@ character(max_string) :: cloud_reff_method
 
    conf%Clouds(jspec,1:2) = UFO_Clouds(ivar,1:2)
    conf%Cloud_Id(jspec)   = CRTM_Cloud_Id(ivar)
-   if (conf%Cloud_Id(jspec) == RAIN_CLOUD .or. conf%Cloud_Id(jspec) == SNOW_CLOUD .or. & 
-        conf%Cloud_Id(jspec) == GRAUPEL_CLOUD) then
-     conf%precip_hydro = .true. 
-   end if  
+   if (conf%Cloud_Id(jspec) == RAIN_CLOUD .or. conf%Cloud_Id(jspec) == SNOW_CLOUD .or. &
+        conf%Cloud_Id(jspec) == GRAUPEL_CLOUD .or. conf%Cloud_Id(jspec) == HAIL_CLOUD) then
+     conf%precip_hydro = .true.
+   end if
  end do
 
  ! Aerosols
@@ -767,7 +767,7 @@ real(kind_real), allocatable :: alon(:),alat(:)
 enddo
 
  if (Is_Active_Sensor) then
-    call obsspace_get_db(obss, "MetaData", "sequenceNumber", seqNum)    
+    call obsspace_get_db(obss, "MetaData", "sequenceNumber", seqNum)
     if (obsspace_has(obss, "MetaData", "extendedObsSpace")) then
        call obsspace_get_db(obss, "MetaData", "extendedObsSpace", extendedObs)
     else
@@ -779,7 +779,7 @@ enddo
        actObsAvgQC = 1
     endif
  endif
- 
+
  allocate(alon(n_Profiles),alat(n_Profiles))
  if (obsspace_has(obss, "MetaData", "latitude")) call obsspace_get_db(obss, "MetaData", "latitude", alat)
  if (obsspace_has(obss, "MetaData", "longitude")) call obsspace_get_db(obss, "MetaData", "longitude", alon)
@@ -828,14 +828,14 @@ enddo
    ! that are beyond threshold. Skip those.
    if (Is_Active_Sensor) then
       if (extendedObs(jprofile) == 0) Options(jprofile)%Skip_Profile = .TRUE.
-      if (actObsAvgQC(jprofile) == 0) Options(jprofile)%Skip_Profile = .TRUE.       
+      if (actObsAvgQC(jprofile) == 0) Options(jprofile)%Skip_Profile = .TRUE.
       if (.not.  Options(jprofile)%Skip_Profile) then
          ! the second dimension is for channels so if any channel is missing then skip it
          Options(jprofile)%Skip_Profile = any(abs(ObsVal(jprofile,:)) >= threshold_reflectivity)
-      endif   
-   endif  
+      endif
+   endif
  end do profile_loop
-  
+
 end subroutine ufo_crtm_skip_profiles
 
 ! ------------------------------------------------------------------------------
@@ -961,6 +961,7 @@ integer  :: id_cld(1)
     ! cloud species content
     CALL ufo_geovals_get_var(geovals, conf%Clouds(jspec,1), geoval)
     do k1 = 1, n_Profiles
+      where( geoval%vals(:, k1) < 0.0_kind_real ) geoval%vals(:, k1) = 0.0_kind_real
       atm(k1)%Cloud(jspec)%Water_Content = geoval%vals(:, k1)
       atm(k1)%Cloud(jspec)%Type = conf%Cloud_Id(jspec)
     end do
@@ -969,6 +970,7 @@ integer  :: id_cld(1)
     if (.not. conf%cal_cloud_reff_in_fov) then
       CALL ufo_geovals_get_var(geovals, conf%Clouds(jspec,2), geoval)
       do k1 = 1, n_Profiles
+        where( geoval%vals(:, k1) < 0.0_kind_real ) geoval%vals(:, k1) = 0.0_kind_real
         atm(k1)%Cloud(jspec)%Effective_Radius = geoval%vals(:, k1)
       end do
     end if
@@ -1003,14 +1005,14 @@ integer  :: id_cld(1)
       geoval_qsat(:, k1)=geoval%vals(:, k1)
     end do
 
-    ! get "moist_air_density"      
+    ! get "moist_air_density"
     call ufo_geovals_get_var(geovals, var_airdens, geoval)
     allocate(airdens(n_Layers,n_profiles))
     do k1 = 1, n_Profiles
       airdens(:, k1)=geoval%vals(:, k1)
     end do
 
-    ! get specific_humidity and relative_humidity which can be 
+    ! get specific_humidity and relative_humidity which can be
     ! different from atm(k1)%Relative_Humidity.
     call ufo_geovals_get_var(geovals, var_q, geoval)
     allocate(specific_humidity(n_Layers,n_profiles))
@@ -1019,7 +1021,7 @@ integer  :: id_cld(1)
       specific_humidity(:, k1)=geoval%vals(:, k1)
     end do
     where(specific_humidity < qsmall) specific_humidity=qsmall
-    relative_humidity=specific_humidity/geoval_qsat 
+    relative_humidity=specific_humidity/geoval_qsat
 
     ! get cloud_ice_number_concentration
     call ufo_geovals_get_var(geovals, var_ni, geoval)
@@ -1057,7 +1059,7 @@ integer  :: id_cld(1)
                ! skip 'call calc_thompson_reff' if clouds are zeroed-out.
                cycle profile_loop_reff
              end if
-          end if 
+          end if
           if (conf%cal_cloud_reff_in_fov) then
             call calc_thompson_reff(airdens(:,k1),atm(k1)%Temperature,clouds_mixingratio(:,k1), &
                   conf%Cloud_Id(jspec), cloud_ice_number(:,k1), rain_number(:,k1), &
@@ -1074,7 +1076,7 @@ integer  :: id_cld(1)
              ! skip 'call calc_thompson_cloudfrac' if clouds are zeroed-out.
              cycle profile_loop_cloudfrac
            end if
-        end if 
+        end if
         pressure_KPa = atm(k1)%Pressure * 0.1_kind_real
         call calc_thompson_cloudfrac(n_Layers, conf%flag_deep_conv_mass_flux, pressure_KPa, &
                 cloudmxr_sum(:,k1), relative_humidity(:,k1), geoval_qsat(:, k1), &
@@ -1116,9 +1118,9 @@ integer  :: id_cld(1)
       end do
     end do
   end if
-          
+
   if ( (conf%n_Clouds > 0) .and. (.NOT. IsActiveSensor) ) then
-    if ( conf%Cloud_Seeding ) then 
+    if ( conf%Cloud_Seeding ) then
       profile_loop_cs: do k1 = 1, n_Profiles
         ! Do not check and reset these cloud values if clouds are zero-ed out.
         if (present(zeroCloudInCRTM)) then
@@ -1542,7 +1544,7 @@ character(len=6) :: chan
      else
         varname = 'brightnessTemperature_' // trim(chan)
      endif
- endif 
+ endif
 
 end subroutine get_var_name
 
@@ -2303,7 +2305,7 @@ end function uv_to_wdir
   real(kind_real)    :: qx
   real(kind_real)    :: reff_min, reff_max
   real(kind_real):: lam_i,lam_w,lam_r, lam_g,lam_exp, am_r,am_w,am_i,am_g
-  
+
   ! Parameters
   real(kind_real), parameter :: qmin = 1.0e-12_kind_real          ! [kg/kg ]
   !.. droplet number concentration.
@@ -2466,10 +2468,10 @@ end function uv_to_wdir
 !
 ! program history log:
 !
-!   2023-01-24  
+!   2023-01-24
 !
 !   language: f90
-!   
+!
 !  ====================  definition of variables  ====================  !
 ! input variables:                                                      !
 !   prsl  (msig) : model layer mean pressure in cb (1000 Pa)            !
@@ -2488,7 +2490,7 @@ end function uv_to_wdir
 
 !  ---  inputs:
   integer(c_int), intent(in) :: n_Layers
-  real(kind_real) , dimension(n_Layers), intent(in) :: prsl, clwf, rhly, qstl  
+  real(kind_real) , dimension(n_Layers), intent(in) :: prsl, clwf, rhly, qstl
   logical, intent(in) :: lmfdeep2
 
 !  ---  outputs
@@ -2497,7 +2499,7 @@ end function uv_to_wdir
 !  ---  local variables:
   real(kind_real)  :: clwmin, clwm, clwt, onemrh, value, tem1, tem2
   integer(c_int) :: k
- 
+
 !> - Compute layer cloud fraction.
   clwmin = 0.0_kind_real
   do k = n_Layers, 2, -1  ! Layer numbers are top-down in UFO.
@@ -2509,12 +2511,12 @@ end function uv_to_wdir
         else
            onemrh= max( 1.e-10_kind_real, 1.0_kind_real-rhly(k) )
            clwm  = clwmin / max( 0.01_kind_real, prsl(k)*0.01_kind_real )
-           tem1  = min(max((onemrh*qstl(k))**0.49_kind_real,0.0001_kind_real),1.0_kind_real) 
+           tem1  = min(max((onemrh*qstl(k))**0.49_kind_real,0.0001_kind_real),1.0_kind_real)
            if (lmfdeep2) then
               tem1  = xrc3 / tem1
            else
               tem1  = 100.0_kind_real / tem1
-           endif 
+           endif
            value = max( min( tem1*(clwf(k)-clwm), 50.0_kind_real ), 0.0_kind_real )
            tem2  = sqrt( sqrt(rhly(k)) )
            cldtot(k) = max( tem2*(1.0_kind_real-exp(-value)), 0.0_kind_real )
