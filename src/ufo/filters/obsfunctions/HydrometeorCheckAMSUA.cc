@@ -117,20 +117,24 @@ void HydrometeorCheckAMSUA::compute(const ObsFilterData & in,
   in.get(Variable(hofxgrp+"/brightnessTemperature", channels_)[ich536], hofx536);
 
   // Get ObsBiasTerm: constant term for 23.8GHz channel
-  std::vector<float> bias_const238(nlocs);
-  in.get(Variable(biastermgrp+"/constant", channels_)[ich238], bias_const238);
+  std::vector<float> bias_const238(nlocs, 0.0f);
+  if (in.has(Variable(biastermgrp+"/constant", channels_)[ich238])) {
+    in.get(Variable(biastermgrp+"/constant", channels_)[ich238], bias_const238);
+  }
 
   // Get ObsBiasTerm: scan angle terms for 23.8GHz channel
   size_t nangs = 4;
-  std::vector<float> values(nlocs);
+  std::vector<float> values(nlocs, 0.0f);
   std::vector<std::string> scanterms(nangs);
-  std::vector<float> bias_scanang238(nlocs);
+  std::vector<float> bias_scanang238(nlocs, 0.0f);
   scanterms[0] = biastermgrp+"/sensorScanAngle_order_4";
   scanterms[1] = biastermgrp+"/sensorScanAngle_order_3";
   scanterms[2] = biastermgrp+"/sensorScanAngle_order_2";
   scanterms[3] = biastermgrp+"/sensorScanAngle";
   for (size_t iang = 0; iang < nangs; ++iang) {
-    in.get(Variable(scanterms[iang], channels_)[ich238], values);
+    if (in.has(Variable(scanterms[iang], channels_)[ich238])) {
+      in.get(Variable(scanterms[iang], channels_)[ich238], values);
+    }
     for (size_t iloc = 0; iloc < nlocs; ++iloc) {
       bias_scanang238[iloc] = bias_scanang238[iloc] + values[iloc];
     }
