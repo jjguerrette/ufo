@@ -25,7 +25,7 @@ static PredictorMaker<TerminatorTimeDelta>
 // -----------------------------------------------------------------------------
 
 TerminatorTimeDelta::TerminatorTimeDelta(const Parameters_ & parameters,
-  const oops::Variables & vars)
+  const oops::ObsVariables & vars)
   : PredictorBase(parameters, vars),
     order_(parameters.order),
     day_night_(parameters.day_night),

@@ -15,7 +15,7 @@
 #include "ufo/predictors/PredictorBase.h"
 
 namespace oops {
-  class Variables;
+  class ObsVariables;
 }
 
 namespace ioda {
@@ -112,7 +112,7 @@ class TerminatorTimeDelta : public PredictorBase {
   /// This typedef is used by the PredictorFactory.
   typedef TerminatorTimeDeltaParameters Parameters_;
 
-  TerminatorTimeDelta(const Parameters_ &, const oops::Variables &);
+  TerminatorTimeDelta(const Parameters_ &, const oops::ObsVariables &);
 
   void compute(const ioda::ObsSpace &,
                const GeoVaLs &,
