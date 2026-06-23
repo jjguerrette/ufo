@@ -8,9 +8,9 @@
 #ifndef UFO_PREDICTORS_TERMINATORTIMEDELTA_H_
 #define UFO_PREDICTORS_TERMINATORTIMEDELTA_H_
 
+#include "oops/util/parameters/Parameter.h"
 #include "oops/util/parameters/ParameterTraits.h"
 #include "oops/util/parameters/RequiredParameter.h"
-#include "oops/util/parameters/Parameter.h"
 
 #include "ufo/predictors/PredictorBase.h"
 
@@ -58,13 +58,11 @@ namespace oops {
 
 template <>
 struct ParameterTraits<ufo::DayNightType> :
-    public EnumParameterTraits<ufo::DayNightTypeParameterTraitsHelper>
-{};
+    public EnumParameterTraits<ufo::DayNightTypeParameterTraitsHelper> {};
 
 template <>
 struct ParameterTraits<ufo::FunctionalForm> :
-    public EnumParameterTraits<ufo::FunctionalFormParameterTraitsHelper>
-{};
+    public EnumParameterTraits<ufo::FunctionalFormParameterTraitsHelper> {};
 
 }  // namespace oops
 

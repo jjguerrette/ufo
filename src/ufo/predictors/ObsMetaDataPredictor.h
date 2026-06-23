@@ -28,6 +28,31 @@ namespace ufo {
 
 // -----------------------------------------------------------------------------
 
+enum class FunctionalForm {
+  POLYNOMIAL, COS, SIN
+};
+
+struct FunctionalFormParameterTraitsHelper {
+  typedef FunctionalForm EnumType;
+  static constexpr char enumTypeName[] = "FunctionalForm";
+  static constexpr util::NamedEnumerator<FunctionalForm> namedValues[] = {
+    { FunctionalForm::POLYNOMIAL, "polynomial" },
+    { FunctionalForm::COS, "cos" },
+    { FunctionalForm::SIN, "sin" }
+  };
+};
+
+}  // namespace ufo
+
+namespace oops {
+
+template <>
+struct ParameterTraits<ufo::FunctionalForm> :
+    public EnumParameterTraits<ufo::FunctionalFormParameterTraitsHelper> {};
+}  // namespace oops
+
+namespace ufo {
+
 /// Configuration parameters of the predictor.
 class ObsMetaDataPredictorParameters : public PredictorParametersBase {
   OOPS_CONCRETE_PARAMETERS(ObsMetaDataPredictorParameters, PredictorParametersBase);
@@ -37,10 +62,18 @@ class ObsMetaDataPredictorParameters : public PredictorParametersBase {
   ///
   /// \note If this option is set, a suffix containing its value (even if it's equal to 1) will be
   /// appended to the predictor name.
-  oops::OptionalParameter<int> order{"order", this};
+  oops::OptionalParameter<float> order{"order", this};
 
   /// Name of the variable (from the obs MetaData group) containing the predictor.
   oops::RequiredParameter<std::string> varName{"variable", this};
+
+  /// Functional form of the predictor, either polynomial, cos, or sin.
+  /// Default is polynomial.
+  oops::Parameter<FunctionalForm> functional_form{"functional form", FunctionalForm::POLYNOMIAL,
+    this};
+
+  /// Multiplier to apply to the variable. Default is 1.0.
+  oops::Parameter<float> multiplier{"multiplier", 1.0, this};
 };
 
 // -----------------------------------------------------------------------------
@@ -62,6 +95,8 @@ class ObsMetaDataPredictor : public PredictorBase {
  private:
   int order_;
   std::string variable_;
+  float multiplier_;
+  FunctionalForm functional_form_;
 };
 
 // -----------------------------------------------------------------------------

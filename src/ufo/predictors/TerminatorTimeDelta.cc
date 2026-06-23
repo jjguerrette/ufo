@@ -48,7 +48,8 @@ void TerminatorTimeDelta::compute(const ioda::ObsSpace & odb,
                                              ioda::ObsVector & out) const {
   const std::size_t nlocs = out.nlocs();
   const std::size_t nvars = out.nvars();
-  const float missingFloat = util::missingValue<float>();
+  const float fmiss = util::missingValue<float>();
+  const double dmiss = util::missingValue<double>();
 
   std::vector<int> day_or_night_qualifier(nlocs, 0);
   odb.get_db("MetaData", "dayOrNightQualifier", day_or_night_qualifier);
@@ -69,17 +70,19 @@ void TerminatorTimeDelta::compute(const ioda::ObsSpace & odb,
   // delta_t_predictor. The solution is to set both to zero in this case, then handle the case of
   // total_delta_t == 0.0 below.
   for (std::size_t jloc = 0; jloc < nlocs; ++jloc) {
-    if (delta_t_since_last[jloc] != missingFloat && delta_t_to_next[jloc] != missingFloat) {
+    if (delta_t_since_last[jloc] != fmiss && delta_t_to_next[jloc] != fmiss) {
       if (delta_t_since_last[jloc] == -delta_t_to_next[jloc]) {
         delta_t_since_last[jloc] = 0.0;
         delta_t_to_next[jloc] = 0.0;
       }
       // check that delta_t's are non-negative besides the case above
       if (delta_t_since_last[jloc] < 0.0) {
-        throw eckit::Exception("delta_t_since_last is negative: " + std::to_string(delta_t_since_last[jloc]));
+        throw eckit::Exception("delta_t_since_last is negative: " +
+          std::to_string(delta_t_since_last[jloc]));
       }
       if (delta_t_to_next[jloc] < 0.0) {
-        throw eckit::Exception("delta_t_to_next is negative: " + std::to_string(delta_t_to_next[jloc]));
+        throw eckit::Exception("delta_t_to_next is negative: " +
+          std::to_string(delta_t_to_next[jloc]));
       }
     }
   }
@@ -90,7 +93,9 @@ void TerminatorTimeDelta::compute(const ioda::ObsSpace & odb,
 
   // only normalize delta_t if the functional form is cosine or sine,
   // which places the predictor in the range of -1 to 1
-  bool normalize = (functional_form_ == FunctionalForm::COS || functional_form_ == FunctionalForm::SIN);
+  bool normalize = (
+    functional_form_ == FunctionalForm::COS ||
+    functional_form_ == FunctionalForm::SIN);
 
   for (std::size_t jloc = 0; jloc < nlocs; ++jloc) {
     // the delta_t_predictor is:
@@ -102,8 +107,8 @@ void TerminatorTimeDelta::compute(const ioda::ObsSpace & odb,
     // * == ±1 if the satellite is at the day-to-night terminator
     // when not normalized, the delta_t_predictor is converted to hours
 
-    delta_t_predictor = missingFloat;
-    if (delta_t_since_last[jloc] != missingFloat && delta_t_to_next[jloc] != missingFloat) {
+    delta_t_predictor = fmiss;
+    if (delta_t_since_last[jloc] != fmiss && delta_t_to_next[jloc] != fmiss) {
       if (day_or_night_qualifier[jloc] == 1) {
         // night (negative)
         delta_t_predictor = - delta_t_to_next[jloc];
@@ -122,11 +127,12 @@ void TerminatorTimeDelta::compute(const ioda::ObsSpace & odb,
     }
 
     // Calculate the predictor value
-    predictor_value = 0.0;
-    if (delta_t_predictor != missingFloat) {
+    predictor_value = fmiss;
+    if (delta_t_predictor != fmiss) {
       // Check that delta_t_predictor is within the range of -1 to 1
       if (normalize && (delta_t_predictor < -1.0 || delta_t_predictor > 1.0)) {
-        throw eckit::Exception("delta_t_predictor is out of range: " + std::to_string(delta_t_predictor));
+        throw eckit::Exception("delta_t_predictor is out of range: " +
+          std::to_string(delta_t_predictor));
       }
       switch (functional_form_) {
         case FunctionalForm::POLYNOMIAL:
@@ -145,11 +151,15 @@ void TerminatorTimeDelta::compute(const ioda::ObsSpace & odb,
 
     // Check that predictor_value is within the range of -1 to 1
     if (normalize && (predictor_value < -1.0 || predictor_value > 1.0)) {
-      throw eckit::Exception("predictor_value is out of range: " + std::to_string(predictor_value));
+      throw eckit::Exception("predictor_value is out of range: " +
+        std::to_string(predictor_value));
     }
 
     for (std::size_t jvar = 0; jvar < nvars; ++jvar) {
-      if ((day_or_night_qualifier[jloc] == 1 && day_night_ == DayNightType::NIGHT) ||
+      if (predictor_value == fmiss) {
+        out[jloc*nvars+jvar] = dmiss;
+      } else if (
+          (day_or_night_qualifier[jloc] == 1 && day_night_ == DayNightType::NIGHT) ||
           (day_or_night_qualifier[jloc] == 0 && day_night_ == DayNightType::DAY) ||
           day_night_ == DayNightType::BOTH) {
         out[jloc*nvars+jvar] = predictor_value;
