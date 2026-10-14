@@ -231,16 +231,16 @@ void CloudLiquidWater::compute(const ioda::ObsSpace & odb,
     lapseHelper_->fillTlapchnAndMeans(odb, geovals, ydiags, tlapchn_all, means_all);
 
     if (nvars != tlapchn_all.size()) {
-      oops::Log::error() << "LapseRate: nvars (" << nvars
+      oops::Log::error() << "CloudLiquidWater: nvars (" << nvars
                          << ") != number of channels (" << tlapchn_all.size() << ")"
                          << std::endl;
-      ABORT("LapseRate: nvars mismatch");
+      ABORT("CloudLiquidWater: nvars mismatch");
     }
 
     std::vector<std::size_t> assimIch(channels_.size());
     const std::vector<int> all_channels = vars_.channels();
     for (std::size_t jvar = 0; jvar < channels_.size(); ++jvar) {
-      assimIch[jvar] = all_channels.size(); // default to missing
+      assimIch[jvar] = all_channels.size();  // default to missing
       for (std::size_t ich = 0; ich < all_channels.size(); ++ich) {
         if (all_channels[ich] == channels_[jvar]) {
           assimIch[jvar] = ich;
@@ -249,7 +249,7 @@ void CloudLiquidWater::compute(const ioda::ObsSpace & odb,
       }
       if (assimIch[jvar] == all_channels.size()) {
         oops::Log::error() << "CloudLiquidWater: channel " << channels_[jvar]
-                           << " not found in " << all_channels << std::endl;
+                           << " not found in vars_.channels()" << std::endl;
         ABORT("CloudLiquidWater: channel not found in vars_.channels()");
       }
     }
@@ -260,10 +260,13 @@ void CloudLiquidWater::compute(const ioda::ObsSpace & odb,
       tlap.push_back(means_all[assimIch[jvar]]);
     }
 
+    const std::vector<float> & tlapchn_v = tlapchn_all[assimIch[jch37v]];
+    const std::vector<float> & tlapchn_h = tlapchn_all[assimIch[jch37h]];
+
     clw_bias_correction_gmi(biascoeffs,
-                          bt_hofx_37vo, bt_hofx_37ho, bt_clr_37vo, bt_clr_37ho, bt37v, bt37h,
-                           water_frac, scanpos, tlapchn_all[assimIch[jch37v]], tlapchn_all[assimIch[jch37h]],
-                           tlap, channels_, clw, clw_gmi_ch1_4);
+                            bt_hofx_37vo, bt_hofx_37ho, bt_clr_37vo, bt_clr_37ho, bt37v, bt37h,
+                            water_frac, scanpos, tlapchn_v, tlapchn_h,
+                            tlap, channels_, clw, clw_gmi_ch1_4);
   }
   if (sensor == "AMSUA" || sensor == "ATMS") {
     clwDerivative_amsua(tsavg, water_frac, bt238o, bt314o,
